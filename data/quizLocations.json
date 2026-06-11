@@ -1,0 +1,166 @@
+[
+  {
+    "id": "karl-x-gustav",
+    "title": {
+      "sv": "Karl X Gustav",
+      "en": "Karl X Gustav",
+      "de": "Karl X Gustav"
+    },
+    "latitude": 55.6062,
+    "longitude": 13.0001,
+    "imageUri": null,
+    "question": {
+      "sv": "Vilket litet djur gömmer sig på hästsvansen?",
+      "en": "Which small animal is hidden in the horse's tail?",
+      "de": "Welches kleine Tier versteckt sich im Schweif des Pferdes?"
+    },
+    "options": {
+      "sv": [
+        "En ekorre",
+        "En mus",
+        "En groda",
+        "En igelkott"
+      ],
+      "en": [
+        "A squirrel",
+        "A mouse",
+        "A frog",
+        "A hedgehog"
+      ],
+      "de": [
+        "Ein Eichhörnchen",
+        "Eine Maus",
+        "Ein Frosch",
+        "Ein Igel"
+      ]
+    },
+    "correctAnswer": {
+      "sv": "En ekorre",
+      "en": "A squirrel",
+      "de": "Ein Eichhörnchen"
+    }
+  },
+  {
+    "id": "apoteket-lejonet",
+    "title": {
+      "sv": "Apoteket Lejonet",
+      "en": "Apoteket Lejonet",
+      "de": "Apoteket Lejonet"
+    },
+    "latitude": 55.6066,
+    "longitude": 13.0011,
+    "imageUri": null,
+    "question": {
+      "sv": "Vilken tysk vetenskapsman finns på fasaden?",
+      "en": "Which German scientist can be found on the facade?",
+      "de": "Welcher deutsche Wissenschaftler ist an der Fassade zu sehen?"
+    },
+    "options": {
+      "sv": [
+        "Albert Einstein",
+        "Johannes Kepler",
+        "Wilhelm Conrad Röntgen",
+        "Carl Friedrich Gauss"
+      ],
+      "en": [
+        "Albert Einstein",
+        "Johannes Kepler",
+        "Wilhelm Conrad Röntgen",
+        "Carl Friedrich Gauss"
+      ],
+      "de": [
+        "Albert Einstein",
+        "Johannes Kepler",
+        "Wilhelm Conrad Röntgen",
+        "Carl Friedrich Gauss"
+      ]
+    },
+    "correctAnswer": {
+      "sv": "Albert Einstein",
+      "en": "Albert Einstein",
+      "de": "Albert Einstein"
+    }
+  },
+  {
+    "id": "davidshallsbron",
+    "title": {
+      "sv": "Davidshallsbron",
+      "en": "Davidshall Bridge",
+      "de": "Davidshall-Brücke"
+    },
+    "latitude": 55.5996,
+    "longitude": 13.0019,
+    "imageUri": null,
+    "question": {
+      "sv": "Vilket djur har fått skor på bron?",
+      "en": "Which animal has been given shoes on the bridge?",
+      "de": "Welches Tier hat auf der Brücke Schuhe bekommen?"
+    },
+    "options": {
+      "sv": [
+        "En häst",
+        "En hund",
+        "En get",
+        "En räv"
+      ],
+      "en": [
+        "A horse",
+        "A dog",
+        "A goat",
+        "A fox"
+      ],
+      "de": [
+        "Ein Pferd",
+        "Ein Hund",
+        "Eine Ziege",
+        "Ein Fuchs"
+      ]
+    },
+    "correctAnswer": {
+      "sv": "En häst",
+      "en": "A horse",
+      "de": "Ein Pferd"
+    }
+  },
+  {
+    "id": "malmo-mix",
+    "title": {
+      "sv": "20 quizfrågor om Malmö",
+      "en": "20 quiz questions about Malmö",
+      "de": "20 Quizfragen über Malmö"
+    },
+    "latitude": null,
+    "longitude": null,
+    "imageUri": null,
+    "question": {
+      "sv": "Vilken kanal delar upp delar av centrala Malmö?",
+      "en": "Which canal separates parts of central Malmö?",
+      "de": "Welcher Kanal trennt Teile der Malmöer Innenstadt?"
+    },
+    "options": {
+      "sv": [
+        "Malmö kanal",
+        "Göta kanal",
+        "Trollhätte kanal",
+        "Dalslands kanal"
+      ],
+      "en": [
+        "Malmö Canal",
+        "Göta Canal",
+        "Trollhätte Canal",
+        "Dalsland Canal"
+      ],
+      "de": [
+        "Der Malmö-Kanal",
+        "Der Göta-Kanal",
+        "Der Trollhätte-Kanal",
+        "Der Dalsland-Kanal"
+      ]
+    },
+    "correctAnswer": {
+      "sv": "Malmö kanal",
+      "en": "Malmö Canal",
+      "de": "Der Malmö-Kanal"
+    }
+  }
+]

@@ -1,23 +1,33 @@
 {
   "expo": {
-    "name": "malmo-cityquiz",
+    "name": "Malmö CityQuiz",
     "slug": "malmo-cityquiz",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.olssonhakan.malmocityquiz"
     },
     "android": {
+      "package": "com.olssonhakan.malmocityquiz",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0B1722",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false
     },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Malmö CityQuiz använder din plats för att låsa upp frågor nära sevärdheter."
+        }
+      ]
+    ],
     "web": {
       "favicon": "./assets/favicon.png"
     }
