@@ -8,62 +8,103 @@ import {
   Text,
   View,
 } from 'react-native'
-import { AppLanguage, QuizEntry } from '../types'
+import { AppLanguage, QuizLocation } from '../types'
+import { buildQuestionProgressId } from '../utils/quizData'
 import { formatDistance, translate } from '../i18n'
 
 type Props = {
   visible: boolean
   language: AppLanguage
-  quiz: QuizEntry | null
-  completed: boolean
+  location: QuizLocation | null
+  completedQuestionIds: string[]
   distanceMeters: number | null
   isUnlocked: boolean
   canForceOpen: boolean
   onRequestClose: () => void
   onForceOpen: () => void
-  onCorrectAnswer: (quizId: string) => void | Promise<void>
+  onCompleteQuestion: (questionProgressId: string) => void | Promise<void>
 }
 
 export default function QuizModal({
   visible,
   language,
-  quiz,
-  completed,
+  location,
+  completedQuestionIds,
   distanceMeters,
   isUnlocked,
   canForceOpen,
   onRequestClose,
   onForceOpen,
-  onCorrectAnswer,
+  onCompleteQuestion,
 }: Props) {
   const [feedback, setFeedback] = useState<'idle' | 'success' | 'error'>('idle')
+  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null)
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
 
-  useEffect(() => {
-    setFeedback('idle')
-  }, [quiz?.id, visible])
-
-  const options = useMemo(() => {
-    if (!quiz) {
+  const unansweredQuestionIndexes = useMemo(() => {
+    if (!location) {
       return []
     }
 
-    return quiz.options[language]
-  }, [language, quiz])
+    return location.questions
+      .map((question, index) => ({
+        index,
+        completed: completedQuestionIds.includes(
+          buildQuestionProgressId(location.id, question.id)
+        ),
+      }))
+      .filter((entry) => !entry.completed)
+      .map((entry) => entry.index)
+  }, [completedQuestionIds, location])
 
-  if (!quiz) {
+  useEffect(() => {
+    setFeedback('idle')
+    setSelectedOptionId(null)
+
+    if (!location) {
+      setCurrentQuestionIndex(0)
+      return
+    }
+
+    setCurrentQuestionIndex(unansweredQuestionIndexes[0] ?? 0)
+  }, [location?.id, unansweredQuestionIndexes, visible])
+
+  if (!location) {
     return null
   }
 
-  const solved = completed || feedback === 'success'
+  const currentQuestion =
+    location.questions[currentQuestionIndex] ?? location.questions[0]
+  const questionProgressId = buildQuestionProgressId(location.id, currentQuestion.id)
+  const locationCompleted = unansweredQuestionIndexes.length === 0
+  const solvedCurrentQuestion =
+    completedQuestionIds.includes(questionProgressId) || feedback === 'success'
+  const currentQuestionNumber = currentQuestionIndex + 1
+  const nextUnansweredIndex = unansweredQuestionIndexes.find(
+    (index) => index > currentQuestionIndex
+  )
 
-  const handleAnswer = async (answer: string) => {
-    if (answer === quiz.correctAnswer[language]) {
+  const handleAnswer = async (optionId: string) => {
+    setSelectedOptionId(optionId)
+
+    if (optionId === currentQuestion.correctOptionId) {
       setFeedback('success')
-      await onCorrectAnswer(quiz.id)
+      await onCompleteQuestion(questionProgressId)
       return
     }
 
     setFeedback('error')
+  }
+
+  const goToNextQuestion = () => {
+    if (typeof nextUnansweredIndex === 'number') {
+      setCurrentQuestionIndex(nextUnansweredIndex)
+      setFeedback('idle')
+      setSelectedOptionId(null)
+      return
+    }
+
+    onRequestClose()
   }
 
   return (
@@ -77,7 +118,8 @@ export default function QuizModal({
         <View style={styles.sheet}>
           <ScrollView contentContainerStyle={styles.content}>
             <View style={styles.grabber} />
-            <Text style={styles.title}>{quiz.title[language]}</Text>
+            <Text style={styles.title}>{location.title[language]}</Text>
+            <Text style={styles.summary}>{location.summary[language]}</Text>
 
             {distanceMeters !== null ? (
               <Text style={styles.meta}>
@@ -87,8 +129,8 @@ export default function QuizModal({
               <Text style={styles.meta}>{translate('markerCitywide', language)}</Text>
             )}
 
-            {quiz.imageUri ? (
-              <Image source={{ uri: quiz.imageUri }} style={styles.image} />
+            {location.imageUri ? (
+              <Image source={{ uri: location.imageUri }} style={styles.image} />
             ) : (
               <View style={styles.imagePlaceholder}>
                 <Text style={styles.imagePlaceholderText}>
@@ -97,16 +139,13 @@ export default function QuizModal({
               </View>
             )}
 
-            {solved ? (
+            {locationCompleted && feedback !== 'success' ? (
               <View style={styles.successCard}>
                 <Text style={styles.successHeading}>
-                  {translate('submitCorrect', language)}
+                  {translate('completed', language)}
                 </Text>
                 <Text style={styles.successText}>
-                  {translate('successMessage', language)}
-                </Text>
-                <Text style={styles.correctAnswerText}>
-                  {quiz.correctAnswer[language]}
+                  {translate('locationComplete', language)}
                 </Text>
               </View>
             ) : !isUnlocked && canForceOpen ? (
@@ -123,23 +162,53 @@ export default function QuizModal({
                   </Text>
                 </Pressable>
               </View>
+            ) : solvedCurrentQuestion ? (
+              <View style={styles.successCard}>
+                <Text style={styles.successHeading}>
+                  {translate('submitCorrect', language)}
+                </Text>
+                <Text style={styles.successText}>
+                  {translate('successMessage', language)}
+                </Text>
+                <Text style={styles.factLabel}>
+                  {translate('didYouKnow', language)}
+                </Text>
+                <Text style={styles.factText}>{currentQuestion.fact[language]}</Text>
+                <Pressable style={styles.primaryButton} onPress={goToNextQuestion}>
+                  <Text style={styles.primaryButtonText}>
+                    {typeof nextUnansweredIndex === 'number'
+                      ? translate('nextQuestion', language)
+                      : translate('finishLocation', language)}
+                  </Text>
+                </Pressable>
+              </View>
             ) : (
               <View style={styles.questionBlock}>
                 <Text style={styles.questionLabel}>
-                  {translate('quizQuestion', language)}
+                  {translate('questionCounter', language)} {currentQuestionNumber}/
+                  {location.questions.length}
                 </Text>
-                <Text style={styles.questionText}>{quiz.question[language]}</Text>
+                <Text style={styles.questionText}>
+                  {currentQuestion.prompt[language]}
+                </Text>
 
                 <View style={styles.optionsWrap}>
-                  {options.map((option) => (
+                  {currentQuestion.options.map((option) => (
                     <Pressable
-                      key={option}
-                      style={styles.optionButton}
+                      key={option.id}
+                      style={[
+                        styles.optionButton,
+                        selectedOptionId === option.id &&
+                          feedback === 'error' &&
+                          styles.optionButtonWrong,
+                      ]}
                       onPress={() => {
-                        void handleAnswer(option)
+                        void handleAnswer(option.id)
                       }}
                     >
-                      <Text style={styles.optionButtonText}>{option}</Text>
+                      <Text style={styles.optionButtonText}>
+                        {option.label[language]}
+                      </Text>
                     </Pressable>
                   ))}
                 </View>
@@ -151,10 +220,6 @@ export default function QuizModal({
                 ) : null}
               </View>
             )}
-
-            {completed && feedback !== 'success' ? (
-              <Text style={styles.meta}>{translate('solvedCard', language)}</Text>
-            ) : null}
 
             <Pressable style={styles.secondaryButton} onPress={onRequestClose}>
               <Text style={styles.secondaryButtonText}>
@@ -175,7 +240,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   sheet: {
-    maxHeight: '85%',
+    maxHeight: '88%',
     backgroundColor: '#08131D',
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
@@ -198,6 +263,11 @@ const styles = StyleSheet.create({
     color: '#F8FAFC',
     fontSize: 24,
     fontWeight: '800',
+  },
+  summary: {
+    color: '#C6D4E0',
+    fontSize: 14,
+    lineHeight: 20,
   },
   meta: {
     color: '#A7BBCB',
@@ -267,6 +337,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     justifyContent: 'center',
   },
+  optionButtonWrong: {
+    backgroundColor: '#5B2130',
+  },
   optionButtonText: {
     color: '#F8FAFC',
     fontSize: 15,
@@ -288,10 +361,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
-  correctAnswerText: {
+  factLabel: {
     color: '#A7F3D0',
-    fontSize: 15,
-    fontWeight: '700',
+    fontSize: 12,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+    marginTop: 4,
+  },
+  factText: {
+    color: '#E7FFF2',
+    fontSize: 14,
+    lineHeight: 21,
   },
   errorText: {
     color: '#FCA5A5',
@@ -304,6 +385,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0EA5E9',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 4,
   },
   primaryButtonText: {
     color: '#F8FAFC',

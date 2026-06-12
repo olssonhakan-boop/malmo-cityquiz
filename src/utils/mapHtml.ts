@@ -1,10 +1,10 @@
-import { AppLanguage, QuizEntry } from '../types'
-
 type MapMarkerPayload = {
   id: string
   title: string
   latitude: number
   longitude: number
+  label: string
+  status: 'locked' | 'nearby' | 'unlocked' | 'completed'
 }
 
 const leafletCssUrl =
@@ -13,17 +13,9 @@ const leafletJsUrl =
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
 
 export function buildLeafletHtml(
-  quizEntries: QuizEntry[],
-  center: { latitude: number; longitude: number },
-  language: AppLanguage
+  markers: MapMarkerPayload[],
+  center: { latitude: number; longitude: number }
 ) {
-  const markers: MapMarkerPayload[] = quizEntries.map((quiz) => ({
-    id: quiz.id,
-    title: quiz.title[language],
-    latitude: quiz.latitude as number,
-    longitude: quiz.longitude as number,
-  }))
-
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -120,6 +112,17 @@ export function buildLeafletHtml(
       }
 
       function renderMarkers(markers) {
+        const nextMarkerIds = new Set(markers.map((marker) => marker.id));
+
+        Object.keys(markersById).forEach((markerId) => {
+          if (nextMarkerIds.has(markerId)) {
+            return;
+          }
+
+          map.removeLayer(markersById[markerId]);
+          delete markersById[markerId];
+        });
+
         markers.forEach((marker) => {
           const position = [marker.latitude, marker.longitude];
           const existingMarker = markersById[marker.id];
@@ -127,12 +130,20 @@ export function buildLeafletHtml(
           if (existingMarker) {
             existingMarker.setLatLng(position);
             existingMarker.setIcon(buildMarkerIcon(marker));
+            existingMarker.bindTooltip(marker.title, {
+              direction: 'top',
+              offset: [0, -18],
+            });
             return;
           }
 
           const leafletMarker = L.marker(position, {
             icon: buildMarkerIcon(marker),
           }).addTo(map);
+          leafletMarker.bindTooltip(marker.title, {
+            direction: 'top',
+            offset: [0, -18],
+          });
 
           leafletMarker.on('click', () => {
             postToApp({ type: 'markerPress', id: marker.id });
@@ -172,6 +183,26 @@ export function buildLeafletHtml(
         if (payload.userLocation) {
           updateUserLocation(payload.userLocation);
         }
+      };
+
+      window.centerOnUser = function centerOnUser(payload) {
+        if (!map || !payload || typeof payload.latitude !== 'number' || typeof payload.longitude !== 'number') {
+          return;
+        }
+
+        map.setView([payload.latitude, payload.longitude], Math.max(map.getZoom(), 16), {
+          animate: true,
+        });
+      };
+
+      window.centerOnCity = function centerOnCity() {
+        if (!map) {
+          return;
+        }
+
+        map.setView([CENTER.latitude, CENTER.longitude], 15, {
+          animate: true,
+        });
       };
 
       initMap();

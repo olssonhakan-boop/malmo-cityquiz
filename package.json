@@ -20,6 +20,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "validate": "npm run validate:content && npx tsc --noEmit && npm run doctor && npm run export:android",
+    "validate:content": "node scripts/validate-content.mjs",
     "doctor": "npx expo-doctor",
     "export:android": "expo export --platform android"
   },

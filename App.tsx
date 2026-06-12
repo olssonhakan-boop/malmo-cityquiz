@@ -12,36 +12,52 @@ import { WebView, WebViewMessageEvent } from 'react-native-webview'
 import LanguageSelector from './src/components/LanguageSelector'
 import MapLegend from './src/components/MapLegend'
 import QuizModal from './src/components/QuizModal'
+import TourPicker from './src/components/TourPicker'
 import useLanguagePreference from './src/hooks/useLanguagePreference'
 import useQuizProgress from './src/hooks/useQuizProgress'
 import useUserLocation from './src/hooks/useUserLocation'
 import {
   CITY_CENTER,
-  getCitywideQuizzes,
-  getMapQuizEntries,
-  quizEntries,
+  filterLocationsByTour,
+  getCitywideLocations,
+  quizLocations,
+  tourDefinitions,
 } from './src/utils/quizData'
 import { buildLeafletHtml } from './src/utils/mapHtml'
-import { getDistanceMeters } from './src/utils/haversine'
+import {
+  buildLocationStatuses,
+  buildMapMarkers,
+  getNearestNextLocation,
+  getOverallProgress,
+  getSolvedQuestionCount,
+  getTourProgressItems,
+} from './src/utils/quizSelectors'
 import { formatDistance, translate } from './src/i18n'
-import { QuizEntry } from './src/types'
+import { QuizLocation } from './src/types'
 
-type SelectedQuizState = {
-  quiz: QuizEntry
+const APP_TITLE = 'Malm\u00f6 CityQuiz'
+
+type SelectedLocationState = {
+  location: QuizLocation
   distanceMeters: number | null
   isUnlocked: boolean
   canForceOpen: boolean
 }
 
-type MarkerStatus = 'locked' | 'nearby' | 'unlocked' | 'completed'
-
 export default function App() {
   const webViewRef = useRef<WebView>(null)
   const autoOpenedRef = useRef<Set<string>>(new Set())
   const [isMapReady, setIsMapReady] = useState(false)
-  const [selectedQuiz, setSelectedQuiz] = useState<SelectedQuizState | null>(null)
-  const { language, setLanguage, hydrated: languageReady } = useLanguagePreference()
-  const { completedIds, markCompleted, hydrated: progressReady } = useQuizProgress()
+  const [selectedTourId, setSelectedTourId] = useState('all')
+  const [selectedLocation, setSelectedLocation] =
+    useState<SelectedLocationState | null>(null)
+  const { language, setLanguage, hydrated: languageReady } =
+    useLanguagePreference()
+  const {
+    completedQuestionIds,
+    markQuestionCompleted,
+    hydrated: progressReady,
+  } = useQuizProgress()
   const {
     errorMessage,
     permissionGranted,
@@ -49,92 +65,61 @@ export default function App() {
     userLocation,
   } = useUserLocation()
 
+  const visibleLocations = useMemo(
+    () => filterLocationsByTour(selectedTourId),
+    [selectedTourId]
+  )
+
+  const locationStatuses = useMemo(
+    () =>
+      buildLocationStatuses(
+        visibleLocations,
+        completedQuestionIds,
+        userLocation
+      ),
+    [completedQuestionIds, userLocation, visibleLocations]
+  )
+
+  const mapMarkers = useMemo(
+    () => buildMapMarkers(locationStatuses, language),
+    [language, locationStatuses]
+  )
+
   const mapHtml = useMemo(
-    () => buildLeafletHtml(getMapQuizEntries(), CITY_CENTER, language),
-    [language]
+    () => buildLeafletHtml(mapMarkers, CITY_CENTER),
+    [mapMarkers]
   )
 
-  const quizStatuses = useMemo(() => {
-    return quizEntries.map((quiz) => {
-      // GPS-based questions unlock at 30 m, while 100 m allows a manual override.
-      const completed = completedIds.includes(quiz.id)
-      const hasCoordinates =
-        typeof quiz.latitude === 'number' && typeof quiz.longitude === 'number'
-      const distanceMeters =
-        hasCoordinates && userLocation
-          ? getDistanceMeters(
-              userLocation.latitude,
-              userLocation.longitude,
-              quiz.latitude as number,
-              quiz.longitude as number
-            )
-          : null
-
-      const citywide = !hasCoordinates
-      const unlocked = citywide || completed || (distanceMeters !== null && distanceMeters <= 30)
-      const canForceOpen =
-        !citywide &&
-        !completed &&
-        distanceMeters !== null &&
-        distanceMeters > 30 &&
-        distanceMeters <= 100
-
-      return {
-        quiz,
-        completed,
-        citywide,
-        distanceMeters,
-        unlocked,
-        canForceOpen,
-        markerStatus: completed
-          ? ('completed' as MarkerStatus)
-          : unlocked
-            ? ('unlocked' as MarkerStatus)
-            : canForceOpen
-              ? ('nearby' as MarkerStatus)
-              : ('locked' as MarkerStatus),
-      }
-    })
-  }, [completedIds, userLocation])
-
-  const mapMarkers = useMemo(() => {
-    return quizStatuses
-      .filter((status) => !status.citywide)
-      .map((status, index) => ({
-        id: status.quiz.id,
-        title: status.quiz.title[language],
-        latitude: status.quiz.latitude as number,
-        longitude: status.quiz.longitude as number,
-        label: String(index + 1),
-        status: status.markerStatus,
-      }))
-  }, [language, quizStatuses])
-
-  const citywideQuizzes = useMemo(
-    () => getCitywideQuizzes().map((quiz) => quizStatuses.find((status) => status.quiz.id === quiz.id)!),
-    [quizStatuses]
+  const citywideLocations = useMemo(
+    () => getCitywideLocations(visibleLocations),
+    [visibleLocations]
   )
 
-  const completedCount = completedIds.length
-  const totalCount = quizEntries.length
-  const nearestDistance = useMemo(() => {
-    const distances = quizStatuses
-      .filter((status) => !status.citywide && typeof status.distanceMeters === 'number')
-      .map((status) => status.distanceMeters as number)
+  const overallProgress = useMemo(
+    () => getOverallProgress(quizLocations, completedQuestionIds),
+    [completedQuestionIds]
+  )
 
-    if (distances.length === 0) {
-      return null
-    }
+  const selectedTourProgress = useMemo(
+    () => getOverallProgress(visibleLocations, completedQuestionIds),
+    [completedQuestionIds, visibleLocations]
+  )
 
-    return Math.min(...distances)
-  }, [quizStatuses])
+  const tourProgressItems = useMemo(
+    () =>
+      getTourProgressItems(
+        tourDefinitions,
+        quizLocations,
+        completedQuestionIds,
+        language
+      ),
+    [completedQuestionIds, language]
+  )
 
-  const nearestUnlockedTitle = useMemo(() => {
-    const candidate = quizStatuses.find(
-      (status) => status.unlocked && !status.completed && !status.citywide
-    )
-    return candidate?.quiz.title[language] ?? null
-  }, [language, quizStatuses])
+  const nearestNextPlace = useMemo(
+    () => getNearestNextLocation(locationStatuses),
+    [locationStatuses]
+  )
 
   useEffect(() => {
     if (!isMapReady) {
@@ -157,37 +142,43 @@ export default function App() {
       return
     }
 
-    const autoOpenCandidate = quizStatuses.find(
+    const autoOpenCandidate = locationStatuses.find(
       (status) =>
         status.unlocked &&
-        !status.completed &&
+        !status.locationCompleted &&
         !status.citywide &&
-        !autoOpenedRef.current.has(status.quiz.id)
+        !autoOpenedRef.current.has(status.location.id)
     )
 
     if (!autoOpenCandidate) {
       return
     }
 
-    autoOpenedRef.current.add(autoOpenCandidate.quiz.id)
-    setSelectedQuiz({
-      quiz: autoOpenCandidate.quiz,
+    autoOpenedRef.current.add(autoOpenCandidate.location.id)
+    setSelectedLocation({
+      location: autoOpenCandidate.location,
       distanceMeters: autoOpenCandidate.distanceMeters,
       isUnlocked: true,
       canForceOpen: false,
     })
-  }, [permissionGranted, quizStatuses])
+  }, [locationStatuses, permissionGranted])
 
-  const openQuiz = (quizId: string) => {
-    const nextStatus = quizStatuses.find((status) => status.quiz.id === quizId)
+  const openLocation = (locationId: string) => {
+    const nextStatus = locationStatuses.find(
+      (status) => status.location.id === locationId
+    )
 
     if (!nextStatus) {
       return
     }
 
-    if (nextStatus.unlocked || nextStatus.completed || nextStatus.citywide) {
-      setSelectedQuiz({
-        quiz: nextStatus.quiz,
+    if (
+      nextStatus.unlocked ||
+      nextStatus.locationCompleted ||
+      nextStatus.citywide
+    ) {
+      setSelectedLocation({
+        location: nextStatus.location,
         distanceMeters: nextStatus.distanceMeters,
         isUnlocked: true,
         canForceOpen: false,
@@ -196,8 +187,8 @@ export default function App() {
     }
 
     if (nextStatus.canForceOpen) {
-      setSelectedQuiz({
-        quiz: nextStatus.quiz,
+      setSelectedLocation({
+        location: nextStatus.location,
         distanceMeters: nextStatus.distanceMeters,
         isUnlocked: false,
         canForceOpen: true,
@@ -215,24 +206,25 @@ export default function App() {
     try {
       const payload = JSON.parse(event.nativeEvent.data)
       if (payload?.type === 'markerPress' && typeof payload.id === 'string') {
-        openQuiz(payload.id)
+        openLocation(payload.id)
       }
     } catch {
-      // Ignore malformed map messages.
+      // Ignore malformed messages from the embedded map.
     }
   }
 
-  const handleCorrectAnswer = async (quizId: string) => {
-    await markCompleted(quizId)
+  const centerMapOnUser = () => {
+    if (!userLocation) {
+      return
+    }
+
+    webViewRef.current?.injectJavaScript(
+      `window.centerOnUser(${JSON.stringify(userLocation)}); true;`
+    )
   }
 
-  const openCitywideQuiz = (quiz: QuizEntry) => {
-    setSelectedQuiz({
-      quiz,
-      distanceMeters: null,
-      isUnlocked: true,
-      canForceOpen: false,
-    })
+  const centerMapOnCity = () => {
+    webViewRef.current?.injectJavaScript('window.centerOnCity(); true;')
   }
 
   const renderLocationState = () => {
@@ -244,12 +236,12 @@ export default function App() {
       return errorMessage || translate('locationDenied', language)
     }
 
-    if (nearestDistance === null) {
+    if (!nearestNextPlace || nearestNextPlace.distanceMeters === null) {
       return translate('locatingUser', language)
     }
 
     return `${translate('nearestQuiz', language)} ${formatDistance(
-      nearestDistance,
+      nearestNextPlace.distanceMeters,
       language
     )}`
   }
@@ -266,6 +258,9 @@ export default function App() {
         source={{ html: mapHtml }}
         onLoadEnd={() => setIsMapReady(true)}
         onMessage={handleMapMessage}
+        javaScriptEnabled
+        domStorageEnabled
+        setSupportMultipleWindows={false}
         style={styles.map}
       />
 
@@ -273,55 +268,116 @@ export default function App() {
         <View style={styles.headerCard}>
           <View style={styles.titleRow}>
             <View style={styles.titleBlock}>
-              <Text style={styles.appTitle}>Malmö CityQuiz</Text>
-              <Text style={styles.subtitle}>{translate('subtitle', language)}</Text>
+              <Text style={styles.appTitle}>{APP_TITLE}</Text>
+              <Text style={styles.subtitle}>
+                {translate('subtitle', language)}
+              </Text>
             </View>
             <View style={styles.progressBadge}>
               <Text style={styles.progressValue}>
-                {completedCount}/{totalCount}
+                {overallProgress.solvedPlaces}/{overallProgress.totalPlaces}
               </Text>
-              <Text style={styles.progressLabel}>{translate('done', language)}</Text>
+              <Text style={styles.progressLabel}>
+                {translate('progressPlaces', language)}
+              </Text>
             </View>
           </View>
 
           <Text style={styles.locationText}>{renderLocationState()}</Text>
-          {nearestUnlockedTitle ? (
+          {nearestNextPlace ? (
             <Text style={styles.helperText}>
-              {translate('readyToSolve', language)} {nearestUnlockedTitle}
+              {translate('nextStop', language)}{' '}
+              {nearestNextPlace.location.title[language]} {'\u00b7'}{' '}
+              {nearestNextPlace.solvedQuestionCount}/
+              {nearestNextPlace.totalQuestionCount}
             </Text>
           ) : null}
+
+          <Text style={styles.helperText}>
+            {translate('routeProgress', language)}{' '}
+            {selectedTourProgress.solvedQuestions}/
+            {selectedTourProgress.totalQuestions} {'\u00b7'}{' '}
+            {translate('progressQuestions', language)}
+          </Text>
+
+          <View style={styles.mapActionRow}>
+            <Pressable
+              style={styles.mapActionButton}
+              onPress={centerMapOnCity}
+            >
+              <Text style={styles.mapActionButtonText}>
+                {translate('centerCity', language)}
+              </Text>
+            </Pressable>
+            <Pressable
+              style={[
+                styles.mapActionButton,
+                !userLocation && styles.mapActionButtonDisabled,
+              ]}
+              onPress={centerMapOnUser}
+              disabled={!userLocation}
+            >
+              <Text style={styles.mapActionButtonText}>
+                {translate('centerMe', language)}
+              </Text>
+            </Pressable>
+          </View>
         </View>
 
         <LanguageSelector language={language} onChange={setLanguage} />
 
-        {citywideQuizzes.length > 0 ? (
+        <TourPicker
+          language={language}
+          selectedTourId={selectedTourId}
+          tours={tourProgressItems}
+          onChange={setSelectedTourId}
+        />
+
+        {citywideLocations.length > 0 ? (
           <View style={styles.citywideCard}>
             <Text style={styles.citywideTitle}>
               {translate('citywideSection', language)}
             </Text>
             <View style={styles.citywideWrap}>
-              {citywideQuizzes.map((status) => (
-                <Pressable
-                  key={status.quiz.id}
-                  style={[
-                    styles.citywideChip,
-                    status.completed && styles.citywideChipCompleted,
-                  ]}
-                  onPress={() => openCitywideQuiz(status.quiz)}
-                >
-                  <Text style={styles.citywideChipIcon}>🧭</Text>
-                  <View style={styles.citywideCopy}>
-                    <Text style={styles.citywideChipTitle}>
-                      {status.quiz.title[language]}
-                    </Text>
-                    <Text style={styles.citywideChipMeta}>
-                      {status.completed
-                        ? translate('completed', language)
-                        : translate('openAnywhere', language)}
-                    </Text>
-                  </View>
-                </Pressable>
-              ))}
+              {citywideLocations.map((location) => {
+                const solvedQuestions = getSolvedQuestionCount(
+                  location,
+                  completedQuestionIds
+                )
+                const locationCompleted =
+                  solvedQuestions === location.questions.length
+
+                return (
+                  <Pressable
+                    key={location.id}
+                    style={[
+                      styles.citywideChip,
+                      locationCompleted && styles.citywideChipCompleted,
+                    ]}
+                    onPress={() =>
+                      setSelectedLocation({
+                        location,
+                        distanceMeters: null,
+                        isUnlocked: true,
+                        canForceOpen: false,
+                      })
+                    }
+                  >
+                    <Text style={styles.citywideChipIcon}>CQ</Text>
+                    <View style={styles.citywideCopy}>
+                      <Text style={styles.citywideChipTitle}>
+                        {location.title[language]}
+                      </Text>
+                      <Text style={styles.citywideChipMeta}>
+                        {solvedQuestions}/{location.questions.length} {'\u00b7'}{' '}
+                        {locationCompleted
+                          ? translate('completed', language)
+                          : translate('openAnywhere', language)}
+                      </Text>
+                    </View>
+                  </Pressable>
+                )
+              })}
             </View>
           </View>
         ) : null}
@@ -330,7 +386,9 @@ export default function App() {
       <View style={styles.bottomOverlay}>
         <MapLegend language={language} />
         {!hydrated ? (
-          <Text style={styles.helperText}>{translate('loadingState', language)}</Text>
+          <Text style={styles.helperText}>
+            {translate('loadingState', language)}
+          </Text>
         ) : null}
         {!permissionGranted && permissionResolved ? (
           <Text style={styles.warningText}>
@@ -340,18 +398,16 @@ export default function App() {
       </View>
 
       <QuizModal
-        visible={Boolean(selectedQuiz)}
+        visible={Boolean(selectedLocation)}
         language={language}
-        quiz={selectedQuiz?.quiz ?? null}
-        completed={Boolean(
-          selectedQuiz && completedIds.includes(selectedQuiz.quiz.id)
-        )}
-        distanceMeters={selectedQuiz?.distanceMeters ?? null}
-        isUnlocked={Boolean(selectedQuiz?.isUnlocked)}
-        canForceOpen={Boolean(selectedQuiz?.canForceOpen)}
-        onRequestClose={() => setSelectedQuiz(null)}
+        location={selectedLocation?.location ?? null}
+        completedQuestionIds={completedQuestionIds}
+        distanceMeters={selectedLocation?.distanceMeters ?? null}
+        isUnlocked={Boolean(selectedLocation?.isUnlocked)}
+        canForceOpen={Boolean(selectedLocation?.canForceOpen)}
+        onRequestClose={() => setSelectedLocation(null)}
         onForceOpen={() =>
-          setSelectedQuiz((current) =>
+          setSelectedLocation((current) =>
             current
               ? {
                   ...current,
@@ -361,7 +417,7 @@ export default function App() {
               : current
           )
         }
-        onCorrectAnswer={handleCorrectAnswer}
+        onCompleteQuestion={markQuestionCompleted}
       />
     </SafeAreaView>
   )
@@ -417,7 +473,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   progressBadge: {
-    minWidth: 76,
+    minWidth: 96,
     paddingVertical: 10,
     paddingHorizontal: 12,
     borderRadius: 18,
@@ -432,8 +488,9 @@ const styles = StyleSheet.create({
   },
   progressLabel: {
     color: '#B7C6D2',
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
+    textAlign: 'center',
   },
   locationText: {
     color: '#F8FAFC',
@@ -444,6 +501,27 @@ const styles = StyleSheet.create({
     color: '#B7C6D2',
     fontSize: 13,
     lineHeight: 18,
+  },
+  mapActionRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 2,
+  },
+  mapActionButton: {
+    minHeight: 38,
+    paddingHorizontal: 12,
+    borderRadius: 14,
+    backgroundColor: '#12364C',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mapActionButtonDisabled: {
+    opacity: 0.45,
+  },
+  mapActionButtonText: {
+    color: '#F8FAFC',
+    fontSize: 12,
+    fontWeight: '700',
   },
   warningText: {
     color: '#FDE68A',
@@ -479,7 +557,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#114738',
   },
   citywideChipIcon: {
-    fontSize: 20,
+    minWidth: 34,
+    minHeight: 34,
+    borderRadius: 17,
+    backgroundColor: '#254E68',
+    color: '#F8FAFC',
+    fontSize: 12,
+    fontWeight: '800',
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    lineHeight: 34,
   },
   citywideCopy: {
     flex: 1,

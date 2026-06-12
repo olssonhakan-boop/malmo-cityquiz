@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Malmö CityQuiz",
+    "name": "Malm\u00f6 CityQuiz",
     "slug": "malmo-cityquiz",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -24,7 +24,7 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Malmö CityQuiz använder din plats för att låsa upp frågor nära sevärdheter."
+          "locationWhenInUsePermission": "Malm\u00f6 CityQuiz anv\u00e4nder din plats f\u00f6r att l\u00e5sa upp fr\u00e5gor n\u00e4ra sev\u00e4rdheter."
         }
       ]
     ],

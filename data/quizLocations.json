@@ -6,39 +6,112 @@
       "en": "Karl X Gustav",
       "de": "Karl X Gustav"
     },
+    "summary": {
+      "sv": "Statyn på Stortorget belönar den som tittar nära på detaljerna.",
+      "en": "The statue at Stortorget rewards anyone who studies the small details closely.",
+      "de": "Die Statue am Stortorget belohnt alle, die sich die kleinen Details genau ansehen."
+    },
     "latitude": 55.6062,
     "longitude": 13.0001,
     "imageUri": null,
-    "question": {
-      "sv": "Vilket litet djur gömmer sig på hästsvansen?",
-      "en": "Which small animal is hidden in the horse's tail?",
-      "de": "Welches kleine Tier versteckt sich im Schweif des Pferdes?"
-    },
-    "options": {
-      "sv": [
-        "En ekorre",
-        "En mus",
-        "En groda",
-        "En igelkott"
-      ],
-      "en": [
-        "A squirrel",
-        "A mouse",
-        "A frog",
-        "A hedgehog"
-      ],
-      "de": [
-        "Ein Eichhörnchen",
-        "Eine Maus",
-        "Ein Frosch",
-        "Ein Igel"
-      ]
-    },
-    "correctAnswer": {
-      "sv": "En ekorre",
-      "en": "A squirrel",
-      "de": "Ein Eichhörnchen"
-    }
+    "questions": [
+      {
+        "id": "tail-animal",
+        "prompt": {
+          "sv": "Vilket litet djur gömmer sig på hästsvansen?",
+          "en": "Which small animal is hidden in the horse's tail?",
+          "de": "Welches kleine Tier versteckt sich im Schweif des Pferdes?"
+        },
+        "options": [
+          {
+            "id": "squirrel",
+            "label": {
+              "sv": "En ekorre",
+              "en": "A squirrel",
+              "de": "Ein Eichhörnchen"
+            }
+          },
+          {
+            "id": "mouse",
+            "label": {
+              "sv": "En mus",
+              "en": "A mouse",
+              "de": "Eine Maus"
+            }
+          },
+          {
+            "id": "frog",
+            "label": {
+              "sv": "En groda",
+              "en": "A frog",
+              "de": "Ein Frosch"
+            }
+          },
+          {
+            "id": "hedgehog",
+            "label": {
+              "sv": "En igelkott",
+              "en": "A hedgehog",
+              "de": "Ein Igel"
+            }
+          }
+        ],
+        "correctOptionId": "squirrel",
+        "fact": {
+          "sv": "Den lilla ekorren är ett klassiskt Malmö-detaljspaningsfynd som många går förbi utan att se.",
+          "en": "The tiny squirrel is a classic Malmö detail that many visitors walk past without noticing.",
+          "de": "Das kleine Eichhörnchen ist ein klassisches Malmö-Detail, das viele übersehen."
+        }
+      },
+      {
+        "id": "monument-purpose",
+        "prompt": {
+          "sv": "Vad vill statyn främst förmedla på torget?",
+          "en": "What is the statue mainly meant to communicate in the square?",
+          "de": "Was soll die Statue auf dem Platz vor allem vermitteln?"
+        },
+        "options": [
+          {
+            "id": "royal-power",
+            "label": {
+              "sv": "Kunglig makt och seger",
+              "en": "Royal power and victory",
+              "de": "Königliche Macht und Sieg"
+            }
+          },
+          {
+            "id": "harvest",
+            "label": {
+              "sv": "Skånsk skörd",
+              "en": "The Scanian harvest",
+              "de": "Die schonische Ernte"
+            }
+          },
+          {
+            "id": "shipbuilding",
+            "label": {
+              "sv": "Malmös varvsepok",
+              "en": "Malmö's shipyard era",
+              "de": "Malmös Werftzeit"
+            }
+          },
+          {
+            "id": "trade",
+            "label": {
+              "sv": "Tysk handel",
+              "en": "German trade",
+              "de": "Deutscher Handel"
+            }
+          }
+        ],
+        "correctOptionId": "royal-power",
+        "fact": {
+          "sv": "Ryttarstatyer används ofta för att signalera makt, kontroll och ett segrande historiskt narrativ.",
+          "en": "Equestrian statues are often used to signal power, control, and a victorious historical narrative.",
+          "de": "Reiterstatuen werden oft genutzt, um Macht, Kontrolle und ein siegreiches Geschichtsbild zu vermitteln."
+        }
+      }
+    ]
   },
   {
     "id": "apoteket-lejonet",
@@ -47,39 +120,112 @@
       "en": "Apoteket Lejonet",
       "de": "Apoteket Lejonet"
     },
+    "summary": {
+      "sv": "Här gäller det att läsa fasaden som om den vore en illustrerad historiebok.",
+      "en": "Here you need to read the facade like an illustrated history book.",
+      "de": "Hier musst du die Fassade wie ein illustriertes Geschichtsbuch lesen."
+    },
     "latitude": 55.6066,
     "longitude": 13.0011,
     "imageUri": null,
-    "question": {
-      "sv": "Vilken tysk vetenskapsman finns på fasaden?",
-      "en": "Which German scientist can be found on the facade?",
-      "de": "Welcher deutsche Wissenschaftler ist an der Fassade zu sehen?"
-    },
-    "options": {
-      "sv": [
-        "Albert Einstein",
-        "Johannes Kepler",
-        "Wilhelm Conrad Röntgen",
-        "Carl Friedrich Gauss"
-      ],
-      "en": [
-        "Albert Einstein",
-        "Johannes Kepler",
-        "Wilhelm Conrad Röntgen",
-        "Carl Friedrich Gauss"
-      ],
-      "de": [
-        "Albert Einstein",
-        "Johannes Kepler",
-        "Wilhelm Conrad Röntgen",
-        "Carl Friedrich Gauss"
-      ]
-    },
-    "correctAnswer": {
-      "sv": "Albert Einstein",
-      "en": "Albert Einstein",
-      "de": "Albert Einstein"
-    }
+    "questions": [
+      {
+        "id": "facade-scientist",
+        "prompt": {
+          "sv": "Vilken tysk vetenskapsman finns på fasaden?",
+          "en": "Which German scientist can be found on the facade?",
+          "de": "Welcher deutsche Wissenschaftler ist an der Fassade zu sehen?"
+        },
+        "options": [
+          {
+            "id": "einstein",
+            "label": {
+              "sv": "Albert Einstein",
+              "en": "Albert Einstein",
+              "de": "Albert Einstein"
+            }
+          },
+          {
+            "id": "kepler",
+            "label": {
+              "sv": "Johannes Kepler",
+              "en": "Johannes Kepler",
+              "de": "Johannes Kepler"
+            }
+          },
+          {
+            "id": "rontgen",
+            "label": {
+              "sv": "Wilhelm Conrad Röntgen",
+              "en": "Wilhelm Conrad Röntgen",
+              "de": "Wilhelm Conrad Röntgen"
+            }
+          },
+          {
+            "id": "gauss",
+            "label": {
+              "sv": "Carl Friedrich Gauss",
+              "en": "Carl Friedrich Gauss",
+              "de": "Carl Friedrich Gauss"
+            }
+          }
+        ],
+        "correctOptionId": "einstein",
+        "fact": {
+          "sv": "Fasader från den här perioden använde ofta lärda gestalter för att signalera bildning, modernitet och internationell orientering.",
+          "en": "Facades from this period often used learned figures to signal education, modernity, and an international outlook.",
+          "de": "Fassaden aus dieser Zeit nutzten oft Gelehrte, um Bildung, Modernität und internationale Orientierung zu signalisieren."
+        }
+      },
+      {
+        "id": "building-type",
+        "prompt": {
+          "sv": "Vad gör platsen extra bra för en regnig dag-runda?",
+          "en": "What makes this spot especially good for a rainy-day route?",
+          "de": "Was macht diesen Ort besonders gut für eine Regentagstour?"
+        },
+        "options": [
+          {
+            "id": "facade-details",
+            "label": {
+              "sv": "Du kan studera många detaljer utan att gå långt",
+              "en": "You can study many details without walking far",
+              "de": "Man kann viele Details betrachten, ohne weit zu gehen"
+            }
+          },
+          {
+            "id": "water-view",
+            "label": {
+              "sv": "Det finns utsikt över havet",
+              "en": "It has a sea view",
+              "de": "Es gibt Meerblick"
+            }
+          },
+          {
+            "id": "open-lawn",
+            "label": {
+              "sv": "Det ligger på en stor gräsyta",
+              "en": "It stands on a large lawn",
+              "de": "Es liegt auf einer großen Rasenfläche"
+            }
+          },
+          {
+            "id": "playground",
+            "label": {
+              "sv": "Det finns en lekplats bredvid",
+              "en": "There is a playground next to it",
+              "de": "Daneben gibt es einen Spielplatz"
+            }
+          }
+        ],
+        "correctOptionId": "facade-details",
+        "fact": {
+          "sv": "Bra cityquizpunkter fungerar även när vädret är sämre, särskilt om detaljerna finns tätt samlade på en fasad.",
+          "en": "Good city-quiz spots also work in bad weather, especially when many details are concentrated on one facade.",
+          "de": "Gute City-Quiz-Orte funktionieren auch bei schlechtem Wetter, besonders wenn viele Details auf einer Fassade konzentriert sind."
+        }
+      }
+    ]
   },
   {
     "id": "davidshallsbron",
@@ -88,39 +234,112 @@
       "en": "Davidshall Bridge",
       "de": "Davidshall-Brücke"
     },
+    "summary": {
+      "sv": "Bron bjuder på lekfulla skulpturdetaljer som gör den perfekt för både barn och detaljjägare.",
+      "en": "The bridge offers playful sculptural details, making it perfect for children and detail hunters alike.",
+      "de": "Die Brücke bietet verspielte Skulpturdetails und ist perfekt für Kinder und Detailjäger."
+    },
     "latitude": 55.5996,
     "longitude": 13.0019,
     "imageUri": null,
-    "question": {
-      "sv": "Vilket djur har fått skor på bron?",
-      "en": "Which animal has been given shoes on the bridge?",
-      "de": "Welches Tier hat auf der Brücke Schuhe bekommen?"
-    },
-    "options": {
-      "sv": [
-        "En häst",
-        "En hund",
-        "En get",
-        "En räv"
-      ],
-      "en": [
-        "A horse",
-        "A dog",
-        "A goat",
-        "A fox"
-      ],
-      "de": [
-        "Ein Pferd",
-        "Ein Hund",
-        "Eine Ziege",
-        "Ein Fuchs"
-      ]
-    },
-    "correctAnswer": {
-      "sv": "En häst",
-      "en": "A horse",
-      "de": "Ein Pferd"
-    }
+    "questions": [
+      {
+        "id": "animal-with-shoes",
+        "prompt": {
+          "sv": "Vilket djur har fått skor på bron?",
+          "en": "Which animal has been given shoes on the bridge?",
+          "de": "Welches Tier hat auf der Brücke Schuhe bekommen?"
+        },
+        "options": [
+          {
+            "id": "horse",
+            "label": {
+              "sv": "En häst",
+              "en": "A horse",
+              "de": "Ein Pferd"
+            }
+          },
+          {
+            "id": "dog",
+            "label": {
+              "sv": "En hund",
+              "en": "A dog",
+              "de": "Ein Hund"
+            }
+          },
+          {
+            "id": "goat",
+            "label": {
+              "sv": "En get",
+              "en": "A goat",
+              "de": "Eine Ziege"
+            }
+          },
+          {
+            "id": "fox",
+            "label": {
+              "sv": "En räv",
+              "en": "A fox",
+              "de": "Ein Fuchs"
+            }
+          }
+        ],
+        "correctOptionId": "horse",
+        "fact": {
+          "sv": "Det är just de oväntade små skulpturinslagen som gör Davidshallsbron så minnesvärd i stadsvandringar.",
+          "en": "It is exactly these unexpected little sculptural details that make Davidshall Bridge memorable on city walks.",
+          "de": "Gerade diese unerwarteten kleinen Skulpturdetails machen die Davidshall-Brücke bei Stadtrundgängen so einprägsam."
+        }
+      },
+      {
+        "id": "bridge-mood",
+        "prompt": {
+          "sv": "Vad kännetecknar bron bäst som quizstopp?",
+          "en": "What best characterizes the bridge as a quiz stop?",
+          "de": "Was zeichnet die Brücke am besten als Quiz-Stopp aus?"
+        },
+        "options": [
+          {
+            "id": "playful-details",
+            "label": {
+              "sv": "Lekfulla detaljer i vardagsmiljö",
+              "en": "Playful details in an everyday setting",
+              "de": "Verspielte Details in alltäglicher Umgebung"
+            }
+          },
+          {
+            "id": "military-theme",
+            "label": {
+              "sv": "Militär symbolik",
+              "en": "Military symbolism",
+              "de": "Militärische Symbolik"
+            }
+          },
+          {
+            "id": "religious-theme",
+            "label": {
+              "sv": "Religiösa figurer",
+              "en": "Religious figures",
+              "de": "Religiöse Figuren"
+            }
+          },
+          {
+            "id": "industrial-theme",
+            "label": {
+              "sv": "Tunga industrimotiv",
+              "en": "Heavy industrial motifs",
+              "de": "Schwere Industriemotive"
+            }
+          }
+        ],
+        "correctOptionId": "playful-details",
+        "fact": {
+          "sv": "Många uppskattar just blandningen av vardag och fantasi här, vilket gör bron extra bra för familjer och barnrundor.",
+          "en": "Many people appreciate the mix of everyday life and imagination here, which makes the bridge especially good for family routes.",
+          "de": "Viele schätzen hier gerade die Mischung aus Alltag und Fantasie, was die Brücke besonders gut für Familienrouten macht."
+        }
+      }
+    ]
   },
   {
     "id": "malmo-mix",
@@ -129,38 +348,111 @@
       "en": "20 quiz questions about Malmö",
       "de": "20 Quizfragen über Malmö"
     },
+    "summary": {
+      "sv": "En platsoberoende frågebank som fungerar var som helst i staden.",
+      "en": "A location-free question bank that works anywhere in the city.",
+      "de": "Ein ortsunabhängiger Fragenpool, der überall in der Stadt funktioniert."
+    },
     "latitude": null,
     "longitude": null,
     "imageUri": null,
-    "question": {
-      "sv": "Vilken kanal delar upp delar av centrala Malmö?",
-      "en": "Which canal separates parts of central Malmö?",
-      "de": "Welcher Kanal trennt Teile der Malmöer Innenstadt?"
-    },
-    "options": {
-      "sv": [
-        "Malmö kanal",
-        "Göta kanal",
-        "Trollhätte kanal",
-        "Dalslands kanal"
-      ],
-      "en": [
-        "Malmö Canal",
-        "Göta Canal",
-        "Trollhätte Canal",
-        "Dalsland Canal"
-      ],
-      "de": [
-        "Der Malmö-Kanal",
-        "Der Göta-Kanal",
-        "Der Trollhätte-Kanal",
-        "Der Dalsland-Kanal"
-      ]
-    },
-    "correctAnswer": {
-      "sv": "Malmö kanal",
-      "en": "Malmö Canal",
-      "de": "Der Malmö-Kanal"
-    }
+    "questions": [
+      {
+        "id": "canal-question",
+        "prompt": {
+          "sv": "Vilken kanal delar upp delar av centrala Malmö?",
+          "en": "Which canal separates parts of central Malmö?",
+          "de": "Welcher Kanal trennt Teile der Malmöer Innenstadt?"
+        },
+        "options": [
+          {
+            "id": "malmo-canal",
+            "label": {
+              "sv": "Malmö kanal",
+              "en": "Malmö Canal",
+              "de": "Der Malmö-Kanal"
+            }
+          },
+          {
+            "id": "gota-canal",
+            "label": {
+              "sv": "Göta kanal",
+              "en": "Göta Canal",
+              "de": "Der Göta-Kanal"
+            }
+          },
+          {
+            "id": "trollhatte-canal",
+            "label": {
+              "sv": "Trollhätte kanal",
+              "en": "Trollhätte Canal",
+              "de": "Der Trollhätte-Kanal"
+            }
+          },
+          {
+            "id": "dalsland-canal",
+            "label": {
+              "sv": "Dalslands kanal",
+              "en": "Dalsland Canal",
+              "de": "Der Dalsland-Kanal"
+            }
+          }
+        ],
+        "correctOptionId": "malmo-canal",
+        "fact": {
+          "sv": "Kanalen spelar en viktig roll i hur man läser Malmös äldre stadsstruktur och rörelser genom centrum.",
+          "en": "The canal plays an important role in how you read Malmö's older urban structure and movement through the center.",
+          "de": "Der Kanal spielt eine wichtige Rolle dabei, wie man Malmös ältere Stadtstruktur und Bewegungen durch das Zentrum versteht."
+        }
+      },
+      {
+        "id": "city-identity",
+        "prompt": {
+          "sv": "Vilken kombination beskriver Malmö bäst idag?",
+          "en": "Which combination best describes Malmö today?",
+          "de": "Welche Kombination beschreibt Malmö heute am besten?"
+        },
+        "options": [
+          {
+            "id": "historic-and-global",
+            "label": {
+              "sv": "Historisk stadskärna och internationell nutid",
+              "en": "Historic core and international present",
+              "de": "Historischer Kern und internationale Gegenwart"
+            }
+          },
+          {
+            "id": "mountain-and-lakes",
+            "label": {
+              "sv": "Bergsby och sjölandskap",
+              "en": "Mountain village and lake landscape",
+              "de": "Bergdorf und Seenlandschaft"
+            }
+          },
+          {
+            "id": "island-and-mines",
+            "label": {
+              "sv": "Öliv och gruvdrift",
+              "en": "Island life and mining",
+              "de": "Inselleben und Bergbau"
+            }
+          },
+          {
+            "id": "forest-and-logging",
+            "label": {
+              "sv": "Skogsstad och timmerhandel",
+              "en": "Forest city and timber trade",
+              "de": "Waldstadt und Holzhandel"
+            }
+          }
+        ],
+        "correctOptionId": "historic-and-global",
+        "fact": {
+          "sv": "Det är just mötet mellan äldre stadsrum och ett samtida, internationellt Malmö som gör många rundor extra spännande.",
+          "en": "It is precisely the meeting of older urban spaces and a contemporary, international Malmö that makes many routes especially interesting.",
+          "de": "Gerade das Zusammentreffen älterer Stadträume mit einem zeitgenössischen, internationalen Malmö macht viele Routen besonders spannend."
+        }
+      }
+    ]
   }
 ]
