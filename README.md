@@ -1,6 +1,6 @@
-# Malmö CityQuiz
+# Malmo CityQuiz
 
-Malmö CityQuiz is a separate Expo / React Native project for an Android-first city quiz experience built around Malmö landmarks.
+Malmo CityQuiz is an Expo / React Native project for an Android-first city quiz experience built around Malmo landmarks.
 
 ## Current stack
 
@@ -14,10 +14,10 @@ Malmö CityQuiz is a separate Expo / React Native project for an Android-first c
 
 ## Implemented so far
 
-- Full-screen Malmö map centered on `55.6050, 13.0038`
+- Full-screen Malmo map centered on `55.6050, 13.0038`
 - Blue user-location dot
 - Multiple location-based quiz markers
-- Citywide quiz items that can open anywhere in Malmö
+- Citywide quiz items that can open anywhere in the city
 - Distance-based unlocking
   - under 30 meters: auto unlock
   - within 100 meters: force open available
@@ -25,10 +25,13 @@ Malmö CityQuiz is a separate Expo / React Native project for an Android-first c
 - Stable multilingual answer ids instead of comparing translated answer strings
 - Runtime translation fallback if one language is temporarily missing in quiz data
 - Multiple questions per location
-- Data-driven thematic tours in `data/tours.json`
-- Marker states for locked, nearby, unlocked, and completed
-- Green completion state after correct answer
-- Quick map actions for centering on Malmö or the user's current position
+- Multiple question types
+  - `multiple-choice`
+  - `true-false`
+  - `sort-order`
+  - `find-detail`
+- Question-level image support via `imageUri` or local `imageAssetId`
+- Data-driven thematic tours in [data/tours.json](C:/Users/hakan/OneDrive/Documents/malmo-cityquiz/data/tours.json)
 - Data-driven quiz content in [data/quizLocations.json](C:/Users/hakan/OneDrive/Documents/malmo-cityquiz/data/quizLocations.json)
 
 ## Run locally
@@ -42,10 +45,10 @@ npm run start
 ## Validate
 
 ```bash
-npm run doctor
-npm run validate:content
-npm run export:android
+npm run validate
 ```
+
+This runs content validation, TypeScript, Expo Doctor, and Android export.
 
 ## Editing quiz content
 
@@ -53,18 +56,13 @@ Update [data/quizLocations.json](C:/Users/hakan/OneDrive/Documents/malmo-cityqui
 
 - To create a location-based quiz, provide `latitude` and `longitude`.
 - To create a citywide quiz, set both coordinates to `null`.
-- Add optional `imageUri` values for photos.
-- Recommended: use `options[]` plus `correctOptionId` instead of localized `correctAnswer` strings.
-
-Examples:
-
-- `https://...`
-- `file:///...`
-- `data:image/jpeg;base64,...`
+- To attach a remote image, set `imageUri`.
+- To attach a bundled app image, set `imageAssetId`.
+- Mixed question types can live in the same location or citywide deck.
 
 ## Notes
 
 - Leaflet is rendered inside a WebView to avoid Google Maps API key requirements.
 - OpenStreetMap tiles require network access.
-- The seeded quiz answers are mock content and can be adjusted in the data file without changing the app logic.
-- The app still accepts the older quiz schema, but the new option-id schema is now the recommended way to manage multiple languages safely.
+- Citywide question decks are already supported through `null` coordinates.
+- The seeded content is mock content and can be adjusted in the data file without changing app logic.

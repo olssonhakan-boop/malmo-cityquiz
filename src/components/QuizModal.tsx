@@ -8,8 +8,16 @@ import {
   Text,
   View,
 } from 'react-native'
-import { AppLanguage, QuizLocation } from '../types'
+import {
+  AppLanguage,
+  FindDetailQuestion,
+  LocationQuestion,
+  QuizOption,
+  QuizLocation,
+  SortOrderQuestion,
+} from '../types'
 import { buildQuestionProgressId } from '../utils/quizData'
+import { resolveQuizImageSource } from '../utils/quizImageAssets'
 import { formatDistance, translate } from '../i18n'
 
 type Props = {
@@ -23,6 +31,39 @@ type Props = {
   onRequestClose: () => void
   onForceOpen: () => void
   onCompleteQuestion: (questionProgressId: string) => void | Promise<void>
+}
+
+function hashString(value: string) {
+  let hash = 0
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0
+  }
+
+  return hash
+}
+
+function getDeterministicSortItems(question: SortOrderQuestion) {
+  return [...question.items].sort((left, right) => {
+    const leftHash = hashString(`${question.id}:${left.id}`)
+    const rightHash = hashString(`${question.id}:${right.id}`)
+
+    if (leftHash === rightHash) {
+      return left.id.localeCompare(right.id)
+    }
+
+    return leftHash - rightHash
+  })
+}
+
+function getQuestionImageSource(
+  location: QuizLocation,
+  question: LocationQuestion
+) {
+  return resolveQuizImageSource(
+    question.imageAssetId ?? location.imageAssetId,
+    question.imageUri ?? location.imageUri
+  )
 }
 
 export default function QuizModal({
@@ -39,7 +80,15 @@ export default function QuizModal({
 }: Props) {
   const [feedback, setFeedback] = useState<'idle' | 'success' | 'error'>('idle')
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null)
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+  const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([])
+  const [lastTapPoint, setLastTapPoint] = useState<{
+    xPercent: number
+    yPercent: number
+  } | null>(null)
+  const [interactiveImageSize, setInteractiveImageSize] = useState({
+    width: 0,
+    height: 0,
+  })
 
   const unansweredQuestionIndexes = useMemo(() => {
     if (!location) {
@@ -57,9 +106,13 @@ export default function QuizModal({
       .map((entry) => entry.index)
   }, [completedQuestionIds, location])
 
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+
   useEffect(() => {
     setFeedback('idle')
     setSelectedOptionId(null)
+    setSelectedOrderIds([])
+    setLastTapPoint(null)
 
     if (!location) {
       setCurrentQuestionIndex(0)
@@ -75,7 +128,11 @@ export default function QuizModal({
 
   const currentQuestion =
     location.questions[currentQuestionIndex] ?? location.questions[0]
-  const questionProgressId = buildQuestionProgressId(location.id, currentQuestion.id)
+  const questionProgressId = buildQuestionProgressId(
+    location.id,
+    currentQuestion.id
+  )
+  const questionImageSource = getQuestionImageSource(location, currentQuestion)
   const locationCompleted = unansweredQuestionIndexes.length === 0
   const solvedCurrentQuestion =
     completedQuestionIds.includes(questionProgressId) || feedback === 'success'
@@ -84,16 +141,103 @@ export default function QuizModal({
     (index) => index > currentQuestionIndex
   )
 
-  const handleAnswer = async (optionId: string) => {
+  const handleCorrectAnswer = async () => {
+    setFeedback('success')
+    await onCompleteQuestion(questionProgressId)
+  }
+
+  const handleWrongAnswer = () => {
+    setFeedback('error')
+  }
+
+  const handleMultipleChoiceAnswer = async (optionId: string) => {
     setSelectedOptionId(optionId)
 
-    if (optionId === currentQuestion.correctOptionId) {
-      setFeedback('success')
-      await onCompleteQuestion(questionProgressId)
+    if (
+      currentQuestion.type === 'multiple-choice' &&
+      optionId === currentQuestion.correctOptionId
+    ) {
+      await handleCorrectAnswer()
       return
     }
 
-    setFeedback('error')
+    handleWrongAnswer()
+  }
+
+  const handleBooleanAnswer = async (value: boolean) => {
+    setSelectedOptionId(value ? 'true' : 'false')
+
+    if (
+      currentQuestion.type === 'true-false' &&
+      value === currentQuestion.correctBoolean
+    ) {
+      await handleCorrectAnswer()
+      return
+    }
+
+    handleWrongAnswer()
+  }
+
+  const handleAddSortItem = (itemId: string) => {
+    setFeedback('idle')
+    setSelectedOrderIds((current) =>
+      current.includes(itemId) ? current : [...current, itemId]
+    )
+  }
+
+  const handleUndoSort = () => {
+    setFeedback('idle')
+    setSelectedOrderIds((current) => current.slice(0, -1))
+  }
+
+  const handleClearSort = () => {
+    setFeedback('idle')
+    setSelectedOrderIds([])
+  }
+
+  const handleCheckSortOrder = async () => {
+    if (currentQuestion.type !== 'sort-order') {
+      return
+    }
+
+    const isCorrect =
+      selectedOrderIds.length === currentQuestion.correctOrderIds.length &&
+      selectedOrderIds.every(
+        (itemId, index) => itemId === currentQuestion.correctOrderIds[index]
+      )
+
+    if (isCorrect) {
+      await handleCorrectAnswer()
+      return
+    }
+
+    handleWrongAnswer()
+  }
+
+  const handleDetailTap = async (question: FindDetailQuestion, x: number, y: number) => {
+    if (interactiveImageSize.width <= 0 || interactiveImageSize.height <= 0) {
+      return
+    }
+
+    const xPercent = (x / interactiveImageSize.width) * 100
+    const yPercent = (y / interactiveImageSize.height) * 100
+    setLastTapPoint({ xPercent, yPercent })
+
+    const matchingTarget = question.detailTargets.find((target) => {
+      const distance = Math.sqrt(
+        Math.pow(xPercent - target.xPercent, 2) +
+          Math.pow(yPercent - target.yPercent, 2)
+      )
+
+      return distance <= target.radiusPercent
+    })
+
+    if (matchingTarget?.id === question.correctTargetId) {
+      await handleCorrectAnswer()
+      return
+    }
+
+    handleWrongAnswer()
   }
 
   const goToNextQuestion = () => {
@@ -101,10 +245,244 @@ export default function QuizModal({
       setCurrentQuestionIndex(nextUnansweredIndex)
       setFeedback('idle')
       setSelectedOptionId(null)
+      setSelectedOrderIds([])
+      setLastTapPoint(null)
       return
     }
 
     onRequestClose()
+  }
+
+  const renderQuestionMedia = () => {
+    if (!questionImageSource) {
+      return (
+        <View style={styles.imagePlaceholder}>
+          <Text style={styles.imagePlaceholderText}>
+            {translate('imageMissing', language)}
+          </Text>
+        </View>
+      )
+    }
+
+    if (currentQuestion.type === 'find-detail') {
+      return (
+        <View
+          style={styles.interactiveImageWrap}
+          onLayout={(event) => {
+            setInteractiveImageSize({
+              width: event.nativeEvent.layout.width,
+              height: event.nativeEvent.layout.height,
+            })
+          }}
+          onStartShouldSetResponder={() => true}
+          onResponderRelease={(event) => {
+            void handleDetailTap(
+              currentQuestion,
+              event.nativeEvent.locationX,
+              event.nativeEvent.locationY
+            )
+          }}
+        >
+          <Image source={questionImageSource} style={styles.interactiveImage} />
+          {lastTapPoint ? (
+            <View
+              pointerEvents="none"
+              style={[
+                styles.tapMarker,
+                {
+                  left: `${lastTapPoint.xPercent}%`,
+                  top: `${lastTapPoint.yPercent}%`,
+                },
+              ]}
+            />
+          ) : null}
+        </View>
+      )
+    }
+
+    return <Image source={questionImageSource} style={styles.image} />
+  }
+
+  const renderMultipleChoiceQuestion = () => {
+    if (currentQuestion.type !== 'multiple-choice') {
+      return null
+    }
+
+    return (
+      <View style={styles.optionsWrap}>
+        {currentQuestion.options.map((option) => (
+          <Pressable
+            key={option.id}
+            style={[
+              styles.optionButton,
+              selectedOptionId === option.id &&
+                feedback === 'error' &&
+                styles.optionButtonWrong,
+            ]}
+            onPress={() => {
+              void handleMultipleChoiceAnswer(option.id)
+            }}
+          >
+            <Text style={styles.optionButtonText}>{option.label[language]}</Text>
+          </Pressable>
+        ))}
+      </View>
+    )
+  }
+
+  const renderTrueFalseQuestion = () => {
+    if (currentQuestion.type !== 'true-false') {
+      return null
+    }
+
+    return (
+      <View style={styles.optionsWrap}>
+        <Pressable
+          style={[
+            styles.optionButton,
+            selectedOptionId === 'true' &&
+              feedback === 'error' &&
+              styles.optionButtonWrong,
+          ]}
+          onPress={() => {
+            void handleBooleanAnswer(true)
+          }}
+        >
+          <Text style={styles.optionButtonText}>
+            {translate('trueLabel', language)}
+          </Text>
+        </Pressable>
+        <Pressable
+          style={[
+            styles.optionButton,
+            selectedOptionId === 'false' &&
+              feedback === 'error' &&
+              styles.optionButtonWrong,
+          ]}
+          onPress={() => {
+            void handleBooleanAnswer(false)
+          }}
+        >
+          <Text style={styles.optionButtonText}>
+            {translate('falseLabel', language)}
+          </Text>
+        </Pressable>
+      </View>
+    )
+  }
+
+  const renderSortOrderQuestion = () => {
+    if (currentQuestion.type !== 'sort-order') {
+      return null
+    }
+
+    const sortedItems = getDeterministicSortItems(currentQuestion)
+    const selectedItems = currentQuestion.correctOrderIds
+      .map((itemId) => currentQuestion.items.find((item) => item.id === itemId))
+      .filter((item): item is QuizOption => Boolean(item))
+    const chosenItems = selectedOrderIds
+      .map((itemId) => currentQuestion.items.find((item) => item.id === itemId))
+      .filter((item): item is QuizOption => Boolean(item))
+    const availableItems = sortedItems.filter(
+      (item) => !selectedOrderIds.includes(item.id)
+    )
+
+    return (
+      <View style={styles.sortWrap}>
+        <View style={styles.sortSequenceCard}>
+          <Text style={styles.sortHeading}>
+            {translate('selectedOrder', language)}
+          </Text>
+          {chosenItems.length > 0 ? (
+            <View style={styles.sortSequenceWrap}>
+              {chosenItems.map((item, index) => (
+                <View key={item.id} style={styles.sortSequenceItem}>
+                  <Text style={styles.sortSequenceIndex}>{index + 1}</Text>
+                  <Text style={styles.sortSequenceText}>
+                    {item.label[language]}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          ) : (
+            <Text style={styles.sortPlaceholder}>
+              {translate('sortPlaceholder', language)}
+            </Text>
+          )}
+        </View>
+
+        <View style={styles.sortActionRow}>
+          <Pressable style={styles.inlineActionButton} onPress={handleUndoSort}>
+            <Text style={styles.inlineActionButtonText}>
+              {translate('sortUndo', language)}
+            </Text>
+          </Pressable>
+          <Pressable style={styles.inlineActionButton} onPress={handleClearSort}>
+            <Text style={styles.inlineActionButtonText}>
+              {translate('sortClear', language)}
+            </Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.optionsWrap}>
+          {availableItems.map((item) => (
+            <Pressable
+              key={item.id}
+              style={styles.optionButton}
+              onPress={() => handleAddSortItem(item.id)}
+            >
+              <Text style={styles.optionButtonText}>{item.label[language]}</Text>
+            </Pressable>
+          ))}
+        </View>
+
+        <Pressable
+          style={[
+            styles.primaryButton,
+            selectedOrderIds.length !== selectedItems.length &&
+              styles.primaryButtonDisabled,
+          ]}
+          onPress={() => {
+            void handleCheckSortOrder()
+          }}
+          disabled={selectedOrderIds.length !== selectedItems.length}
+        >
+          <Text style={styles.primaryButtonText}>
+            {translate('checkOrder', language)}
+          </Text>
+        </Pressable>
+      </View>
+    )
+  }
+
+  const renderFindDetailQuestion = () => {
+    if (currentQuestion.type !== 'find-detail') {
+      return null
+    }
+
+    return (
+      <View style={styles.findDetailWrap}>
+        <Text style={styles.findDetailHint}>
+          {translate('findDetailHint', language)}
+        </Text>
+      </View>
+    )
+  }
+
+  const renderQuestionInteraction = () => {
+    if (currentQuestion.type === 'multiple-choice') {
+      return renderMultipleChoiceQuestion()
+    }
+
+    if (currentQuestion.type === 'true-false') {
+      return renderTrueFalseQuestion()
+    }
+
+    if (currentQuestion.type === 'sort-order') {
+      return renderSortOrderQuestion()
+    }
+
+    return renderFindDetailQuestion()
   }
 
   return (
@@ -123,20 +501,13 @@ export default function QuizModal({
 
             {distanceMeters !== null ? (
               <Text style={styles.meta}>
-                {translate('distanceLabel', language)}: {formatDistance(distanceMeters, language)}
+                {translate('distanceLabel', language)}:{' '}
+                {formatDistance(distanceMeters, language)}
               </Text>
             ) : (
-              <Text style={styles.meta}>{translate('markerCitywide', language)}</Text>
-            )}
-
-            {location.imageUri ? (
-              <Image source={{ uri: location.imageUri }} style={styles.image} />
-            ) : (
-              <View style={styles.imagePlaceholder}>
-                <Text style={styles.imagePlaceholderText}>
-                  {translate('imageMissing', language)}
-                </Text>
-              </View>
+              <Text style={styles.meta}>
+                {translate('markerCitywide', language)}
+              </Text>
             )}
 
             {locationCompleted && feedback !== 'success' ? (
@@ -173,7 +544,9 @@ export default function QuizModal({
                 <Text style={styles.factLabel}>
                   {translate('didYouKnow', language)}
                 </Text>
-                <Text style={styles.factText}>{currentQuestion.fact[language]}</Text>
+                <Text style={styles.factText}>
+                  {currentQuestion.fact[language]}
+                </Text>
                 <Pressable style={styles.primaryButton} onPress={goToNextQuestion}>
                   <Text style={styles.primaryButtonText}>
                     {typeof nextUnansweredIndex === 'number'
@@ -191,27 +564,12 @@ export default function QuizModal({
                 <Text style={styles.questionText}>
                   {currentQuestion.prompt[language]}
                 </Text>
+                <Text style={styles.instructionText}>
+                  {currentQuestion.instruction[language]}
+                </Text>
 
-                <View style={styles.optionsWrap}>
-                  {currentQuestion.options.map((option) => (
-                    <Pressable
-                      key={option.id}
-                      style={[
-                        styles.optionButton,
-                        selectedOptionId === option.id &&
-                          feedback === 'error' &&
-                          styles.optionButtonWrong,
-                      ]}
-                      onPress={() => {
-                        void handleAnswer(option.id)
-                      }}
-                    >
-                      <Text style={styles.optionButtonText}>
-                        {option.label[language]}
-                      </Text>
-                    </Pressable>
-                  ))}
-                </View>
+                {renderQuestionMedia()}
+                {renderQuestionInteraction()}
 
                 {feedback === 'error' ? (
                   <Text style={styles.errorText}>
@@ -280,6 +638,29 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: '#122635',
   },
+  interactiveImageWrap: {
+    position: 'relative',
+    width: '100%',
+    height: 220,
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: '#122635',
+  },
+  interactiveImage: {
+    width: '100%',
+    height: '100%',
+  },
+  tapMarker: {
+    position: 'absolute',
+    width: 32,
+    height: 32,
+    marginLeft: -16,
+    marginTop: -16,
+    borderRadius: 16,
+    borderWidth: 3,
+    borderColor: '#F8FAFC',
+    backgroundColor: 'rgba(14,165,233,0.28)',
+  },
   imagePlaceholder: {
     height: 120,
     borderRadius: 20,
@@ -327,6 +708,11 @@ const styles = StyleSheet.create({
     lineHeight: 28,
     fontWeight: '700',
   },
+  instructionText: {
+    color: '#A7BBCB',
+    fontSize: 13,
+    lineHeight: 19,
+  },
   optionsWrap: {
     gap: 10,
   },
@@ -344,6 +730,80 @@ const styles = StyleSheet.create({
     color: '#F8FAFC',
     fontSize: 15,
     fontWeight: '700',
+  },
+  sortWrap: {
+    gap: 12,
+  },
+  sortSequenceCard: {
+    backgroundColor: '#102535',
+    borderRadius: 18,
+    padding: 14,
+    gap: 10,
+  },
+  sortHeading: {
+    color: '#E2E8F0',
+    fontSize: 13,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+  },
+  sortSequenceWrap: {
+    gap: 8,
+  },
+  sortSequenceItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  sortSequenceIndex: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    lineHeight: 24,
+    color: '#0B1722',
+    backgroundColor: '#F8FAFC',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  sortSequenceText: {
+    flex: 1,
+    color: '#F8FAFC',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  sortPlaceholder: {
+    color: '#A7BBCB',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  sortActionRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  inlineActionButton: {
+    flex: 1,
+    minHeight: 42,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#365063',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+  },
+  inlineActionButtonText: {
+    color: '#E2E8F0',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  findDetailWrap: {
+    gap: 6,
+  },
+  findDetailHint: {
+    color: '#B7C6D2',
+    fontSize: 13,
+    lineHeight: 18,
   },
   successCard: {
     backgroundColor: '#0F352A',
@@ -386,6 +846,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 4,
+    paddingHorizontal: 14,
+  },
+  primaryButtonDisabled: {
+    opacity: 0.45,
   },
   primaryButtonText: {
     color: '#F8FAFC',

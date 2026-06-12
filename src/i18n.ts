@@ -137,6 +137,46 @@ const copy = {
     en: 'Question',
     de: 'Frage',
   },
+  trueLabel: {
+    sv: 'Sant',
+    en: 'True',
+    de: 'Wahr',
+  },
+  falseLabel: {
+    sv: 'Falskt',
+    en: 'False',
+    de: 'Falsch',
+  },
+  selectedOrder: {
+    sv: 'Vald ordning',
+    en: 'Selected order',
+    de: 'Gew\u00e4hlte Reihenfolge',
+  },
+  sortPlaceholder: {
+    sv: 'V\u00e4lj delarna i den ordning du tycker att de ska ligga.',
+    en: 'Tap the items in the order you think is correct.',
+    de: 'Tippe die Elemente in der Reihenfolge an, die du f\u00fcr richtig h\u00e4ltst.',
+  },
+  sortUndo: {
+    sv: 'Ta bort senaste',
+    en: 'Undo last',
+    de: 'Letztes entfernen',
+  },
+  sortClear: {
+    sv: 'Rensa allt',
+    en: 'Clear all',
+    de: 'Alles leeren',
+  },
+  checkOrder: {
+    sv: 'Kontrollera ordning',
+    en: 'Check order',
+    de: 'Reihenfolge pr\u00fcfen',
+  },
+  findDetailHint: {
+    sv: 'Tryck direkt p\u00e5 bilden d\u00e4r du tror att detaljen finns.',
+    en: 'Tap directly on the image where you think the detail is.',
+    de: 'Tippe direkt auf das Bild, wo du das Detail vermutest.',
+  },
   didYouKnow: {
     sv: 'Visste du att?',
     en: 'Did you know?',
