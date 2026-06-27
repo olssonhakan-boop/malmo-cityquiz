@@ -478,7 +478,7 @@ export default function QuizModal({
                 style={styles.nextBtn}
                 activeOpacity={0.85}
                 onPress={allDone ? onClose : handleNext}>
-                <View style={styles.nextBtnSheen} />
+                <View style={styles.nextBtnHighlight} />
                 <Text style={styles.nextBtnText}>
                   {allDone ? t(lang, 'locationComplete') : t(lang, 'nextQuestion')}
                 </Text>
@@ -636,28 +636,39 @@ const styles = StyleSheet.create({
   sortNumText:  {color: '#fff', fontSize: 12, fontWeight: '800'},
   sortItemText: {fontSize: 14, fontWeight: '500', flex: 1, color: DARK},
 
-  // ── Resultat-kort ─────────────────────────────────────────────────────────────
+  // ── Resultat-kort — eget kort med djup ───────────────────────────────────────
   resultArea: {
     alignItems: 'center',
-    paddingTop: 8,
-    paddingBottom: 20,
+    backgroundColor: '#FFF8E1',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#E8D99A',
+    paddingTop: 24,
+    paddingBottom: 24,
+    paddingHorizontal: 16,
+    marginBottom: 14,
+    elevation: 4,
+    shadowColor: '#8A6A00',
+    shadowOffset: {width: 0, height: 3},
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
   },
   resultCircle: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10,
-    elevation: 4,
+    marginBottom: 12,
+    elevation: 6,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.18,
-    shadowRadius: 4,
+    shadowOffset: {width: 0, height: 3},
+    shadowOpacity: 0.22,
+    shadowRadius: 5,
   },
   resultCircleOk:   {backgroundColor: GREEN},
   resultCircleErr:  {backgroundColor: RED},
-  resultCircleText: {fontSize: 32, color: '#fff', fontWeight: '900', lineHeight: 38},
+  resultCircleText: {fontSize: 34, color: '#fff', fontWeight: '900', lineHeight: 40},
   resultLabel: {
     fontSize: 20,
     fontWeight: '800',
@@ -668,13 +679,13 @@ const styles = StyleSheet.create({
   // Poäng-stämpel
   scoreWrap: {
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 14,
   },
   scoreNum: {
-    fontSize: 56,
+    fontSize: 58,
     fontWeight: '900',
     color: GOLD,
-    lineHeight: 60,
+    lineHeight: 62,
     letterSpacing: -2,
   },
   scoreLabel: {
@@ -687,13 +698,14 @@ const styles = StyleSheet.create({
 
   // Streak
   streakBadge: {
-    backgroundColor: '#FFF8E1',
+    backgroundColor: '#fff',
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 6,
     borderWidth: 1.5,
     borderColor: GOLD,
     marginBottom: 4,
+    elevation: 2,
   },
   streakText: {fontSize: 13, fontWeight: '700', color: '#7A5A00'},
 
@@ -711,18 +723,23 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     borderWidth: 1.5,
     borderColor: GREEN,
+    elevation: 2,
   },
   correctPillText: {fontSize: 14, fontWeight: '700', color: GREEN},
 
-  // ── Visste du att ─────────────────────────────────────────────────────────────
+  // ── Visste du att — faktakort med djup ───────────────────────────────────────
   funFact: {
-    backgroundColor: '#FFF8E1',
+    backgroundColor: '#fff',
     borderRadius: 14,
     padding: 14,
     marginBottom: 14,
-    borderLeftWidth: 3,
-    borderLeftColor: GOLD,
-    borderWidth: 0,
+    borderWidth: 1.5,
+    borderColor: GOLD,
+    elevation: 3,
+    shadowColor: '#8A6A00',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.10,
+    shadowRadius: 4,
   },
   funFactLabel: {
     fontSize: 10,
@@ -734,27 +751,28 @@ const styles = StyleSheet.create({
   },
   funFactText: {fontSize: 13, color: DARK, lineHeight: 19},
 
-  // ── Nästa-knapp ───────────────────────────────────────────────────────────────
+  // ── Nästa/Stäng — enligt designdokumentet ────────────────────────────────────
   nextBtn: {
     backgroundColor: GOLD,
     borderRadius: 50,
     paddingVertical: 15,
     alignItems: 'center',
     overflow: 'hidden',
-    borderBottomWidth: 3,
-    borderBottomColor: '#8A6A00',
+    elevation: 8,
+    borderBottomWidth: 4,
+    borderBottomColor: 'rgba(0,0,0,0.30)',
   },
-  nextBtnSheen: {
+  nextBtnHighlight: {
     position: 'absolute',
     top: 0, left: 0, right: 0,
-    height: '45%',
-    backgroundColor: 'rgba(255,255,255,0.18)',
+    height: 22,
+    backgroundColor: 'rgba(255,255,255,0.25)',
     borderRadius: 50,
   },
   nextBtnText: {
-    color: DARK,
+    color: '#1a0f00',
     fontSize: 15,
-    fontWeight: '800',
+    fontWeight: '700',
     letterSpacing: 0.3,
   },
 });
