@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useState, useEffect, useRef, useMemo} from 'react';
 import {
   Modal,
   View,
@@ -6,9 +6,16 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
+  Animated,
 } from 'react-native';
 import {t} from '../utils/i18n';
 import {makeProgressId} from '../hooks/useLocations';
+
+const GOLD   = '#C8A840';
+const DARK   = '#2C1E0F';
+const GREEN  = '#27AE60';
+const RED    = '#E74C3C';
+const SHEET_BG = '#FDFAF5';
 
 function hashString(value) {
   let hash = 0;
@@ -29,6 +36,24 @@ function shuffledItems(questionId, items) {
 function loc(obj, lang) {
   if (!obj) return '';
   return obj[lang] || obj.sv || '';
+}
+
+// ─── Flash overlay (grön/röd) ─────────────────────────────────────────────────
+function useFlash() {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const colorRef = useRef('#fff');
+
+  function flash(color) {
+    colorRef.current = color;
+    opacity.setValue(0.35);
+    Animated.timing(opacity, {
+      toValue: 0,
+      duration: 600,
+      useNativeDriver: true,
+    }).start();
+  }
+
+  return {opacity, colorRef, flash};
 }
 
 // ─── Multiple choice ──────────────────────────────────────────────────────────
@@ -57,33 +82,44 @@ function MultipleChoice({question, lang, onCorrect, onWrong}) {
       {question.options.map(opt => {
         const isCorrect = opt.id === question.correctOptionId;
         const isSelected = opt.id === selected;
-        let style = styles.optionBtn;
+
+        let containerStyle = styles.optionBtn;
         let textStyle = styles.optionText;
+        let icon = null;
+
         if (answered) {
           if (isCorrect) {
-            style = [styles.optionBtn, styles.optionCorrect];
+            containerStyle = [styles.optionBtn, styles.optionCorrect];
             textStyle = [styles.optionText, styles.optionTextLight];
+            icon = <Text style={styles.optionIcon}>✓</Text>;
           } else if (isSelected) {
-            style = [styles.optionBtn, styles.optionWrong];
+            containerStyle = [styles.optionBtn, styles.optionWrong];
             textStyle = [styles.optionText, styles.optionTextLight];
+            icon = <Text style={styles.optionIcon}>✗</Text>;
+          } else {
+            containerStyle = [styles.optionBtn, styles.optionDimmed];
           }
-        } else if (isSelected) {
-          style = [styles.optionBtn, styles.optionSelected];
         }
+
         return (
           <TouchableOpacity
             key={opt.id}
-            style={style}
+            style={containerStyle}
             onPress={() => handlePress(opt.id)}
+            activeOpacity={0.75}
             disabled={answered}>
             <Text style={textStyle}>{loc(opt.label, lang)}</Text>
+            {icon}
           </TouchableOpacity>
         );
       })}
       {answered && selected !== question.correctOptionId && (
-        <Text style={styles.wrongHint}>
-          {t(lang, 'correctAnswerWas')} {correctLabel}
-        </Text>
+        <View style={styles.wrongHintRow}>
+          <Text style={styles.wrongHintIcon}>💡</Text>
+          <Text style={styles.wrongHint}>
+            {t(lang, 'correctAnswerWas')} {correctLabel}
+          </Text>
+        </View>
       )}
     </>
   );
@@ -122,9 +158,11 @@ function TrueFalse({question, lang, onCorrect, onWrong}) {
   return (
     <View style={styles.tfRow}>
       <TouchableOpacity style={[btnStyle(true), {flex: 1, marginRight: 8}]} onPress={() => handlePress(true)} disabled={answered}>
+        <Text style={styles.tfIcon}>👍</Text>
         <Text style={txtStyle(true)}>{t(lang, 'trueFalseTrue')}</Text>
       </TouchableOpacity>
       <TouchableOpacity style={[btnStyle(false), {flex: 1, marginLeft: 8}]} onPress={() => handlePress(false)} disabled={answered}>
+        <Text style={styles.tfIcon}>👎</Text>
         <Text style={txtStyle(false)}>{t(lang, 'trueFalseFalse')}</Text>
       </TouchableOpacity>
     </View>
@@ -162,7 +200,7 @@ function SortOrder({question, lang, onCorrect, onWrong}) {
   function itemTextStyle(itemId) {
     const idx = picked.indexOf(itemId);
     if (confirmed) return [styles.optionText, styles.optionTextLight];
-    if (idx >= 0) return [styles.optionText, {color: '#003366', fontWeight: '700'}];
+    if (idx >= 0) return [styles.optionText, {color: DARK, fontWeight: '700'}];
     return styles.optionText;
   }
 
@@ -199,8 +237,9 @@ export default function QuizModal({
   onCompleteQuestion,
 }) {
   const [qIndex, setQIndex] = useState(0);
-  const [feedback, setFeedback] = useState('idle'); // 'idle' | 'correct' | 'wrong'
-  const [key, setKey] = useState(0); // force re-mount of question component
+  const [feedback, setFeedback] = useState('idle');
+  const [key, setKey] = useState(0);
+  const {opacity, colorRef, flash} = useFlash();
 
   const unanswered = useMemo(() => {
     if (!location) return [];
@@ -224,15 +263,16 @@ export default function QuizModal({
 
   const progressId = makeProgressId(location.id, question.id);
   const totalQ = location.questions.length;
-  const doneCount = totalQ - unanswered.length;
   const allDone = unanswered.length === 0 || (feedback === 'correct' && unanswered.length === 1);
 
   function handleCorrect() {
+    flash(GREEN);
     setFeedback('correct');
     onCompleteQuestion(progressId);
   }
 
   function handleWrong() {
+    flash(RED);
     setFeedback('wrong');
   }
 
@@ -258,24 +298,29 @@ export default function QuizModal({
       animationType="slide"
       onRequestClose={onClose}>
       <View style={styles.overlay}>
+        {/* Flash-overlay */}
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            StyleSheet.absoluteFillObject,
+            {backgroundColor: colorRef.current, opacity},
+          ]}
+        />
+
         <View style={styles.sheet}>
-          <ScrollView showsVerticalScrollIndicator={false}>
+          <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+
             {/* Header */}
             <View style={styles.header}>
               <Text style={styles.locationTitle} numberOfLines={2}>{title}</Text>
-              <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+              <TouchableOpacity onPress={onClose} style={styles.closeBtn} hitSlop={{top:10,right:10,bottom:10,left:10}}>
                 <Text style={styles.closeBtnText}>✕</Text>
               </TouchableOpacity>
             </View>
 
-            {/* Progress */}
+            {/* Progress dots */}
             <View style={styles.progressRow}>
-              <Text style={styles.progressText}>
-                {t(lang, 'questionOf')
-                  .replace('{n}', qIndex + 1)
-                  .replace('{total}', totalQ)}
-              </Text>
-              <View style={styles.progressBar}>
+              <View style={styles.progressDots}>
                 {location.questions.map((q, i) => (
                   <View
                     key={q.id}
@@ -290,30 +335,29 @@ export default function QuizModal({
                   />
                 ))}
               </View>
+              <Text style={styles.progressText}>
+                {t(lang, 'questionOf')
+                  .replace('{n}', qIndex + 1)
+                  .replace('{total}', totalQ)}
+              </Text>
             </View>
 
             {/* GPS bonus badge */}
             {isOnLocation && (
               <View style={styles.gpsBadge}>
-                <Text style={styles.gpsBadgeText}>{t(lang, 'gpsBonus')}</Text>
+                <Text style={styles.gpsBadgeIcon}>⚡</Text>
+                <View>
+                  <Text style={styles.gpsBadgeTitle}>GPS-bonus!</Text>
+                  <Text style={styles.gpsBadgeSub}>Rätt svar ger 3× poäng</Text>
+                </View>
               </View>
             )}
 
-            {/* Type badge */}
-            <View style={styles.typeBadge}>
-              <Text style={styles.typeBadgeText}>
-                {question.type === 'multiple-choice' && t(lang, 'typeMultipleChoice')}
-                {question.type === 'true-false' && t(lang, 'typeTrueFalse')}
-                {question.type === 'sort-order' && t(lang, 'typeSortOrder')}
-                {question.type === 'find-detail' && t(lang, 'typeFindDetail')}
-              </Text>
-            </View>
-
-            {/* Question text */}
+            {/* Frågetext */}
             <Text style={styles.question}>{questionText}</Text>
 
-            {/* Question type UI */}
-            {feedback === 'idle' || question.type === 'multiple-choice' || question.type === 'true-false' || question.type === 'sort-order' ? (
+            {/* Frågetyp */}
+            {(feedback === 'idle' || question.type !== 'find-detail') && (
               <View key={key}>
                 {question.type === 'multiple-choice' && (
                   <MultipleChoice
@@ -343,11 +387,14 @@ export default function QuizModal({
                   <Text style={styles.unsupported}>{t(lang, 'findDetailUnsupported')}</Text>
                 )}
               </View>
-            ) : null}
+            )}
 
-            {/* Feedback */}
+            {/* Feedback-rad */}
             {feedback !== 'idle' && (
-              <View style={[styles.feedback, feedback === 'correct' ? styles.feedbackCorrect : styles.feedbackWrong]}>
+              <View style={[styles.feedbackRow, feedback === 'correct' ? styles.feedbackCorrect : styles.feedbackWrong]}>
+                <Text style={styles.feedbackIcon}>
+                  {feedback === 'correct' ? '✓' : '✗'}
+                </Text>
                 <Text style={styles.feedbackText}>
                   {feedback === 'correct' ? t(lang, 'correct') : t(lang, 'wrong')}
                 </Text>
@@ -357,23 +404,28 @@ export default function QuizModal({
             {/* Fun fact */}
             {feedback !== 'idle' && fact ? (
               <View style={styles.funFactBox}>
-                <Text style={styles.funFactLabel}>{t(lang, 'funFact')}</Text>
+                <View style={styles.funFactHeader}>
+                  <Text style={styles.funFactBulb}>💡</Text>
+                  <Text style={styles.funFactLabel}>{t(lang, 'funFact')}</Text>
+                </View>
                 <Text style={styles.funFactText}>{fact}</Text>
               </View>
             ) : null}
 
-            {/* Action button */}
+            {/* Nästa/Klar-knapp */}
             {feedback !== 'idle' && (
               <TouchableOpacity
                 style={styles.actionBtn}
+                activeOpacity={0.85}
                 onPress={allDone ? onClose : handleNext}>
+                <View style={styles.actionBtnHighlight} />
                 <Text style={styles.actionBtnText}>
                   {allDone ? t(lang, 'locationComplete') : t(lang, 'nextQuestion')}
                 </Text>
               </TouchableOpacity>
             )}
 
-            <View style={{height: 24}} />
+            <View style={{height: 28}} />
           </ScrollView>
         </View>
       </View>
@@ -384,157 +436,258 @@ export default function QuizModal({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.55)',
     justifyContent: 'flex-end',
   },
   sheet: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    maxHeight: '88%',
-    padding: 20,
+    backgroundColor: SHEET_BG,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    maxHeight: '90%',
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
+
+  // ── Header ─────────────────────────────────────────────────────────────────
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 10,
+    marginBottom: 14,
   },
   locationTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#003366',
+    fontSize: 20,
+    fontWeight: '800',
+    color: DARK,
     flex: 1,
     marginRight: 12,
+    letterSpacing: -0.3,
   },
-  closeBtn: {padding: 4},
-  closeBtnText: {fontSize: 18, color: '#666'},
+  closeBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#E8E0D0',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeBtnText: {fontSize: 14, color: '#666', fontWeight: '700'},
+
+  // ── Progress ────────────────────────────────────────────────────────────────
   progressRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  progressDots: {flexDirection: 'row', gap: 6},
+  progressDot: {width: 10, height: 10, borderRadius: 5},
+  progressDotDone: {backgroundColor: GREEN},
+  progressDotActive: {backgroundColor: GOLD},
+  progressDotEmpty: {backgroundColor: '#DDD5C4'},
+  progressText: {fontSize: 12, color: '#999', fontWeight: '500'},
+
+  // ── GPS badge ───────────────────────────────────────────────────────────────
+  gpsBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF8E1',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
+    borderWidth: 1.5,
+    borderColor: GOLD,
     gap: 10,
   },
-  progressText: {fontSize: 12, color: '#888'},
-  progressBar: {flexDirection: 'row', gap: 4},
-  progressDot: {width: 10, height: 10, borderRadius: 5},
-  progressDotDone: {backgroundColor: '#27ae60'},
-  progressDotActive: {backgroundColor: '#003366'},
-  progressDotEmpty: {backgroundColor: '#ddd'},
-  gpsBadge: {
-    backgroundColor: '#e8f5e9',
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 10,
-    borderLeftWidth: 4,
-    borderLeftColor: '#27ae60',
-  },
-  gpsBadgeText: {fontSize: 14, fontWeight: '700', color: '#27ae60'},
-  typeBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#f0f4ff',
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    marginBottom: 12,
-  },
-  typeBadgeText: {fontSize: 11, color: '#003366', fontWeight: '600'},
+  gpsBadgeIcon: {fontSize: 22},
+  gpsBadgeTitle: {fontSize: 14, fontWeight: '800', color: '#7A5A00'},
+  gpsBadgeSub: {fontSize: 12, color: '#A07820', marginTop: 1},
+
+  // ── Fråga ───────────────────────────────────────────────────────────────────
   question: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111',
-    marginBottom: 16,
-    lineHeight: 22,
+    fontSize: 17,
+    fontWeight: '700',
+    color: DARK,
+    marginBottom: 18,
+    lineHeight: 24,
   },
+
+  // ── Alternativ-knappar ──────────────────────────────────────────────────────
   optionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     borderWidth: 2,
-    borderColor: '#ddd',
-    borderRadius: 10,
-    padding: 14,
+    borderColor: '#DDD5C4',
+    borderRadius: 14,
+    paddingVertical: 16,
+    paddingHorizontal: 18,
     marginBottom: 10,
-    backgroundColor: '#fafafa',
+    backgroundColor: '#fff',
   },
-  optionSelected: {borderColor: '#003366', backgroundColor: '#e8f0fb'},
-  optionCorrect: {borderColor: '#27ae60', backgroundColor: '#27ae60'},
-  optionWrong: {borderColor: '#e74c3c', backgroundColor: '#e74c3c'},
-  optionText: {fontSize: 15, color: '#333'},
-  optionTextLight: {color: '#fff', fontWeight: '600'},
-  wrongHint: {fontSize: 13, color: '#e74c3c', marginBottom: 8},
+  optionDimmed: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 2,
+    borderColor: '#EEE8DA',
+    borderRadius: 14,
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+    marginBottom: 10,
+    backgroundColor: '#F9F6F0',
+  },
+  optionCorrect: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 2,
+    borderColor: GREEN,
+    borderRadius: 14,
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+    marginBottom: 10,
+    backgroundColor: GREEN,
+  },
+  optionWrong: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 2,
+    borderColor: RED,
+    borderRadius: 14,
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+    marginBottom: 10,
+    backgroundColor: RED,
+  },
+  optionText: {fontSize: 15, color: '#333', fontWeight: '500', flex: 1},
+  optionTextLight: {color: '#fff', fontWeight: '700'},
+  optionIcon: {fontSize: 18, color: '#fff', fontWeight: '700', marginLeft: 8},
+  wrongHintRow: {flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginBottom: 12},
+  wrongHintIcon: {fontSize: 15},
+  wrongHint: {fontSize: 13, color: RED, flex: 1, fontWeight: '600'},
+
+  // ── Ja/Nej ──────────────────────────────────────────────────────────────────
   tfRow: {flexDirection: 'row', marginBottom: 12},
   tfBtn: {
     borderWidth: 2,
-    borderColor: '#ddd',
-    borderRadius: 10,
-    padding: 18,
-    backgroundColor: '#fafafa',
+    borderColor: '#DDD5C4',
+    borderRadius: 14,
+    paddingVertical: 20,
+    paddingHorizontal: 12,
+    backgroundColor: '#fff',
     alignItems: 'center',
   },
   tfSelected: {
     borderWidth: 2,
-    borderColor: '#003366',
-    borderRadius: 10,
-    padding: 18,
-    backgroundColor: '#e8f0fb',
+    borderColor: GOLD,
+    borderRadius: 14,
+    paddingVertical: 20,
+    paddingHorizontal: 12,
+    backgroundColor: '#FFF8E1',
     alignItems: 'center',
   },
-  tfText: {fontSize: 16, fontWeight: '700', color: '#333'},
-  sortHint: {fontSize: 13, color: '#888', marginBottom: 10},
+  tfIcon: {fontSize: 28, marginBottom: 6},
+  tfText: {fontSize: 16, fontWeight: '700', color: DARK},
+
+  // ── Sort order ──────────────────────────────────────────────────────────────
+  sortHint: {fontSize: 13, color: '#999', marginBottom: 10},
   sortBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#ddd',
-    borderRadius: 10,
-    padding: 12,
+    borderColor: '#DDD5C4',
+    borderRadius: 14,
+    padding: 14,
     marginBottom: 8,
-    backgroundColor: '#fafafa',
+    backgroundColor: '#fff',
   },
   sortPicked: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#003366',
-    borderRadius: 10,
-    padding: 12,
+    borderColor: GOLD,
+    borderRadius: 14,
+    padding: 14,
     marginBottom: 8,
-    backgroundColor: '#e8f0fb',
+    backgroundColor: '#FFF8E1',
   },
   sortNumber: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: '#003366',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: DARK,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 10,
+    marginRight: 12,
   },
-  sortNumberText: {color: '#fff', fontSize: 12, fontWeight: '700'},
-  unsupported: {color: '#aaa', fontSize: 14, textAlign: 'center', marginVertical: 20},
-  feedback: {borderRadius: 10, padding: 14, marginTop: 4, marginBottom: 12},
-  feedbackCorrect: {backgroundColor: '#eafaf1'},
-  feedbackWrong: {backgroundColor: '#fdf0f0'},
-  feedbackText: {fontSize: 16, fontWeight: '700', color: '#111'},
-  funFactBox: {
-    backgroundColor: '#fff9e6',
-    borderLeftWidth: 4,
-    borderLeftColor: '#f39c12',
-    borderRadius: 8,
-    padding: 14,
-    marginBottom: 16,
-  },
-  funFactLabel: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#f39c12',
-    marginBottom: 6,
-    textTransform: 'uppercase',
-  },
-  funFactText: {fontSize: 14, color: '#555', lineHeight: 20},
-  actionBtn: {
-    backgroundColor: '#003366',
-    borderRadius: 12,
-    paddingVertical: 16,
+  sortNumberText: {color: '#fff', fontSize: 13, fontWeight: '700'},
+
+  // ── Feedback ────────────────────────────────────────────────────────────────
+  feedbackRow: {
+    flexDirection: 'row',
     alignItems: 'center',
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    marginTop: 6,
+    marginBottom: 14,
+    gap: 10,
   },
-  actionBtnText: {color: '#fff', fontSize: 16, fontWeight: '700'},
+  feedbackCorrect: {backgroundColor: '#E8F8EF', borderWidth: 1.5, borderColor: GREEN},
+  feedbackWrong: {backgroundColor: '#FDECEA', borderWidth: 1.5, borderColor: RED},
+  feedbackIcon: {fontSize: 20, fontWeight: '700'},
+  feedbackText: {fontSize: 16, fontWeight: '800', color: DARK},
+
+  // ── Fun fact ────────────────────────────────────────────────────────────────
+  funFactBox: {
+    backgroundColor: '#FFF8E1',
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 18,
+    borderWidth: 1.5,
+    borderColor: GOLD,
+  },
+  funFactHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  funFactBulb: {fontSize: 20},
+  funFactLabel: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#7A5A00',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+  },
+  funFactText: {fontSize: 15, color: '#4A3800', lineHeight: 22},
+
+  // ── Nästa-knapp ─────────────────────────────────────────────────────────────
+  actionBtn: {
+    backgroundColor: GOLD,
+    borderRadius: 50,
+    paddingVertical: 18,
+    alignItems: 'center',
+    overflow: 'hidden',
+    borderBottomWidth: 4,
+    borderBottomColor: '#8A6A00',
+    position: 'relative',
+  },
+  actionBtnHighlight: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0,
+    height: '45%',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 50,
+  },
+  actionBtnText: {
+    color: DARK,
+    fontSize: 16,
+    fontWeight: '800',
+    letterSpacing: 0.3,
+  },
+  unsupported: {color: '#aaa', fontSize: 14, textAlign: 'center', marginVertical: 20},
 });

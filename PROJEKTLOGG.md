@@ -24,21 +24,27 @@ Se separat privat anteckning — lägg ALDRIG API-nycklar i den här filen efter
 
 ## Vad som fungerar ✅
 
-- App startar utan krasch (React Native 0.86 + New Architecture)
-- Hemskärm renderar korrekt
-- Poängräknare och språkväljare (SV/EN/DE)
-- GPS-tillståndsdialog och GPS-positionering
-- Frågor laddas från `questions.json` (lokalt fallback om offline)
-- Kategorifiltrering på hemskärm
-- QuizModal med flersvarsfrågor
-- FreeQuestionsPanel för frågor utan GPS-koordinater
-- Release APK byggs korrekt med Gradle
+- App startar utan krasch (React Native 0.86, newArchEnabled=false)
+- Hemskärm → SelectScreen → CategoryScreen → InfoScreen → MapScreen
+- Release APK byggs korrekt (arm64-v8a + x86_64) — NDK 27-patch via scripts/apply-patches.js
+- Google Maps tiles laddas och visas (verifierat i emulator)
+- Kartmarkörer (QuizMarker) med kategoriikon + färg, zoom-baserad storlek, klustring
+- BottomBar: Poäng / Avklarade / Kvar
+- GPS-permission-dialog
+- QuizModal öppnas när man trycker på markör
+- Flervalsfrågor, Ja/Nej-frågor, Sortera-frågor — alla redesignade (session 2026-06-27)
+- GPS-bonus-badge (guld, ⚡), fun fact-kort (guld-ram, 💡), guld Nästa-knapp
+- GitHub-synk live (quizLocations.json och categories.json hämtas från GitHub)
+- Synkad till GitHub (commit edc7085 + QuizModal-redesign)
 
 ## Vad som INTE fungerar / är oklart ❌
 
-- Google Maps tiles — laddas inte på Pixel 7 API 34-emulatorn (troligen GMS-problem i emulatorn, fungerar förmodligen på riktig enhet)
-- Material Symbols-ikoner på kartan — implementerade men ej visuellt verifierade (emulatorn blockeras av "System UI isn't responding"-dialog)
-- GitHub-synk — frågor och kategorier hämtas från GitHub men appen har ännu inte testats med live-data (lokal fallback används alltid i emulator)
+- Ej testat på riktig Android-enhet (bara emulator)
+- "System UI isn't responding" dyker upp om man skickar för många input-events snabbt till emulatorn — inget app-problem, emulatorn är bara långsam
+- Visuell skillnad Standard vs På plats-markör ej beslutat (opacitet? animation?)
+- "Quiz i soffan"-skärm ej byggd
+- MarkerTestScreen.js (temp-fil) ska raderas
+- Bildfråga, Hitta-detalj, Uppskatta-siffra — nya frågetyper ej implementerade än
 
 ---
 
