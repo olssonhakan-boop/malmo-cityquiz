@@ -41,47 +41,27 @@ function loc(obj, lang) {
   return obj[lang] || obj.sv || '';
 }
 
-// ─── Flash-animation ──────────────────────────────────────────────────────────
+// ─── Flash-overlay ────────────────────────────────────────────────────────────
 function useFlash() {
-  const opacity = useRef(new Animated.Value(0)).current;
-  const colorRef = useRef('#fff');
+  const opacity   = useRef(new Animated.Value(0)).current;
+  const colorRef  = useRef('#fff');
   function flash(color) {
     colorRef.current = color;
-    opacity.setValue(0.35);
-    Animated.timing(opacity, {toValue: 0, duration: 600, useNativeDriver: true}).start();
+    opacity.setValue(0.3);
+    Animated.timing(opacity, {toValue: 0, duration: 500, useNativeDriver: true}).start();
   }
   return {opacity, colorRef, flash};
 }
 
-// ─── Svarsknapp ───────────────────────────────────────────────────────────────
-// state: 'idle' | 'correct' | 'wrong' | 'hidden'
-function OptionBtn({label, state, onPress, disabled}) {
-  if (state === 'hidden') return null;
-
-  const isIdle    = state === 'idle';
-  const isCorrect = state === 'correct';
-  const isWrong   = state === 'wrong';
-
+// ─── Svarsknapp (bara synlig INNAN svar) ─────────────────────────────────────
+function OptionBtn({label, onPress, disabled}) {
   return (
     <TouchableOpacity
-      style={[
-        styles.optionBtn,
-        isCorrect && styles.optionCorrect,
-        isWrong   && styles.optionWrong,
-      ]}
+      style={styles.optionBtn}
       onPress={onPress}
       disabled={disabled}
       activeOpacity={0.72}>
-      <Text
-        style={[
-          styles.optionText,
-          (isCorrect || isWrong) && styles.optionTextLight,
-        ]}
-        numberOfLines={2}>
-        {label}
-      </Text>
-      {isCorrect && <Text style={styles.optionCheck}>✓</Text>}
-      {isWrong   && <Text style={styles.optionCheck}>✗</Text>}
+      <Text style={styles.optionText} numberOfLines={2}>{label}</Text>
     </TouchableOpacity>
   );
 }
@@ -89,34 +69,29 @@ function OptionBtn({label, state, onPress, disabled}) {
 // ─── Flervalsfråga ────────────────────────────────────────────────────────────
 function MultipleChoice({question, lang, onCorrect, onWrong}) {
   const [selected, setSelected] = useState(null);
-  const answered = selected !== null;
-  const correctId = question.correctOptionId;
+  const answered   = selected !== null;
+  const correctId  = question.correctOptionId;
 
   function handlePress(id) {
     if (answered) return;
     setSelected(id);
-    id === correctId ? onCorrect() : onWrong();
+    const correctOpt  = question.options.find(o => o.id === correctId);
+    const correctText = loc(correctOpt?.label, lang);
+    id === correctId ? onCorrect(correctText) : onWrong(correctText);
   }
+
+  if (answered) return null;
 
   return (
     <>
-      {question.options.map(opt => {
-        let state = 'idle';
-        if (answered) {
-          if (opt.id === correctId)  state = 'correct';
-          else if (opt.id === selected) state = 'wrong';
-          else                          state = 'hidden';
-        }
-        return (
-          <OptionBtn
-            key={opt.id}
-            label={loc(opt.label, lang)}
-            state={state}
-            onPress={() => handlePress(opt.id)}
-            disabled={answered}
-          />
-        );
-      })}
+      {question.options.map(opt => (
+        <OptionBtn
+          key={opt.id}
+          label={loc(opt.label, lang)}
+          onPress={() => handlePress(opt.id)}
+          disabled={false}
+        />
+      ))}
     </>
   );
 }
@@ -129,44 +104,35 @@ function TrueFalse({question, lang, onCorrect, onWrong}) {
   function handlePress(value) {
     if (answered) return;
     setSelected(value);
-    value === question.correctBoolean ? onCorrect() : onWrong();
+    const correctText = question.correctBoolean
+      ? t(lang, 'trueFalseTrue')
+      : t(lang, 'trueFalseFalse');
+    value === question.correctBoolean ? onCorrect(correctText) : onWrong(correctText);
   }
+
+  if (answered) return null;
 
   return (
     <View style={styles.tfRow}>
-      {[true, false].map(val => {
-        const isCorrect = answered && val === question.correctBoolean;
-        const isWrong   = answered && val === selected && val !== question.correctBoolean;
-        return (
-          <TouchableOpacity
-            key={String(val)}
-            style={[
-              styles.tfBtn,
-              isCorrect && styles.optionCorrect,
-              isWrong   && styles.optionWrong,
-            ]}
-            onPress={() => handlePress(val)}
-            disabled={answered}
-            activeOpacity={0.72}>
-            <Text style={[styles.tfText, (isCorrect || isWrong) && {color: '#fff'}]}>
-              {val ? t(lang, 'trueFalseTrue') : t(lang, 'trueFalseFalse')}
-            </Text>
-            {isCorrect && <Text style={styles.optionCheck}>✓</Text>}
-            {isWrong   && <Text style={styles.optionCheck}>✗</Text>}
-          </TouchableOpacity>
-        );
-      })}
+      {[true, false].map(val => (
+        <TouchableOpacity
+          key={String(val)}
+          style={styles.tfBtn}
+          onPress={() => handlePress(val)}
+          activeOpacity={0.72}>
+          <Text style={styles.tfText}>
+            {val ? t(lang, 'trueFalseTrue') : t(lang, 'trueFalseFalse')}
+          </Text>
+        </TouchableOpacity>
+      ))}
     </View>
   );
 }
 
 // ─── Sortera ──────────────────────────────────────────────────────────────────
 function SortOrder({question, lang, onCorrect, onWrong}) {
-  const shuffled = useMemo(
-    () => shuffledItems(question.id, question.items),
-    [question.id, question.items],
-  );
-  const [picked, setPicked] = useState([]);
+  const shuffled    = useMemo(() => shuffledItems(question.id, question.items), [question.id, question.items]);
+  const [picked,    setPicked]    = useState([]);
   const [confirmed, setConfirmed] = useState(false);
 
   function handlePick(itemId) {
@@ -176,7 +142,7 @@ function SortOrder({question, lang, onCorrect, onWrong}) {
     if (next.length === question.items.length) {
       setConfirmed(true);
       const correct = next.every((id, i) => id === question.correctOrderIds[i]);
-      correct ? onCorrect() : onWrong();
+      correct ? onCorrect('') : onWrong('');
     }
   }
 
@@ -197,7 +163,7 @@ function SortOrder({question, lang, onCorrect, onWrong}) {
       <Text style={styles.sortHint}>{t(lang, 'sortOrderHint')}</Text>
       {shuffled.map((item, i) => {
         const state = itemState(item.id);
-        const idx = picked.indexOf(item.id);
+        const idx   = picked.indexOf(item.id);
         return (
           <TouchableOpacity
             key={item.id}
@@ -228,6 +194,55 @@ function SortOrder({question, lang, onCorrect, onWrong}) {
   );
 }
 
+// ─── Resultat-sektion (efter svar, ej sortera) ────────────────────────────────
+function ResultArea({feedback, correctAnswer, points, streak, iconScale, scoreScale}) {
+  const isCorrect = feedback === 'correct';
+  return (
+    <View style={styles.resultArea}>
+
+      {/* Stor ikon-cirkel */}
+      <Animated.View style={[
+        styles.resultCircle,
+        isCorrect ? styles.resultCircleOk : styles.resultCircleErr,
+        {transform: [{scale: iconScale}]},
+      ]}>
+        <Text style={styles.resultCircleText}>{isCorrect ? '✓' : '✗'}</Text>
+      </Animated.View>
+
+      {/* Rätt/Fel-text */}
+      <Text style={[styles.resultLabel, {color: isCorrect ? GREEN : RED}]}>
+        {isCorrect ? 'Rätt svar!' : 'Fel svar'}
+      </Text>
+
+      {/* Poäng-stämpel (rätt svar) */}
+      {isCorrect && (
+        <Animated.View style={[styles.scoreWrap, {transform: [{scale: scoreScale}]}]}>
+          <Text style={styles.scoreNum}>+{points}</Text>
+          <Text style={styles.scoreLabel}>POÄNG</Text>
+        </Animated.View>
+      )}
+
+      {/* Streak-badge */}
+      {isCorrect && streak >= 2 && (
+        <View style={styles.streakBadge}>
+          <Text style={styles.streakText}>{streak} rätt i rad</Text>
+        </View>
+      )}
+
+      {/* Rätt svar (visas bara vid fel svar) */}
+      {!isCorrect && correctAnswer ? (
+        <View style={styles.correctPillWrap}>
+          <Text style={styles.correctPillLabel}>Rätt svar var:</Text>
+          <View style={styles.correctPill}>
+            <Text style={styles.correctPillText}>✓  {correctAnswer}</Text>
+          </View>
+        </View>
+      ) : null}
+
+    </View>
+  );
+}
+
 // ─── Huvudmodal ───────────────────────────────────────────────────────────────
 export default function QuizModal({
   visible,
@@ -238,10 +253,19 @@ export default function QuizModal({
   onClose,
   onCompleteQuestion,
 }) {
-  const [qIndex, setQIndex] = useState(0);
-  const [feedback, setFeedback] = useState('idle');
-  const [key, setKey] = useState(0);
+  const [qIndex,        setQIndex]        = useState(0);
+  const [feedback,      setFeedback]      = useState('idle');
+  const [correctAnswer, setCorrectAnswer] = useState('');
+  const [streak,        setStreak]        = useState(0);
+  const [key,           setKey]           = useState(0);
+
   const {opacity, colorRef, flash} = useFlash();
+
+  // Animationsvärden
+  const iconScale   = useRef(new Animated.Value(0)).current;
+  const scoreScale  = useRef(new Animated.Value(0)).current;
+  const factOpacity = useRef(new Animated.Value(0)).current;
+  const factSlide   = useRef(new Animated.Value(28)).current;
 
   const unanswered = useMemo(() => {
     if (!location) return [];
@@ -255,7 +279,10 @@ export default function QuizModal({
     const first = unanswered[0] ?? 0;
     setQIndex(first);
     setFeedback('idle');
+    setCorrectAnswer('');
+    setStreak(0);
     setKey(k => k + 1);
+    resetAnims();
   }, [visible, location?.id]);
 
   if (!location) return null;
@@ -264,24 +291,64 @@ export default function QuizModal({
 
   const progressId = makeProgressId(location.id, question.id);
   const totalQ     = location.questions.length;
+  const answered   = feedback !== 'idle';
   const allDone    = unanswered.length === 0 ||
                      (feedback === 'correct' && unanswered.length === 1);
-  const answered   = feedback !== 'idle';
+  const points     = isOnLocation ? 30 : 10;
 
-  function handleCorrect() {
+  // ─── Animationer ──────────────────────────────────────────────────────────
+  function resetAnims() {
+    iconScale.setValue(0);
+    scoreScale.setValue(0);
+    factOpacity.setValue(0);
+    factSlide.setValue(28);
+  }
+
+  function startResultAnims() {
+    // 1. Ikon poppar in med fjäder
+    Animated.spring(iconScale, {
+      toValue: 1, friction: 5, tension: 80, useNativeDriver: true,
+    }).start();
+    // 2. Poäng stampar in (bara vid rätt svar)
+    setTimeout(() => {
+      Animated.spring(scoreScale, {
+        toValue: 1, friction: 5, tension: 60, useNativeDriver: true,
+      }).start();
+    }, 220);
+    // 3. Faktaruta glider upp
+    setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(factOpacity, {toValue: 1, duration: 320, useNativeDriver: true}),
+        Animated.spring(factSlide,   {toValue: 0, friction: 8,   useNativeDriver: true}),
+      ]).start();
+    }, 480);
+  }
+
+  // ─── Händelser ────────────────────────────────────────────────────────────
+  function handleCorrect(correctText) {
     flash(GREEN);
     setFeedback('correct');
+    setCorrectAnswer(correctText || '');
+    setStreak(s => s + 1);
     onCompleteQuestion(progressId);
+    startResultAnims();
   }
-  function handleWrong() {
+
+  function handleWrong(correctText) {
     flash(RED);
     setFeedback('wrong');
+    setCorrectAnswer(correctText || '');
+    setStreak(0);
+    startResultAnims();
   }
+
   function handleNext() {
+    resetAnims();
     const nextIdx = unanswered.find(i => i > qIndex) ?? unanswered[0];
     if (nextIdx !== undefined && nextIdx !== qIndex) {
       setQIndex(nextIdx);
       setFeedback('idle');
+      setCorrectAnswer('');
       setKey(k => k + 1);
     } else {
       onClose();
@@ -341,7 +408,7 @@ export default function QuizModal({
             </View>
 
             {/* ── GPS-bonus ── */}
-            {isOnLocation && (
+            {isOnLocation && !answered && (
               <View style={styles.gpsBadge}>
                 <View style={styles.gpsPill}>
                   <Text style={styles.gpsPillText}>GPS</Text>
@@ -353,7 +420,7 @@ export default function QuizModal({
             {/* ── Fråga ── */}
             <Text style={styles.question}>{questionText}</Text>
 
-            {/* ── Svarsalternativ ── */}
+            {/* ── Svarsalternativ (döljs när answered, utom SortOrder) ── */}
             <View key={key}>
               {question.type === 'multiple-choice' && (
                 <MultipleChoice
@@ -381,40 +448,28 @@ export default function QuizModal({
               )}
             </View>
 
-            {/* ── Feedback ── */}
-            {answered && (
-              <View
-                style={[
-                  styles.feedbackRow,
-                  feedback === 'correct' ? styles.feedbackOk : styles.feedbackErr,
-                ]}>
-                <Text style={[
-                  styles.feedbackIcon,
-                  {color: feedback === 'correct' ? GREEN : RED},
-                ]}>
-                  {feedback === 'correct' ? '✓' : '✗'}
-                </Text>
-                <Text style={[
-                  styles.feedbackText,
-                  {color: feedback === 'correct' ? GREEN : RED},
-                ]}>
-                  {feedback === 'correct' ? t(lang, 'correct') : t(lang, 'wrong')}
-                </Text>
-                <Text style={[
-                  styles.feedbackPoints,
-                  {color: feedback === 'correct' ? (isOnLocation ? GOLD : GREEN) : '#BBB'},
-                ]}>
-                  {feedback === 'correct' ? (isOnLocation ? '+3p' : '+1p') : ''}
-                </Text>
-              </View>
+            {/* ── Resultat-kort (MC + TF efter svar) ── */}
+            {answered && question.type !== 'sort-order' && (
+              <ResultArea
+                feedback={feedback}
+                correctAnswer={correctAnswer}
+                points={points}
+                streak={streak}
+                iconScale={iconScale}
+                scoreScale={scoreScale}
+              />
             )}
 
-            {/* ── Visste du att ── */}
+            {/* ── Visste du att (alltid vid svar, rätt och fel) ── */}
             {answered && fact ? (
-              <View style={styles.funFact}>
+              <Animated.View
+                style={[
+                  styles.funFact,
+                  {opacity: factOpacity, transform: [{translateY: factSlide}]},
+                ]}>
                 <Text style={styles.funFactLabel}>{t(lang, 'funFact')}</Text>
                 <Text style={styles.funFactText}>{fact}</Text>
-              </View>
+              </Animated.View>
             ) : null}
 
             {/* ── Nästa / Stäng ── */}
@@ -430,7 +485,7 @@ export default function QuizModal({
               </TouchableOpacity>
             )}
 
-            <View style={{height: 24}} />
+            <View style={{height: 28}} />
           </ScrollView>
         </View>
       </View>
@@ -522,44 +577,37 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     color: DARK,
-    marginBottom: 12,
+    marginBottom: 14,
     lineHeight: 22,
   },
 
-  // ── Svarsknapp (flerval) ─────────────────────────────────────────────────────
+  // ── Svarsknapp ───────────────────────────────────────────────────────────────
   optionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     borderWidth: 1.5,
     borderColor: BORDER,
     borderRadius: 12,
-    paddingVertical: 12,
+    paddingVertical: 13,
     paddingHorizontal: 16,
     marginBottom: 8,
     backgroundColor: '#fff',
   },
-  optionCorrect: {borderColor: GREEN, backgroundColor: GREEN},
-  optionWrong:   {borderColor: RED,   backgroundColor: RED},
-  optionText:      {fontSize: 14, color: DARK, fontWeight: '500', flex: 1},
-  optionTextLight: {color: '#fff', fontWeight: '700'},
-  optionCheck:     {fontSize: 16, color: '#fff', fontWeight: '800', marginLeft: 8},
+  optionText: {fontSize: 14, color: DARK, fontWeight: '500', flex: 1},
 
   // ── Ja / Nej ─────────────────────────────────────────────────────────────────
-  tfRow: {flexDirection: 'row', gap: 8, marginBottom: 8},
+  tfRow: {flexDirection: 'row', gap: 10, marginBottom: 8},
   tfBtn: {
     flex: 1,
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
     borderWidth: 1.5,
     borderColor: BORDER,
-    borderRadius: 12,
-    paddingVertical: 20,
+    borderRadius: 14,
+    paddingVertical: 22,
     backgroundColor: '#fff',
   },
-  tfText: {fontSize: 16, fontWeight: '800', color: DARK},
+  tfText: {fontSize: 17, fontWeight: '800', color: DARK},
 
   // ── Sortera ──────────────────────────────────────────────────────────────────
   sortHint: {fontSize: 12, color: MUTED, marginBottom: 10},
@@ -574,9 +622,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     backgroundColor: '#fff',
   },
-  sortPicked:  {borderColor: GOLD, backgroundColor: '#FFF8E1'},
-  sortCorrect: {borderColor: GREEN, backgroundColor: GREEN},
-  sortWrong:   {borderColor: RED,   backgroundColor: RED},
+  sortPicked:   {borderColor: GOLD, backgroundColor: '#FFF8E1'},
+  sortCorrect:  {borderColor: GREEN, backgroundColor: GREEN},
+  sortWrong:    {borderColor: RED,   backgroundColor: RED},
   sortNum: {
     width: 26,
     height: 26,
@@ -588,52 +636,113 @@ const styles = StyleSheet.create({
   sortNumText:  {color: '#fff', fontSize: 12, fontWeight: '800'},
   sortItemText: {fontSize: 14, fontWeight: '500', flex: 1, color: DARK},
 
-  // ── Feedback ─────────────────────────────────────────────────────────────────
-  feedbackRow: {
-    flexDirection: 'row',
+  // ── Resultat-kort ─────────────────────────────────────────────────────────────
+  resultArea: {
     alignItems: 'center',
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    marginTop: 4,
-    marginBottom: 10,
-    gap: 8,
+    paddingTop: 8,
+    paddingBottom: 20,
   },
-  feedbackOk:  {backgroundColor: '#E8F8ED', borderWidth: 1.5, borderColor: GREEN},
-  feedbackErr: {backgroundColor: '#FDECEA', borderWidth: 1.5, borderColor: RED},
-  feedbackIcon:   {fontSize: 15, fontWeight: '800'},
-  feedbackText:   {fontSize: 14, fontWeight: '700', flex: 1},
-  feedbackPoints: {fontSize: 13, fontWeight: '700'},
+  resultCircle: {
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.18,
+    shadowRadius: 4,
+  },
+  resultCircleOk:   {backgroundColor: GREEN},
+  resultCircleErr:  {backgroundColor: RED},
+  resultCircleText: {fontSize: 32, color: '#fff', fontWeight: '900', lineHeight: 38},
+  resultLabel: {
+    fontSize: 20,
+    fontWeight: '800',
+    marginBottom: 16,
+    letterSpacing: -0.3,
+  },
+
+  // Poäng-stämpel
+  scoreWrap: {
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  scoreNum: {
+    fontSize: 56,
+    fontWeight: '900',
+    color: GOLD,
+    lineHeight: 60,
+    letterSpacing: -2,
+  },
+  scoreLabel: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: GOLD,
+    letterSpacing: 2.5,
+    marginTop: -4,
+  },
+
+  // Streak
+  streakBadge: {
+    backgroundColor: '#FFF8E1',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderWidth: 1.5,
+    borderColor: GOLD,
+    marginBottom: 4,
+  },
+  streakText: {fontSize: 13, fontWeight: '700', color: '#7A5A00'},
+
+  // Rätt svar-pill (vid fel)
+  correctPillWrap: {
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 8,
+  },
+  correctPillLabel: {fontSize: 11, color: MUTED, fontWeight: '600'},
+  correctPill: {
+    backgroundColor: '#E8F8ED',
+    borderRadius: 20,
+    paddingHorizontal: 18,
+    paddingVertical: 7,
+    borderWidth: 1.5,
+    borderColor: GREEN,
+  },
+  correctPillText: {fontSize: 14, fontWeight: '700', color: GREEN},
 
   // ── Visste du att ─────────────────────────────────────────────────────────────
   funFact: {
     backgroundColor: '#FFF8E1',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 12,
-    borderWidth: 1.5,
-    borderColor: GOLD,
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 14,
+    borderLeftWidth: 3,
+    borderLeftColor: GOLD,
+    borderWidth: 0,
   },
   funFactLabel: {
     fontSize: 10,
     fontWeight: '800',
     color: GOLD,
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 1.2,
     marginBottom: 6,
   },
-  funFactText: {fontSize: 13, color: DARK, lineHeight: 18},
+  funFactText: {fontSize: 13, color: DARK, lineHeight: 19},
 
   // ── Nästa-knapp ───────────────────────────────────────────────────────────────
   nextBtn: {
     backgroundColor: GOLD,
     borderRadius: 50,
-    paddingVertical: 14,
+    paddingVertical: 15,
     alignItems: 'center',
     overflow: 'hidden',
     borderBottomWidth: 3,
     borderBottomColor: '#8A6A00',
-    position: 'relative',
   },
   nextBtnSheen: {
     position: 'absolute',
