@@ -1,15 +1,23 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {View, Text} from 'react-native';
 import {Marker} from 'react-native-maps';
-import {useCategories} from '../hooks/useCategories';
 
-const COMPLETED_ICON = String.fromCodePoint(0xe86c); // check_circle outlined
-const COMPLETED_COLOR = '#2E7D32';
+const GOLD = '#C8A840';
+const GOLD_DARK = '#7A5A00';
 
-export default function QuizMarker({coordinate, category, status, size, onPress}) {
-  const {getCategoryConfig} = useCategories();
+const COUNTER_CODEPOINTS = {
+  0: 0xf785, 1: 0xf784, 2: 0xf783, 3: 0xf782, 4: 0xf781,
+  5: 0xf780, 6: 0xf77f, 7: 0xf77e, 8: 0xf77d, 9: 0xf77c,
+};
+
+function getCounterIcon(count) {
+  const n = count > 9 ? 9 : count;
+  return String.fromCodePoint(COUNTER_CODEPOINTS[n]);
+}
+
+export default function ClusterMarker({coordinate, count, size, onPress}) {
   const [tracksViewChanges, setTracksViewChanges] = useState(true);
-  const prevKey = useRef(`${status}-${category}-${size}`);
+  const prevKey = useRef(`${count}-${size}`);
 
   useEffect(() => {
     const timer = setTimeout(() => setTracksViewChanges(false), 500);
@@ -17,19 +25,14 @@ export default function QuizMarker({coordinate, category, status, size, onPress}
   }, []);
 
   useEffect(() => {
-    const newKey = `${status}-${category}-${size}`;
+    const newKey = `${count}-${size}`;
     if (newKey !== prevKey.current) {
       prevKey.current = newKey;
       setTracksViewChanges(true);
       const timer = setTimeout(() => setTracksViewChanges(false), 500);
       return () => clearTimeout(timer);
     }
-  }, [status, category, size]);
-
-  const config =
-    status === 'completed'
-      ? {icon: COMPLETED_ICON, color: COMPLETED_COLOR}
-      : getCategoryConfig(category);
+  }, [count, size]);
 
   const iconSize = size * 0.55;
 
@@ -44,22 +47,39 @@ export default function QuizMarker({coordinate, category, status, size, onPress}
           width: size,
           height: size,
           borderRadius: size / 2,
-          backgroundColor: config.color,
+          backgroundColor: GOLD,
           alignItems: 'center',
           justifyContent: 'center',
           borderWidth: 2,
           borderColor: '#fff',
-          elevation: 3,
+          elevation: 5,
         }}>
         <Text
           style={{
             fontFamily: 'MaterialSymbolsOutlined',
             fontSize: iconSize,
-            color: '#fff',
+            color: '#1a0f00',
             lineHeight: iconSize * 1.1,
           }}>
-          {config.icon}
+          {getCounterIcon(count)}
         </Text>
+        {count > 9 && (
+          <Text
+            style={{
+              position: 'absolute',
+              bottom: -1,
+              right: -1,
+              fontSize: size * 0.22,
+              fontWeight: '800',
+              color: '#fff',
+              backgroundColor: GOLD_DARK,
+              borderRadius: 4,
+              paddingHorizontal: 2,
+              lineHeight: size * 0.28,
+            }}>
+            +
+          </Text>
+        )}
       </View>
     </Marker>
   );

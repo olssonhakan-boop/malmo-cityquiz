@@ -1,12 +1,12 @@
 {
   "kultur":     {"codepoint": "ea66", "color": "#7B1FA2"},
   "konst":      {"codepoint": "e40a", "color": "#E91E63"},
-  "personer":   {"codepoint": "e7fd", "color": "#00BCD4"},
+  "personer":   {"codepoint": "f0d3", "color": "#00BCD4"},
   "mat":        {"codepoint": "e56c", "color": "#FFB300"},
   "natur":      {"codepoint": "ea63", "color": "#2E7D32"},
   "musik":      {"codepoint": "e405", "color": "#1976D2"},
-  "historia":   {"codepoint": "e678", "color": "#8D6E63"},
-  "händelser":  {"codepoint": "e878", "color": "#E65100"},
-  "arkitektur": {"codepoint": "ea3a", "color": "#1565C0"},
-  "kuriosa":    {"codepoint": "e887", "color": "#F57C00"}
+  "historia":   {"codepoint": "ea3e", "color": "#8D6E63"},
+  "händelser":  {"codepoint": "ebff", "color": "#E65100"},
+  "arkitektur": {"codepoint": "f200", "color": "#1565C0"},
+  "kuriosa":    {"codepoint": "f04c", "color": "#F57C00"}
 }

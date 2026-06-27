@@ -1,0 +1,673 @@
+[
+  {
+    "id": "karl-x-gustav",
+    "title": {
+      "sv": "Karl X Gustav",
+      "en": "Karl X Gustav",
+      "de": "Karl X Gustav"
+    },
+    "summary": {
+      "sv": "Statyn p\u00e5 Stortorget bel\u00f6nar den som tittar n\u00e4ra p\u00e5 detaljerna.",
+      "en": "The statue at Stortorget rewards anyone who studies the small details closely.",
+      "de": "Die Statue am Stortorget belohnt alle, die sich die kleinen Details genau ansehen."
+    },
+    "latitude": 55.6062,
+    "longitude": 13.0001,
+    "questions": [
+      {
+        "id": "tail-animal",
+        "type": "multiple-choice",
+        "prompt": {
+          "sv": "Vilket litet djur g\u00f6mmer sig p\u00e5 h\u00e4stsvansen?",
+          "en": "Which small animal is hidden in the horse's tail?",
+          "de": "Welches kleine Tier versteckt sich im Schweif des Pferdes?"
+        },
+        "instruction": {
+          "sv": "V\u00e4lj det svar du tycker st\u00e4mmer b\u00e4st.",
+          "en": "Choose the answer you think fits best.",
+          "de": "W\u00e4hle die Antwort, die am besten passt."
+        },
+        "options": [
+          {
+            "id": "squirrel",
+            "label": {
+              "sv": "En ekorre",
+              "en": "A squirrel",
+              "de": "Ein Eichh\u00f6rnchen"
+            }
+          },
+          {
+            "id": "mouse",
+            "label": {
+              "sv": "En mus",
+              "en": "A mouse",
+              "de": "Eine Maus"
+            }
+          },
+          {
+            "id": "frog",
+            "label": {
+              "sv": "En groda",
+              "en": "A frog",
+              "de": "Ein Frosch"
+            }
+          },
+          {
+            "id": "hedgehog",
+            "label": {
+              "sv": "En igelkott",
+              "en": "A hedgehog",
+              "de": "Ein Igel"
+            }
+          }
+        ],
+        "correctOptionId": "squirrel",
+        "fact": {
+          "sv": "Den lilla ekorren \u00e4r ett klassiskt Malm\u00f6-detaljspaningsfynd som m\u00e5nga g\u00e5r f\u00f6rbi utan att se.",
+          "en": "The tiny squirrel is a classic Malm\u00f6 detail that many visitors walk past without noticing.",
+          "de": "Das kleine Eichh\u00f6rnchen ist ein klassisches Malm\u00f6-Detail, das viele \u00fcbersehen."
+        }
+      },
+      {
+        "id": "monument-purpose",
+        "type": "multiple-choice",
+        "prompt": {
+          "sv": "Vad vill statyn fr\u00e4mst f\u00f6rmedla p\u00e5 torget?",
+          "en": "What is the statue mainly meant to communicate in the square?",
+          "de": "Was soll die Statue auf dem Platz vor allem vermitteln?"
+        },
+        "instruction": {
+          "sv": "V\u00e4lj den tolkning som passar monumentet b\u00e4st.",
+          "en": "Choose the interpretation that best fits the monument.",
+          "de": "W\u00e4hle die Deutung, die am besten zum Monument passt."
+        },
+        "options": [
+          {
+            "id": "royal-power",
+            "label": {
+              "sv": "Kunglig makt och seger",
+              "en": "Royal power and victory",
+              "de": "K\u00f6nigliche Macht und Sieg"
+            }
+          },
+          {
+            "id": "harvest",
+            "label": {
+              "sv": "Sk\u00e5nsk sk\u00f6rd",
+              "en": "The Scanian harvest",
+              "de": "Schonische Ernte"
+            }
+          },
+          {
+            "id": "shipbuilding",
+            "label": {
+              "sv": "Malm\u00f6s varvsepok",
+              "en": "Malm\u00f6's shipyard era",
+              "de": "Malm\u00f6s Werftzeit"
+            }
+          },
+          {
+            "id": "trade",
+            "label": {
+              "sv": "Tysk handel",
+              "en": "German trade",
+              "de": "Deutscher Handel"
+            }
+          }
+        ],
+        "correctOptionId": "royal-power",
+        "fact": {
+          "sv": "Ryttarstatyer anv\u00e4nds ofta f\u00f6r att signalera makt, kontroll och ett segrande historiskt narrativ.",
+          "en": "Equestrian statues are often used to signal power, control, and a victorious historical narrative.",
+          "de": "Reiterstatuen werden oft genutzt, um Macht, Kontrolle und ein siegreiches Geschichtsbild zu vermitteln."
+        }
+      }
+    ]
+  },
+  {
+    "id": "apoteket-lejonet",
+    "title": {
+      "sv": "Apoteket Lejonet",
+      "en": "Apoteket Lejonet",
+      "de": "Apoteket Lejonet"
+    },
+    "summary": {
+      "sv": "H\u00e4r g\u00e4ller det att l\u00e4sa fasaden som om den vore en illustrerad historiebok.",
+      "en": "Here you need to read the facade like an illustrated history book.",
+      "de": "Hier musst du die Fassade wie ein illustriertes Geschichtsbuch lesen."
+    },
+    "latitude": 55.6066,
+    "longitude": 13.0011,
+    "questions": [
+      {
+        "id": "facade-scientist",
+        "type": "multiple-choice",
+        "prompt": {
+          "sv": "Vilken tysk vetenskapsman finns p\u00e5 fasaden?",
+          "en": "Which German scientist can be found on the facade?",
+          "de": "Welcher deutsche Wissenschaftler ist an der Fassade zu sehen?"
+        },
+        "instruction": {
+          "sv": "V\u00e4lj personen som passar fasadens motiv.",
+          "en": "Choose the person who matches the facade motif.",
+          "de": "W\u00e4hle die Person, die zum Fassadenmotiv passt."
+        },
+        "options": [
+          {
+            "id": "einstein",
+            "label": {
+              "sv": "Albert Einstein",
+              "en": "Albert Einstein",
+              "de": "Albert Einstein"
+            }
+          },
+          {
+            "id": "kepler",
+            "label": {
+              "sv": "Johannes Kepler",
+              "en": "Johannes Kepler",
+              "de": "Johannes Kepler"
+            }
+          },
+          {
+            "id": "rontgen",
+            "label": {
+              "sv": "Wilhelm Conrad R\u00f6ntgen",
+              "en": "Wilhelm Conrad R\u00f6ntgen",
+              "de": "Wilhelm Conrad R\u00f6ntgen"
+            }
+          },
+          {
+            "id": "gauss",
+            "label": {
+              "sv": "Carl Friedrich Gauss",
+              "en": "Carl Friedrich Gauss",
+              "de": "Carl Friedrich Gauss"
+            }
+          }
+        ],
+        "correctOptionId": "einstein",
+        "fact": {
+          "sv": "Fasader fr\u00e5n den h\u00e4r perioden anv\u00e4nde ofta l\u00e4rda gestalter f\u00f6r att signalera bildning, modernitet och internationell orientering.",
+          "en": "Facades from this period often used learned figures to signal education, modernity, and an international outlook.",
+          "de": "Fassaden aus dieser Zeit nutzten oft Gelehrte, um Bildung, Modernit\u00e4t und internationale Orientierung zu signalisieren."
+        }
+      },
+      {
+        "id": "building-type",
+        "type": "multiple-choice",
+        "prompt": {
+          "sv": "Vad g\u00f6r platsen extra bra f\u00f6r en regnig dag-runda?",
+          "en": "What makes this spot especially good for a rainy-day route?",
+          "de": "Was macht diesen Ort besonders gut f\u00fcr eine Regentagstour?"
+        },
+        "instruction": {
+          "sv": "V\u00e4lj f\u00f6rklaringen som b\u00e4st beskriver platsens styrka.",
+          "en": "Choose the explanation that best captures the strength of this stop.",
+          "de": "W\u00e4hle die Erkl\u00e4rung, die die St\u00e4rke dieses Stopps am besten beschreibt."
+        },
+        "options": [
+          {
+            "id": "facade-details",
+            "label": {
+              "sv": "Du kan studera m\u00e5nga detaljer utan att g\u00e5 l\u00e5ngt",
+              "en": "You can study many details without walking far",
+              "de": "Man kann viele Details betrachten, ohne weit zu gehen"
+            }
+          },
+          {
+            "id": "water-view",
+            "label": {
+              "sv": "Det finns utsikt \u00f6ver havet",
+              "en": "It has a sea view",
+              "de": "Es gibt Meerblick"
+            }
+          },
+          {
+            "id": "open-lawn",
+            "label": {
+              "sv": "Det ligger p\u00e5 en stor gr\u00e4syta",
+              "en": "It stands on a large lawn",
+              "de": "Es liegt auf einer gro\u00dfen Rasenfl\u00e4che"
+            }
+          },
+          {
+            "id": "playground",
+            "label": {
+              "sv": "Det finns en lekplats bredvid",
+              "en": "There is a playground next to it",
+              "de": "Daneben gibt es einen Spielplatz"
+            }
+          }
+        ],
+        "correctOptionId": "facade-details",
+        "fact": {
+          "sv": "Bra cityquizpunkter fungerar \u00e4ven n\u00e4r v\u00e4dret \u00e4r s\u00e4mre, s\u00e4rskilt om detaljerna finns t\u00e4tt samlade p\u00e5 en fasad.",
+          "en": "Good city-quiz spots also work in bad weather, especially when many details are concentrated on one facade.",
+          "de": "Gute City-Quiz-Orte funktionieren auch bei schlechtem Wetter, besonders wenn viele Details auf einer Fassade konzentriert sind."
+        }
+      }
+    ]
+  },
+  {
+    "id": "davidshallsbron",
+    "title": {
+      "sv": "Davidshallsbron",
+      "en": "Davidshall Bridge",
+      "de": "Davidshall-Br\u00fccke"
+    },
+    "summary": {
+      "sv": "Bron bjuder p\u00e5 lekfulla skulpturdetaljer som g\u00f6r den perfekt f\u00f6r b\u00e5de barn och detaljj\u00e4gare.",
+      "en": "The bridge offers playful sculptural details, making it perfect for children and detail hunters alike.",
+      "de": "Die Br\u00fccke bietet verspielte Skulpturdetails und ist perfekt f\u00fcr Kinder und Detailj\u00e4ger."
+    },
+    "latitude": 55.5996,
+    "longitude": 13.0019,
+    "questions": [
+      {
+        "id": "animal-with-shoes",
+        "type": "multiple-choice",
+        "prompt": {
+          "sv": "Vilket djur har f\u00e5tt skor p\u00e5 bron?",
+          "en": "Which animal has been given shoes on the bridge?",
+          "de": "Welches Tier hat auf der Br\u00fccke Schuhe bekommen?"
+        },
+        "instruction": {
+          "sv": "V\u00e4lj det djur du tror att konstn\u00e4ren har lyft fram.",
+          "en": "Choose the animal you think the artist highlighted.",
+          "de": "W\u00e4hle das Tier, das der K\u00fcnstler hervorgehoben hat."
+        },
+        "options": [
+          {
+            "id": "horse",
+            "label": {
+              "sv": "En h\u00e4st",
+              "en": "A horse",
+              "de": "Ein Pferd"
+            }
+          },
+          {
+            "id": "dog",
+            "label": {
+              "sv": "En hund",
+              "en": "A dog",
+              "de": "Ein Hund"
+            }
+          },
+          {
+            "id": "goat",
+            "label": {
+              "sv": "En get",
+              "en": "A goat",
+              "de": "Eine Ziege"
+            }
+          },
+          {
+            "id": "fox",
+            "label": {
+              "sv": "En r\u00e4v",
+              "en": "A fox",
+              "de": "Ein Fuchs"
+            }
+          }
+        ],
+        "correctOptionId": "horse",
+        "fact": {
+          "sv": "Det \u00e4r just de ov\u00e4ntade sm\u00e5 skulpturinslagen som g\u00f6r Davidshallsbron s\u00e5 minnesv\u00e4rd i stadsvandringar.",
+          "en": "It is exactly these unexpected little sculptural details that make Davidshall Bridge memorable on city walks.",
+          "de": "Gerade diese unerwarteten kleinen Skulpturdetails machen die Davidshall-Br\u00fccke bei Stadtrundg\u00e4ngen so einpr\u00e4gsam."
+        }
+      },
+      {
+        "id": "bridge-mood",
+        "type": "multiple-choice",
+        "prompt": {
+          "sv": "Vad k\u00e4nnetecknar bron b\u00e4st som quizstopp?",
+          "en": "What best characterizes the bridge as a quiz stop?",
+          "de": "Was zeichnet die Br\u00fccke am besten als Quiz-Stopp aus?"
+        },
+        "instruction": {
+          "sv": "V\u00e4lj den beskrivning som passar bron b\u00e4st.",
+          "en": "Choose the description that fits the bridge best.",
+          "de": "W\u00e4hle die Beschreibung, die am besten zur Br\u00fccke passt."
+        },
+        "options": [
+          {
+            "id": "playful-details",
+            "label": {
+              "sv": "Lekfulla detaljer i vardagsmilj\u00f6",
+              "en": "Playful details in an everyday setting",
+              "de": "Verspielte Details in allt\u00e4glicher Umgebung"
+            }
+          },
+          {
+            "id": "military-theme",
+            "label": {
+              "sv": "Milit\u00e4r symbolik",
+              "en": "Military symbolism",
+              "de": "Milit\u00e4rische Symbolik"
+            }
+          },
+          {
+            "id": "religious-theme",
+            "label": {
+              "sv": "Religi\u00f6sa figurer",
+              "en": "Religious figures",
+              "de": "Religi\u00f6se Figuren"
+            }
+          },
+          {
+            "id": "industrial-theme",
+            "label": {
+              "sv": "Tunga industrimotiv",
+              "en": "Heavy industrial motifs",
+              "de": "Schwere Industriemotive"
+            }
+          }
+        ],
+        "correctOptionId": "playful-details",
+        "fact": {
+          "sv": "M\u00e5nga uppskattar just blandningen av vardag och fantasi h\u00e4r, vilket g\u00f6r bron extra bra f\u00f6r familjer och barnrundor.",
+          "en": "Many people appreciate the mix of everyday life and imagination here, which makes the bridge especially good for family routes.",
+          "de": "Viele sch\u00e4tzen hier gerade die Mischung aus Alltag und Fantasie, was die Br\u00fccke besonders gut f\u00fcr Familienrouten macht."
+        }
+      }
+    ]
+  },
+  {
+    "id": "malmo-mix",
+    "title": {
+      "sv": "Malm\u00f6mix",
+      "en": "Malm\u00f6 mix",
+      "de": "Malm\u00f6-Mix"
+    },
+    "summary": {
+      "sv": "En platsoberoende fr\u00e5gebank som fungerar var som helst i staden.",
+      "en": "A location-free question bank that works anywhere in the city.",
+      "de": "Ein ortsunabh\u00e4ngiger Fragenpool, der \u00fcberall in der Stadt funktioniert."
+    },
+    "latitude": null,
+    "longitude": null,
+    "questions": [
+      {
+        "id": "canal-question",
+        "type": "multiple-choice",
+        "prompt": {
+          "sv": "Vilken kanal delar upp delar av centrala Malm\u00f6?",
+          "en": "Which canal separates parts of central Malm\u00f6?",
+          "de": "Welcher Kanal trennt Teile der Malm\u00f6er Innenstadt?"
+        },
+        "instruction": {
+          "sv": "V\u00e4lj den kanal som h\u00f6r ihop med stadsk\u00e4rnan.",
+          "en": "Choose the canal associated with the city center.",
+          "de": "W\u00e4hle den Kanal, der mit dem Stadtzentrum verbunden ist."
+        },
+        "options": [
+          {
+            "id": "malmo-canal",
+            "label": {
+              "sv": "Malm\u00f6 kanal",
+              "en": "Malm\u00f6 Canal",
+              "de": "Der Malm\u00f6-Kanal"
+            }
+          },
+          {
+            "id": "gota-canal",
+            "label": {
+              "sv": "G\u00f6ta kanal",
+              "en": "G\u00f6ta Canal",
+              "de": "Der G\u00f6ta-Kanal"
+            }
+          },
+          {
+            "id": "trollhatte-canal",
+            "label": {
+              "sv": "Trollh\u00e4tte kanal",
+              "en": "Trollh\u00e4tte Canal",
+              "de": "Der Trollh\u00e4tte-Kanal"
+            }
+          },
+          {
+            "id": "dalsland-canal",
+            "label": {
+              "sv": "Dalslands kanal",
+              "en": "Dalsland Canal",
+              "de": "Der Dalsland-Kanal"
+            }
+          }
+        ],
+        "correctOptionId": "malmo-canal",
+        "fact": {
+          "sv": "Kanalen spelar en viktig roll i hur man l\u00e4ser Malm\u00f6s \u00e4ldre stadsstruktur och r\u00f6relser genom centrum.",
+          "en": "The canal plays an important role in how you read Malm\u00f6's older urban structure and movement through the center.",
+          "de": "Der Kanal spielt eine wichtige Rolle dabei, wie man Malm\u00f6s \u00e4ltere Stadtstruktur und Bewegungen durch das Zentrum versteht."
+        }
+      },
+      {
+        "id": "city-identity",
+        "type": "multiple-choice",
+        "prompt": {
+          "sv": "Vilken kombination beskriver Malm\u00f6 b\u00e4st idag?",
+          "en": "Which combination best describes Malm\u00f6 today?",
+          "de": "Welche Kombination beschreibt Malm\u00f6 heute am besten?"
+        },
+        "instruction": {
+          "sv": "V\u00e4lj den kombination som st\u00e4mmer b\u00e4st med dagens stad.",
+          "en": "Choose the combination that best fits the city today.",
+          "de": "W\u00e4hle die Kombination, die am besten zur heutigen Stadt passt."
+        },
+        "options": [
+          {
+            "id": "historic-and-global",
+            "label": {
+              "sv": "Historisk stadsk\u00e4rna och internationell nutid",
+              "en": "Historic core and international present",
+              "de": "Historischer Kern und internationale Gegenwart"
+            }
+          },
+          {
+            "id": "mountain-and-lakes",
+            "label": {
+              "sv": "Bergsby och sj\u00f6landskap",
+              "en": "Mountain village and lake landscape",
+              "de": "Bergdorf und Seenlandschaft"
+            }
+          },
+          {
+            "id": "island-and-mines",
+            "label": {
+              "sv": "\u00d6liv och gruvdrift",
+              "en": "Island life and mining",
+              "de": "Inselleben und Bergbau"
+            }
+          },
+          {
+            "id": "forest-and-logging",
+            "label": {
+              "sv": "Skogsstad och timmerhandel",
+              "en": "Forest city and timber trade",
+              "de": "Waldstadt und Holzhandel"
+            }
+          }
+        ],
+        "correctOptionId": "historic-and-global",
+        "fact": {
+          "sv": "Det \u00e4r just m\u00f6tet mellan \u00e4ldre stadsrum och ett samtida, internationellt Malm\u00f6 som g\u00f6r m\u00e5nga rundor extra sp\u00e4nnande.",
+          "en": "It is precisely the meeting of older urban spaces and a contemporary, international Malm\u00f6 that makes many routes especially interesting.",
+          "de": "Gerade das Zusammentreffen \u00e4lterer Stadtr\u00e4ume mit einem zeitgen\u00f6ssischen, internationalen Malm\u00f6 macht viele Routen besonders spannend."
+        }
+      }
+    ]
+  },
+  {
+    "id": "malmo-history",
+    "title": {
+      "sv": "Malm\u00f6 historia",
+      "en": "Malm\u00f6 history",
+      "de": "Malm\u00f6 Geschichte"
+    },
+    "summary": {
+      "sv": "En platsoberoende kategorirunda med blandade fr\u00e5getyper om Malm\u00f6s historia.",
+      "en": "A location-free themed round with mixed question types about Malm\u00f6's history.",
+      "de": "Eine ortsunabh\u00e4ngige Themenrunde mit gemischten Fragetypen \u00fcber Malm\u00f6s Geschichte."
+    },
+    "latitude": null,
+    "longitude": null,
+    "questions": [
+      {
+        "id": "danish-period",
+        "type": "true-false",
+        "prompt": {
+          "sv": "Malm\u00f6 var en dansk stad fram till 1658.",
+          "en": "Malm\u00f6 was a Danish city until 1658.",
+          "de": "Malm\u00f6 war bis 1658 eine d\u00e4nische Stadt."
+        },
+        "instruction": {
+          "sv": "Avg\u00f6r om p\u00e5st\u00e5endet \u00e4r sant eller falskt.",
+          "en": "Decide whether the statement is true or false.",
+          "de": "Entscheide, ob die Aussage wahr oder falsch ist."
+        },
+        "correctBoolean": true,
+        "fact": {
+          "sv": "Freden i Roskilde 1658 gjorde att Sk\u00e5ne och Malm\u00f6 blev svenska.",
+          "en": "The Treaty of Roskilde in 1658 made Scania and Malm\u00f6 part of Sweden.",
+          "de": "Der Frieden von Roskilde 1658 machte Schonen und Malm\u00f6 schwedisch."
+        }
+      },
+      {
+        "id": "timeline-order",
+        "type": "sort-order",
+        "prompt": {
+          "sv": "Ordna h\u00e4ndelserna fr\u00e5n \u00e4ldst till yngst.",
+          "en": "Arrange the events from oldest to most recent.",
+          "de": "Ordne die Ereignisse vom \u00e4ltesten zum j\u00fcngsten."
+        },
+        "instruction": {
+          "sv": "Tryck p\u00e5 h\u00e4ndelserna i den ordning de intr\u00e4ffade.",
+          "en": "Tap the events in the order they happened.",
+          "de": "Tippe die Ereignisse in der Reihenfolge an, in der sie stattfanden."
+        },
+        "items": [
+          {
+            "id": "danish-trade",
+            "label": {
+              "sv": "Malm\u00f6 som dansk handelsstad",
+              "en": "Malm\u00f6 as a Danish trade city",
+              "de": "Malm\u00f6 als d\u00e4nische Handelsstadt"
+            }
+          },
+          {
+            "id": "industrial-era",
+            "label": {
+              "sv": "Industrialiseringen tar fart",
+              "en": "Industrialization accelerates",
+              "de": "Die Industrialisierung nimmt Fahrt auf"
+            }
+          },
+          {
+            "id": "oresund-bridge",
+            "label": {
+              "sv": "\u00d6resundsbron invigs",
+              "en": "The \u00d6resund Bridge opens",
+              "de": "Die \u00d6resundbr\u00fccke wird er\u00f6ffnet"
+            }
+          }
+        ],
+        "correctOrderIds": [
+          "danish-trade",
+          "industrial-era",
+          "oresund-bridge"
+        ],
+        "fact": {
+          "sv": "Malm\u00f6s historia r\u00f6r sig fr\u00e5n medeltida handelsstad till industristad och vidare till en starkt internationell regionstad.",
+          "en": "Malm\u00f6's history moves from medieval trade town to industrial city and then to a strongly international regional center.",
+          "de": "Malm\u00f6s Geschichte f\u00fchrt von der mittelalterlichen Handelsstadt \u00fcber die Industriestadt zu einem stark internationalen Regionalzentrum."
+        }
+      },
+      {
+        "id": "image-symbol",
+        "type": "multiple-choice",
+        "prompt": {
+          "sv": "Vilken detalj syns h\u00f6gst upp till h\u00f6ger i bilden?",
+          "en": "Which detail appears at the top right of the image?",
+          "de": "Welches Detail ist oben rechts im Bild zu sehen?"
+        },
+        "instruction": {
+          "sv": "Studera bilden och v\u00e4lj detaljen som ligger i \u00f6vre h\u00f6gra delen.",
+          "en": "Study the image and choose the detail placed in the upper-right area.",
+          "de": "Betrachte das Bild und w\u00e4hle das Detail im oberen rechten Bereich."
+        },
+        "imageAssetId": "malmo-history-detail",
+        "options": [
+          {
+            "id": "crown",
+            "label": {
+              "sv": "En krona",
+              "en": "A crown",
+              "de": "Eine Krone"
+            }
+          },
+          {
+            "id": "shield",
+            "label": {
+              "sv": "En sk\u00f6ld",
+              "en": "A shield",
+              "de": "Ein Schild"
+            }
+          },
+          {
+            "id": "key",
+            "label": {
+              "sv": "En nyckel",
+              "en": "A key",
+              "de": "Ein Schl\u00fcssel"
+            }
+          },
+          {
+            "id": "window",
+            "label": {
+              "sv": "Ett f\u00f6nster",
+              "en": "A window",
+              "de": "Ein Fenster"
+            }
+          }
+        ],
+        "correctOptionId": "crown",
+        "fact": {
+          "sv": "Bildfr\u00e5gor g\u00f6r det l\u00e4ttare att bygga quiz om fasader, skulpturer och visuella detaljer utan att begr\u00e4nsa sig till vanlig text.",
+          "en": "Image questions make it easier to build quizzes about facades, sculptures, and visual details without being limited to plain text.",
+          "de": "Bildfragen machen es leichter, Quizze \u00fcber Fassaden, Skulpturen und visuelle Details zu erstellen, ohne auf reinen Text beschr\u00e4nkt zu sein."
+        }
+      },
+      {
+        "id": "find-the-crown",
+        "type": "find-detail",
+        "prompt": {
+          "sv": "Hitta kronan i bilden.",
+          "en": "Find the crown in the image.",
+          "de": "Finde die Krone im Bild."
+        },
+        "instruction": {
+          "sv": "Tryck direkt p\u00e5 kronan i bilden.",
+          "en": "Tap directly on the crown in the image.",
+          "de": "Tippe direkt auf die Krone im Bild."
+        },
+        "imageAssetId": "malmo-history-detail",
+        "detailTargets": [
+          {
+            "id": "crown-top-right",
+            "xPercent": 73,
+            "yPercent": 30,
+            "radiusPercent": 12
+          }
+        ],
+        "correctTargetId": "crown-top-right",
+        "fact": {
+          "sv": "Med \"hitta detaljen\" kan quizet anv\u00e4nda samma bild men l\u00e5ta spelaren interagera direkt med motivet.",
+          "en": "With a \"find the detail\" question, the quiz can use the same image but let the player interact directly with the motif.",
+          "de": "Mit einer \"Finde das Detail\"-Frage kann das Quiz dasselbe Bild verwenden und den Spieler direkt mit dem Motiv interagieren lassen."
+        }
+      }
+    ]
+  }
+]

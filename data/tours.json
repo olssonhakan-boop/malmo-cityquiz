@@ -1,0 +1,102 @@
+[
+  {
+    "id": "old-malmo",
+    "title": {
+      "sv": "Gamla Malm\u00f6",
+      "en": "Old Malm\u00f6",
+      "de": "Altes Malm\u00f6"
+    },
+    "description": {
+      "sv": "En runda genom historiska milj\u00f6er och klassiska stadsmotiv.",
+      "en": "A route through historic settings and classic city motifs.",
+      "de": "Eine Runde durch historische Umgebungen und klassische Stadtmotive."
+    },
+    "iconLabel": "GM",
+    "locationIds": [
+      "karl-x-gustav",
+      "apoteket-lejonet",
+      "malmo-mix",
+      "malmo-history"
+    ]
+  },
+  {
+    "id": "sculptures",
+    "title": {
+      "sv": "Skulpturer",
+      "en": "Sculptures",
+      "de": "Skulpturen"
+    },
+    "description": {
+      "sv": "Detaljer, former och ber\u00e4ttelser i Malm\u00f6s offentliga konst.",
+      "en": "Details, forms, and stories in Malm\u00f6's public art.",
+      "de": "Details, Formen und Geschichten in Malm\u00f6s \u00f6ffentlicher Kunst."
+    },
+    "iconLabel": "SK",
+    "locationIds": ["karl-x-gustav", "davidshallsbron"]
+  },
+  {
+    "id": "mystery-details",
+    "title": {
+      "sv": "Mystiska detaljer",
+      "en": "Mysterious details",
+      "de": "Geheimnisvolle Details"
+    },
+    "description": {
+      "sv": "F\u00f6r den som gillar att hitta s\u00e5dant andra missar.",
+      "en": "For those who like spotting what others miss.",
+      "de": "F\u00fcr alle, die gern entdecken, was andere \u00fcbersehen."
+    },
+    "iconLabel": "MD",
+    "locationIds": [
+      "karl-x-gustav",
+      "apoteket-lejonet",
+      "davidshallsbron",
+      "malmo-history"
+    ]
+  },
+  {
+    "id": "family-walk",
+    "title": {
+      "sv": "Barnrunda",
+      "en": "Family walk",
+      "de": "Familienrunde"
+    },
+    "description": {
+      "sv": "Lekfulla stopp och l\u00e4ttare fr\u00e5gor f\u00f6r en gemensam promenad.",
+      "en": "Playful stops and lighter questions for a shared walk.",
+      "de": "Verspielte Stopps und leichtere Fragen f\u00fcr einen gemeinsamen Spaziergang."
+    },
+    "iconLabel": "BR",
+    "locationIds": ["davidshallsbron", "karl-x-gustav", "malmo-mix"]
+  },
+  {
+    "id": "rainy-day",
+    "title": {
+      "sv": "Regnig dag-runda",
+      "en": "Rainy-day route",
+      "de": "Regentagstour"
+    },
+    "description": {
+      "sv": "Fr\u00e5gor som fungerar \u00e4ven n\u00e4r du vill r\u00f6ra dig lite kortare eller st\u00e5 still och titta n\u00e4ra.",
+      "en": "Questions that work well when you want a shorter walk or a closer look from one spot.",
+      "de": "Fragen, die auch dann gut funktionieren, wenn du k\u00fcrzer gehen oder an einem Ort genauer schauen willst."
+    },
+    "iconLabel": "RD",
+    "locationIds": ["apoteket-lejonet", "malmo-mix", "malmo-history"]
+  },
+  {
+    "id": "history-deck",
+    "title": {
+      "sv": "Malm\u00f6 historia",
+      "en": "Malm\u00f6 history",
+      "de": "Malm\u00f6 Geschichte"
+    },
+    "description": {
+      "sv": "Platsoberoende fr\u00e5gor med sant/falskt, ordning och bilddetaljer.",
+      "en": "Location-free questions with true/false, ordering, and image-detail tasks.",
+      "de": "Ortsunabh\u00e4ngige Fragen mit Wahr/Falsch, Reihenfolge und Bilddetails."
+    },
+    "iconLabel": "HI",
+    "locationIds": ["malmo-history"]
+  }
+]
