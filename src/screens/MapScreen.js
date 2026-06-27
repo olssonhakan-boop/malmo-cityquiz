@@ -235,7 +235,6 @@ export default function MapScreen({lang, onLangChange, selectedCategories, onGoH
         }}
         showsUserLocation={locationGranted}
         showsMyLocationButton={false}
-        customMapStyle={CUSTOM_MAP_STYLE}
         onRegionChangeComplete={region => setLatitudeDelta(region.latitudeDelta)}>
         {(() => {
           const markerSize = getMarkerSize(latitudeDelta);

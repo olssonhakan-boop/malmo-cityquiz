@@ -1,0 +1,341 @@
+[
+  {
+    "id": "karl-x-gustav",
+    "category": "historia",
+    "title": {"sv": "Karl X Gustav-statyn", "en": "Karl X Gustav Statue", "de": "Statue Karl X Gustav"},
+    "latitude": 55.6062,
+    "longitude": 13.0001,
+    "imageUri": null,
+    "questions": [
+      {
+        "id": "tail-animal",
+        "type": "multiple-choice",
+        "prompt": {
+          "sv": "Vilket litet djur gömmer sig på hästsvansen?",
+          "en": "What small animal hides on the horse's tail?",
+          "de": "Welches kleine Tier versteckt sich am Schwanz des Pferdes?"
+        },
+        "options": [
+          {"id": "a", "label": {"sv": "En råtta", "en": "A rat", "de": "Eine Ratte"}},
+          {"id": "b", "label": {"sv": "En ekorre", "en": "A squirrel", "de": "Ein Eichhörnchen"}},
+          {"id": "c", "label": {"sv": "En fågel", "en": "A bird", "de": "Ein Vogel"}},
+          {"id": "d", "label": {"sv": "En katt", "en": "A cat", "de": "Eine Katze"}}
+        ],
+        "correctOptionId": "a",
+        "fact": {
+          "sv": "Alla fyra hovar är i marken – det avslöjar att kungen dog av naturliga orsaker, inte i strid!",
+          "en": "All four hooves are on the ground – this reveals the king died of natural causes, not in battle!",
+          "de": "Alle vier Hufe stehen auf dem Boden – das zeigt, dass der König eines natürlichen Todes starb!"
+        }
+      },
+      {
+        "id": "statue-year",
+        "type": "true-false",
+        "prompt": {
+          "sv": "Statyn av Karl X Gustav restes redan på 1600-talet, kort efter hans död.",
+          "en": "The statue of Karl X Gustav was erected in the 1600s, shortly after his death.",
+          "de": "Die Statue von Karl X. Gustav wurde bereits im 17. Jahrhundert, kurz nach seinem Tod, errichtet."
+        },
+        "correctBoolean": false,
+        "fact": {
+          "sv": "Statyn restes faktiskt 1896 – nästan 240 år efter att Karl X Gustav dog 1660!",
+          "en": "The statue was actually erected in 1896 – nearly 240 years after Karl X Gustav died in 1660!",
+          "de": "Die Statue wurde tatsächlich 1896 errichtet – fast 240 Jahre nach dem Tod von Karl X. Gustav im Jahr 1660!"
+        }
+      }
+    ]
+  },
+  {
+    "id": "apoteket-lejonet",
+    "category": "kuriosa",
+    "title": {"sv": "Apoteket Lejonet", "en": "Apoteket Lejonet", "de": "Apotheke Lejonet"},
+    "latitude": 55.6066,
+    "longitude": 13.0011,
+    "imageUri": null,
+    "questions": [
+      {
+        "id": "einstein-facade",
+        "type": "multiple-choice",
+        "prompt": {
+          "sv": "Vilken känd tysk vetenskapsman finns gömd på fasaden?",
+          "en": "Which famous German scientist is hidden on the facade?",
+          "de": "Welcher berühmte deutsche Wissenschaftler ist an der Fassade versteckt?"
+        },
+        "options": [
+          {"id": "a", "label": {"sv": "Albert Einstein", "en": "Albert Einstein", "de": "Albert Einstein"}},
+          {"id": "b", "label": {"sv": "Isaac Newton", "en": "Isaac Newton", "de": "Isaac Newton"}},
+          {"id": "c", "label": {"sv": "Galileo Galilei", "en": "Galileo Galilei", "de": "Galileo Galilei"}},
+          {"id": "d", "label": {"sv": "Charles Darwin", "en": "Charles Darwin", "de": "Charles Darwin"}}
+        ],
+        "correctOptionId": "a",
+        "fact": {
+          "sv": "En liten Einstein-relief lades till fasaden långt efter att huset byggdes – och de flesta förbipasserare missar den helt!",
+          "en": "A small Einstein relief was added to the facade long after the building was constructed – and most passersby miss it entirely!",
+          "de": "Ein kleines Einstein-Relief wurde lange nach dem Bau an der Fassade angebracht – und die meisten Passanten bemerken es gar nicht!"
+        }
+      }
+    ]
+  },
+  {
+    "id": "davidshallsbron",
+    "category": "kuriosa",
+    "title": {"sv": "Davidshallsbron", "en": "Davidshallsbron Bridge", "de": "Brücke Davidshallsbron"},
+    "latitude": 55.5996,
+    "longitude": 13.0019,
+    "imageUri": null,
+    "questions": [
+      {
+        "id": "dog-shoes",
+        "type": "multiple-choice",
+        "prompt": {
+          "sv": "Vilket djur har fått ett par skor på bron?",
+          "en": "Which animal has received a pair of shoes on the bridge?",
+          "de": "Welches Tier hat ein Paar Schuhe auf der Brücke bekommen?"
+        },
+        "options": [
+          {"id": "a", "label": {"sv": "En hund", "en": "A dog", "de": "Ein Hund"}},
+          {"id": "b", "label": {"sv": "En katt", "en": "A cat", "de": "Eine Katze"}},
+          {"id": "c", "label": {"sv": "En häst", "en": "A horse", "de": "Ein Pferd"}},
+          {"id": "d", "label": {"sv": "En räv", "en": "A fox", "de": "Ein Fuchs"}}
+        ],
+        "correctOptionId": "a",
+        "fact": {
+          "sv": "Hunden heter 'Lotta' och tillhörde revykungen Nils Poppe – bron är täckt av bronskor som tillhört kända Malmöprofiler.",
+          "en": "The dog's name is 'Lotta' and belonged to comedy king Nils Poppe – the bridge is covered in bronze shoes that belonged to famous Malmö personalities.",
+          "de": "Der Hund heißt 'Lotta' und gehörde dem Komödienkönig Nils Poppe – die Brücke ist mit Bronzeschuhen bekannter Malmöer Persönlichkeiten bedeckt."
+        }
+      },
+      {
+        "id": "bridge-shoes-count",
+        "type": "true-false",
+        "prompt": {
+          "sv": "Alla skor på Davidshallsbron tillhörde kända Malmöbor.",
+          "en": "All shoes on Davidshallsbron belonged to famous Malmö residents.",
+          "de": "Alle Schuhe auf der Davidshallsbron gehörten berühmten Malmöer Persönlichkeiten."
+        },
+        "correctBoolean": true,
+        "fact": {
+          "sv": "Varje par bronskor på bron representerar en känd person från Malmös kulturliv – ett levande minnesmärke mitt i staden.",
+          "en": "Each pair of bronze shoes on the bridge represents a famous person from Malmö's cultural life – a living monument in the heart of the city.",
+          "de": "Jedes Paar Bronzeschuhe auf der Brücke repräsentiert eine berühmte Persönlichkeit aus Malmös Kulturleben – ein lebendiges Denkmal mitten in der Stadt."
+        }
+      }
+    ]
+  },
+  {
+    "id": "malmohus-slott",
+    "category": "historia",
+    "title": {"sv": "Malmöhus slott", "en": "Malmöhus Castle", "de": "Schloss Malmöhus"},
+    "latitude": 55.6073,
+    "longitude": 12.9940,
+    "imageUri": null,
+    "questions": [
+      {
+        "id": "cannonball",
+        "type": "multiple-choice",
+        "prompt": {
+          "sv": "Vad sitter fast i slottsmuren mot parken?",
+          "en": "What is embedded in the castle wall facing the park?",
+          "de": "Was steckt in der Schlossmauer zum Park hin?"
+        },
+        "options": [
+          {"id": "a", "label": {"sv": "En kanonkula från 1677", "en": "A cannonball from 1677", "de": "Eine Kanonenkugel von 1677"}},
+          {"id": "b", "label": {"sv": "En medeltida sköld", "en": "A medieval shield", "de": "Ein mittelalterlicher Schild"}},
+          {"id": "c", "label": {"sv": "En gammal ankare", "en": "An old anchor", "de": "Ein alter Anker"}},
+          {"id": "d", "label": {"sv": "En romersk mynt", "en": "A Roman coin", "de": "Eine römische Münze"}}
+        ],
+        "correctOptionId": "a",
+        "fact": {
+          "sv": "Under den danska belägringen 1677 fastnade kanonkulan i muren och sitter kvar än idag som ett stenstort minne av slaget om Malmö.",
+          "en": "During the Danish siege of 1677, the cannonball became lodged in the wall and remains there to this day as a reminder of the battle for Malmö.",
+          "de": "Während der dänischen Belagerung 1677 blieb die Kanonenkugel in der Mauer stecken und ist noch heute als Erinnerung an die Schlacht um Malmö zu sehen."
+        }
+      }
+    ]
+  },
+  {
+    "id": "st-petri-kyrka",
+    "category": "historia",
+    "title": {"sv": "S:t Petri kyrka", "en": "St. Peter's Church", "de": "St. Petri Kirche"},
+    "latitude": 55.6063,
+    "longitude": 13.0027,
+    "imageUri": null,
+    "questions": [
+      {
+        "id": "mans-figure",
+        "type": "multiple-choice",
+        "prompt": {
+          "sv": "Vilken liten figur på kyrkan vänder baken mot Köpenhamn?",
+          "en": "Which small figure on the church turns its backside towards Copenhagen?",
+          "de": "Welche kleine Figur an der Kirche dreht Kopenhagen den Rücken zu?"
+        },
+        "options": [
+          {"id": "a", "label": {"sv": "Måns", "en": "Måns", "de": "Måns"}},
+          {"id": "b", "label": {"sv": "Påven", "en": "The Pope", "de": "Der Papst"}},
+          {"id": "c", "label": {"sv": "Djävulen", "en": "The Devil", "de": "Der Teufel"}},
+          {"id": "d", "label": {"sv": "En riddare", "en": "A knight", "de": "Ein Ritter"}}
+        ],
+        "correctOptionId": "a",
+        "fact": {
+          "sv": "'Måns' är en skånsk skymf – figuren moonar mot Danmark som en protest mot försvenskningen av Skåne efter 1658!",
+          "en": "'Måns' is a Scanian insult – the figure moons towards Denmark as a protest against the Swedification of Scania after 1658!",
+          "de": "'Måns' ist eine schonische Beleidigung – die Figur zeigt Dänemark den nackten Hintern als Protest gegen die Schwedenisierung Schonens nach 1658!"
+        }
+      }
+    ]
+  },
+  {
+    "id": "lilla-torg",
+    "category": "kuriosa",
+    "title": {"sv": "Lilla Torg", "en": "Lilla Torg Square", "de": "Kleiner Marktplatz"},
+    "latitude": 55.6054,
+    "longitude": 13.0017,
+    "imageUri": null,
+    "questions": [
+      {
+        "id": "narrowest-house",
+        "type": "multiple-choice",
+        "prompt": {
+          "sv": "Hur brett är Malmös smalaste hus vid Lilla Torg?",
+          "en": "How wide is Malmö's narrowest house at Lilla Torg?",
+          "de": "Wie breit ist Malmös schmaltes Haus am Lilla Torg?"
+        },
+        "options": [
+          {"id": "a", "label": {"sv": "Cirka 2,5 meter", "en": "About 2.5 meters", "de": "Etwa 2,5 Meter"}},
+          {"id": "b", "label": {"sv": "Cirka 1 meter", "en": "About 1 meter", "de": "Etwa 1 Meter"}},
+          {"id": "c", "label": {"sv": "Cirka 4 meter", "en": "About 4 meters", "de": "Etwa 4 Meter"}},
+          {"id": "d", "label": {"sv": "Cirka 5 meter", "en": "About 5 meters", "de": "Etwa 5 Meter"}}
+        ],
+        "correctOptionId": "a",
+        "fact": {
+          "sv": "Aspegrenska huset är Malmös smalaste hus och ett av de smalaste i hela Sverige – trots sin blygsamma bredd har det stått här i hundratals år!",
+          "en": "The Aspegrenian house is Malmö's narrowest building and one of the narrowest in all of Sweden – despite its modest width, it has stood here for hundreds of years!",
+          "de": "Das Aspegrensche Haus ist Malmös schmalstes Gebäude und eines der schmalsten in ganz Schweden – trotz seiner bescheidenen Breite steht es seit Jahrhunderten hier!"
+        }
+      }
+    ]
+  },
+  {
+    "id": "malmo-historia-fri",
+    "category": "historia",
+    "title": {"sv": "Malmö-quiz: Historia", "en": "Malmö Quiz: History", "de": "Malmö-Quiz: Geschichte"},
+    "latitude": null,
+    "longitude": null,
+    "imageUri": null,
+    "questions": [
+      {
+        "id": "sodergatan-year",
+        "type": "multiple-choice",
+        "prompt": {
+          "sv": "Vilket år blev Södergatan Sveriges allra första permanenta gågata?",
+          "en": "In what year did Södergatan become Sweden's very first permanent pedestrian street?",
+          "de": "In welchem Jahr wurde Södergatan Schwedens erste permanente Fußgängerzone?"
+        },
+        "options": [
+          {"id": "a", "label": {"sv": "1978", "en": "1978", "de": "1978"}},
+          {"id": "b", "label": {"sv": "1965", "en": "1965", "de": "1965"}},
+          {"id": "c", "label": {"sv": "1990", "en": "1990", "de": "1990"}},
+          {"id": "d", "label": {"sv": "1952", "en": "1952", "de": "1952"}}
+        ],
+        "correctOptionId": "a",
+        "fact": {
+          "sv": "Malmö var pionjär – Södergatan stängdes för biltrafik och blev en av Sveriges absolut första gågator, ett experiment som sen spred sig till hela landet.",
+          "en": "Malmö was a pioneer – Södergatan was closed to traffic and became one of Sweden's very first pedestrian streets, an experiment that later spread across the country.",
+          "de": "Malmö war Pionier – die Södergatan wurde für den Autoverkehr gesperrt und wurde eine der ersten Fußgängerzonen Schwedens, ein Experiment, das sich dann im ganzen Land verbreitete."
+        }
+      },
+      {
+        "id": "malmo-city-age",
+        "type": "true-false",
+        "prompt": {
+          "sv": "Malmö är en av Sveriges äldsta städer med anor från tidig medeltid.",
+          "en": "Malmö is one of Sweden's oldest cities with origins in the early Middle Ages.",
+          "de": "Malmö ist eine der ältesten Städte Schwedens mit Ursprüngen im frühen Mittelalter."
+        },
+        "correctBoolean": true,
+        "fact": {
+          "sv": "Malmö omnämns i skriftliga källor redan på 1200-talet och var länge en av Nordens viktigaste handelsstäder.",
+          "en": "Malmö is mentioned in written sources as early as the 13th century and was long one of the most important trading cities in the Nordic region.",
+          "de": "Malmö wird bereits im 13. Jahrhundert in schriftlichen Quellen erwähnt und war lange eine der wichtigsten Handelsstädte Nordeuropas."
+        }
+      }
+    ]
+  },
+  {
+    "id": "malmo-kultur-fri",
+    "category": "kultur",
+    "title": {"sv": "Malmö-quiz: Berömda personer", "en": "Malmö Quiz: Famous People", "de": "Malmö-Quiz: Berühmte Persönlichkeiten"},
+    "latitude": null,
+    "longitude": null,
+    "imageUri": null,
+    "questions": [
+      {
+        "id": "bergman-debut",
+        "type": "multiple-choice",
+        "prompt": {
+          "sv": "Vilken känd regissör gjorde sin debut på Malmö Stadsteater 1944?",
+          "en": "Which famous director made his debut at Malmö City Theatre in 1944?",
+          "de": "Welcher berühmte Regisseur gab 1944 sein Debüt am Malmöer Stadttheater?"
+        },
+        "options": [
+          {"id": "a", "label": {"sv": "Ingmar Bergman", "en": "Ingmar Bergman", "de": "Ingmar Bergman"}},
+          {"id": "b", "label": {"sv": "Victor Sjöström", "en": "Victor Sjöström", "de": "Victor Sjöström"}},
+          {"id": "c", "label": {"sv": "Lasse Hallström", "en": "Lasse Hallström", "de": "Lasse Hallström"}},
+          {"id": "d", "label": {"sv": "Roy Andersson", "en": "Roy Andersson", "de": "Roy Andersson"}}
+        ],
+        "correctOptionId": "a",
+        "fact": {
+          "sv": "Ingmar Bergman var bara 26 år när han debuterade i Malmö – staden spelade en viktig roll i hans tidiga karriär innan han blev världsberömd.",
+          "en": "Ingmar Bergman was only 26 when he debuted in Malmö – the city played an important role in his early career before he became world-famous.",
+          "de": "Ingmar Bergman war erst 26 Jahre alt, als er in Malmö debütierte – die Stadt spielte eine wichtige Rolle in seiner frühen Karriere, bevor er weltberühmt wurde."
+        }
+      }
+    ]
+  },
+  {
+    "id": "malmo-arkitektur-fri",
+    "category": "arkitektur",
+    "title": {"sv": "Malmö-quiz: Turning Torso", "en": "Malmö Quiz: Turning Torso", "de": "Malmö-Quiz: Turning Torso"},
+    "latitude": null,
+    "longitude": null,
+    "imageUri": null,
+    "questions": [
+      {
+        "id": "calatrava-inspiration",
+        "type": "multiple-choice",
+        "prompt": {
+          "sv": "Vad inspirerade arkitekten Calatrava till Turning Torsos vridna form?",
+          "en": "What inspired architect Calatrava to create Turning Torso's twisted shape?",
+          "de": "Was inspirierte Architekt Calatrava zu Turning Torsos verdrehter Form?"
+        },
+        "options": [
+          {"id": "a", "label": {"sv": "En skulptur av en mänsklig ryggrad", "en": "A sculpture of a human spine", "de": "Eine Skulptur einer menschlichen Wirbelsäule"}},
+          {"id": "b", "label": {"sv": "En snörkork", "en": "A corkscrew", "de": "Ein Korkenzieher"}},
+          {"id": "c", "label": {"sv": "Öresundsbron", "en": "The Øresund Bridge", "de": "Die Öresundbrücke"}},
+          {"id": "d", "label": {"sv": "En tornado", "en": "A tornado", "de": "Ein Tornado"}}
+        ],
+        "correctOptionId": "a",
+        "fact": {
+          "sv": "Calatrava designade först en skulptur föreställande en människa som vrider sig – och omvandlade sedan den formen till en av Skandinaviens mest ikoniska byggnader!",
+          "en": "Calatrava first designed a sculpture of a person twisting – and then transformed that shape into one of Scandinavia's most iconic buildings!",
+          "de": "Calatrava entwarf zunächst eine Skulptur eines sich drehenden Menschen – und verwandelte diese Form dann in eines der ikonischsten Gebäude Skandinaviens!"
+        }
+      },
+      {
+        "id": "turning-torso-floors",
+        "type": "true-false",
+        "prompt": {
+          "sv": "Turning Torso är Skandinaviens högsta bostadshus.",
+          "en": "Turning Torso is Scandinavia's tallest residential building.",
+          "de": "Turning Torso ist Skandinaviens höchstes Wohngebäude."
+        },
+        "correctBoolean": true,
+        "fact": {
+          "sv": "Med sina 190 meter och 54 våningar är Turning Torso fortfarande det högsta bostadshuset i Skandinavien sedan det stod klart 2005.",
+          "en": "At 190 metres and 54 floors, Turning Torso has remained Scandinavia's tallest residential building since its completion in 2005.",
+          "de": "Mit 190 Metern und 54 Etagen ist Turning Torso seit seiner Fertigstellung im Jahr 2005 das höchste Wohngebäude Skandinaviens."
+        }
+      }
+    ]
+  }
+]

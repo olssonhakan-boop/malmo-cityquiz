@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   Modal,
   View,
@@ -7,17 +7,17 @@ import {
   FlatList,
   StyleSheet,
 } from 'react-native';
-import { t } from '../utils/i18n';
+import {t} from '../utils/i18n';
+import {isLocationComplete, locationProgress} from '../hooks/useLocations';
 
-export default function FreeQuestionsPanel({ questions, lang, completed, onSelect }) {
+export default function FreeQuestionsPanel({locations, lang, completedIds, onSelect}) {
   const [visible, setVisible] = useState(false);
 
-  const pending = questions.filter((q) => !completed.has(q.id));
-  const done = questions.filter((q) => completed.has(q.id));
+  const pending = locations.filter(loc => !isLocationComplete(loc, completedIds));
+  const done = locations.filter(loc => isLocationComplete(loc, completedIds));
 
   return (
     <>
-      {/* Floating button on map */}
       <TouchableOpacity style={styles.fab} onPress={() => setVisible(true)}>
         <Text style={styles.fabIcon}>🏛️</Text>
         <Text style={styles.fabLabel}>{t(lang, 'freeQuestions')}</Text>
@@ -28,7 +28,11 @@ export default function FreeQuestionsPanel({ questions, lang, completed, onSelec
         )}
       </TouchableOpacity>
 
-      <Modal visible={visible} transparent animationType="slide" onRequestClose={() => setVisible(false)}>
+      <Modal
+        visible={visible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setVisible(false)}>
         <View style={styles.overlay}>
           <View style={styles.panel}>
             <View style={styles.header}>
@@ -43,9 +47,10 @@ export default function FreeQuestionsPanel({ questions, lang, completed, onSelec
 
             <FlatList
               data={[...pending, ...done]}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => {
-                const isDone = completed.has(item.id);
+              keyExtractor={item => item.id}
+              renderItem={({item}) => {
+                const isDone = isLocationComplete(item, completedIds);
+                const {done: doneQ, total} = locationProgress(item, completedIds);
                 return (
                   <TouchableOpacity
                     style={[styles.item, isDone && styles.itemDone]}
@@ -53,12 +58,18 @@ export default function FreeQuestionsPanel({ questions, lang, completed, onSelec
                       setVisible(false);
                       onSelect(item);
                     }}
-                    disabled={isDone}
-                  >
+                    disabled={isDone}>
                     <Text style={styles.itemIcon}>{isDone ? '✅' : '❓'}</Text>
-                    <Text style={[styles.itemTitle, isDone && styles.itemTitleDone]}>
-                      {item.title[lang] || item.title['sv']}
-                    </Text>
+                    <View style={{flex: 1}}>
+                      <Text style={[styles.itemTitle, isDone && styles.itemTitleDone]}>
+                        {item.title[lang] || item.title.sv}
+                      </Text>
+                      {total > 1 && (
+                        <Text style={styles.itemSub}>
+                          {doneQ}/{total} {t(lang, 'questionsShort')}
+                        </Text>
+                      )}
+                    </View>
                   </TouchableOpacity>
                 );
               }}
@@ -88,16 +99,8 @@ const styles = StyleSheet.create({
     elevation: 8,
     minWidth: 80,
   },
-  fabIcon: {
-    fontSize: 22,
-  },
-  fabLabel: {
-    color: '#fff',
-    fontSize: 11,
-    fontWeight: '600',
-    marginTop: 2,
-    textAlign: 'center',
-  },
+  fabIcon: {fontSize: 22},
+  fabLabel: {color: '#fff', fontSize: 11, fontWeight: '600', marginTop: 2, textAlign: 'center'},
   badge: {
     position: 'absolute',
     top: -6,
@@ -110,16 +113,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 4,
   },
-  badgeText: {
-    color: '#fff',
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
-  },
+  badgeText: {color: '#fff', fontSize: 11, fontWeight: '700'},
+  overlay: {flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end'},
   panel: {
     backgroundColor: '#fff',
     borderTopLeftRadius: 20,
@@ -133,18 +128,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 16,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#003366',
-  },
-  subtitle: {
-    fontSize: 13,
-    color: '#888',
-    marginTop: 2,
-  },
-  closeBtn: { padding: 6 },
-  closeBtnText: { fontSize: 18, color: '#666' },
+  title: {fontSize: 18, fontWeight: '700', color: '#003366'},
+  subtitle: {fontSize: 13, color: '#888', marginTop: 2},
+  closeBtn: {padding: 6},
+  closeBtnText: {fontSize: 18, color: '#666'},
   item: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -152,25 +139,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
   },
-  itemDone: {
-    opacity: 0.5,
-  },
-  itemIcon: {
-    fontSize: 20,
-    marginRight: 12,
-  },
-  itemTitle: {
-    fontSize: 15,
-    color: '#333',
-    flex: 1,
-  },
-  itemTitleDone: {
-    textDecorationLine: 'line-through',
-    color: '#aaa',
-  },
-  empty: {
-    textAlign: 'center',
-    color: '#aaa',
-    marginTop: 20,
-  },
+  itemDone: {opacity: 0.5},
+  itemIcon: {fontSize: 20, marginRight: 12},
+  itemTitle: {fontSize: 15, color: '#333'},
+  itemTitleDone: {textDecorationLine: 'line-through', color: '#aaa'},
+  itemSub: {fontSize: 12, color: '#aaa', marginTop: 2},
+  empty: {textAlign: 'center', color: '#aaa', marginTop: 20},
 });

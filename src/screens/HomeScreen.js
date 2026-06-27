@@ -1,255 +1,134 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
   StyleSheet,
-  Modal,
-  Alert,
+  ImageBackground,
+  StatusBar,
   SafeAreaView,
+  useWindowDimensions,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {t, categoryLabel} from '../utils/i18n';
-import {useQuestions} from '../hooks/useQuestions';
+import {t} from '../utils/i18n';
 import LanguagePicker from '../components/LanguagePicker';
 
-const COMPLETED_KEY = 'malmo_completed';
-const SCORE_KEY = 'malmo_score';
-const ONBOARDING_KEY = 'malmo_onboarding_done';
+const HERO_IMAGE = require('../assets/homequiz.png');
 
-export default function HomeScreen({lang, onLangChange, selectedCategories, onCategoriesChange, onStart}) {
-  const [score, setScore] = useState(0);
-  const [completedCount, setCompletedCount] = useState(0);
-  const [showOnboarding, setShowOnboarding] = useState(false);
+export default function HomeScreen({lang, onLangChange, onStart}) {
+  const {width, height} = useWindowDimensions();
 
-  const {questions} = useQuestions();
-  const totalCount = questions.length;
-
-  const allCategories = [...new Set(questions.map(q => q.category).filter(Boolean))].sort();
-
-  useEffect(() => {
-    async function loadData() {
-      const [scoreVal, completedVal, onboardingDone] = await Promise.all([
-        AsyncStorage.getItem(SCORE_KEY),
-        AsyncStorage.getItem(COMPLETED_KEY),
-        AsyncStorage.getItem(ONBOARDING_KEY),
-      ]);
-      setScore(scoreVal ? parseInt(scoreVal, 10) : 0);
-      setCompletedCount(completedVal ? JSON.parse(completedVal).length : 0);
-      if (!onboardingDone) {
-        setShowOnboarding(true);
-      }
-    }
-    loadData();
-  }, []);
-
-  function toggleCategory(cat) {
-    if (selectedCategories.includes(cat)) {
-      onCategoriesChange(selectedCategories.filter(c => c !== cat));
-    } else {
-      onCategoriesChange([...selectedCategories, cat]);
-    }
-  }
-
-  function handleReset() {
-    Alert.alert(
-      t(lang, 'resetProgress'),
-      t(lang, 'resetConfirm'),
-      [
-        {text: t(lang, 'resetNo'), style: 'cancel'},
-        {
-          text: t(lang, 'resetYes'),
-          style: 'destructive',
-          onPress: async () => {
-            await AsyncStorage.multiRemove([SCORE_KEY, COMPLETED_KEY]);
-            setScore(0);
-            setCompletedCount(0);
-          },
-        },
-      ],
-    );
-  }
-
-  async function finishOnboarding() {
-    await AsyncStorage.setItem(ONBOARDING_KEY, '1');
-    setShowOnboarding(false);
-  }
+  // Alla mått beräknas från faktisk skärmstorlek
+  const s = makeStyles(width, height);
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.headerTitle}>Malmö CityQuiz</Text>
-          <Text style={styles.headerSub}>Utforska staden — svara på frågor</Text>
-        </View>
-        <LanguagePicker lang={lang} onSelect={onLangChange} />
-      </View>
+    <View style={s.root}>
+      <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Score card */}
-        <View style={styles.scoreCard}>
-          <View style={styles.scoreMain}>
-            <Text style={styles.scoreNumber}>{score}</Text>
-            <Text style={styles.scoreLabel}>{t(lang, 'yourScore')}</Text>
+      <ImageBackground source={HERO_IMAGE} style={s.bg} resizeMode="cover">
+        <SafeAreaView style={s.safe}>
+
+          <View style={s.header}>
+            <Text style={s.title}>{t(lang, 'homeTitle')}</Text>
+            <Text style={s.subtitle}>{t(lang, 'homeSubtitle')}</Text>
           </View>
-          <View style={styles.scoreDivider} />
-          <View style={styles.scoreMain}>
-            <Text style={styles.scoreNumber}>{completedCount}</Text>
-            <Text style={styles.scoreLabel}>
-              {t(lang, 'placesOf')} {totalCount}
-            </Text>
+
+          <View style={s.langWrapper}>
+            <LanguagePicker lang={lang} onSelect={onLangChange} />
           </View>
-        </View>
 
-        {/* Categories */}
-        {allCategories.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t(lang, 'chooseCategories')}</Text>
-            <View style={styles.chips}>
-              <TouchableOpacity
-                style={[styles.chip, selectedCategories.length === 0 && styles.chipActive]}
-                onPress={() => onCategoriesChange([])}>
-                <Text style={[styles.chipText, selectedCategories.length === 0 && styles.chipTextActive]}>
-                  {t(lang, 'allCategories')}
-                </Text>
-              </TouchableOpacity>
-              {allCategories.map(cat => {
-                const active = selectedCategories.includes(cat);
-                return (
-                  <TouchableOpacity
-                    key={cat}
-                    style={[styles.chip, active && styles.chipActive]}
-                    onPress={() => toggleCategory(cat)}>
-                    <Text style={[styles.chipText, active && styles.chipTextActive]}>
-                      {categoryLabel(lang, cat)}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          </View>
-        )}
-
-        {/* Start button */}
-        <TouchableOpacity style={styles.startBtn} onPress={onStart}>
-          <Text style={styles.startBtnText}>{t(lang, 'startBtn')}</Text>
-        </TouchableOpacity>
-
-        {/* Reset */}
-        <TouchableOpacity style={styles.resetBtn} onPress={handleReset}>
-          <Text style={styles.resetBtnText}>{t(lang, 'resetProgress')}</Text>
-        </TouchableOpacity>
-      </ScrollView>
-
-      {/* Onboarding modal */}
-      <Modal visible={showOnboarding} transparent animationType="fade">
-        <View style={styles.onboardingOverlay}>
-          <View style={styles.onboardingCard}>
-            <Text style={styles.onboardingTitle}>{t(lang, 'onboardingTitle')}</Text>
-            <Text style={styles.onboardingStep}>{t(lang, 'onboardingStep1')}</Text>
-            <Text style={styles.onboardingStep}>{t(lang, 'onboardingStep2')}</Text>
-            <Text style={styles.onboardingStep}>{t(lang, 'onboardingStep3')}</Text>
-            <TouchableOpacity style={styles.onboardingBtn} onPress={finishOnboarding}>
-              <Text style={styles.onboardingBtnText}>{t(lang, 'onboardingBtn')}</Text>
+          <View style={s.btnWrapper}>
+            <TouchableOpacity style={s.startBtn} onPress={onStart} activeOpacity={0.85}>
+              <View style={s.startBtnHighlight} />
+              <Text style={s.startBtnText}>{t(lang, 'homeStartBtn')}</Text>
             </TouchableOpacity>
           </View>
-        </View>
-      </Modal>
-    </SafeAreaView>
+
+        </SafeAreaView>
+      </ImageBackground>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#f4f6f9'},
-  header: {
-    backgroundColor: '#003366',
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  headerTitle: {fontSize: 22, fontWeight: '800', color: '#fff'},
-  headerSub: {fontSize: 13, color: 'rgba(255,255,255,0.7)', marginTop: 2},
-  content: {padding: 20, gap: 20},
-  scoreCard: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 24,
-    flexDirection: 'row',
-    alignItems: 'center',
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-  },
-  scoreMain: {flex: 1, alignItems: 'center'},
-  scoreNumber: {fontSize: 42, fontWeight: '800', color: '#003366'},
-  scoreLabel: {fontSize: 13, color: '#666', marginTop: 4, textAlign: 'center'},
-  scoreDivider: {width: 1, height: 60, backgroundColor: '#e0e0e0'},
-  section: {gap: 12},
-  sectionTitle: {fontSize: 15, fontWeight: '700', color: '#333'},
-  chips: {flexDirection: 'row', flexWrap: 'wrap', gap: 8},
-  chip: {
-    borderWidth: 1.5,
-    borderColor: '#003366',
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: '#fff',
-  },
-  chipActive: {backgroundColor: '#003366'},
-  chipText: {fontSize: 14, color: '#003366', fontWeight: '600'},
-  chipTextActive: {color: '#fff'},
-  startBtn: {
-    backgroundColor: '#003366',
-    borderRadius: 14,
-    paddingVertical: 18,
-    alignItems: 'center',
-    elevation: 4,
-    shadowColor: '#003366',
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
-  startBtnText: {fontSize: 18, fontWeight: '800', color: '#fff'},
-  resetBtn: {alignItems: 'center', paddingVertical: 8},
-  resetBtnText: {fontSize: 13, color: '#999'},
-  onboardingOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-  },
-  onboardingCard: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 28,
-    width: '100%',
-  },
-  onboardingTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#003366',
-    textAlign: 'center',
-    marginBottom: 24,
-    lineHeight: 30,
-  },
-  onboardingStep: {
-    fontSize: 15,
-    color: '#333',
-    lineHeight: 24,
-    marginBottom: 14,
-  },
-  onboardingBtn: {
-    backgroundColor: '#003366',
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginTop: 12,
-  },
-  onboardingBtnText: {fontSize: 16, fontWeight: '700', color: '#fff'},
-});
+function makeStyles(width, height) {
+  const hp = pct => height * (pct / 100); // procentandel av höjden
+  const wp = pct => width * (pct / 100);  // procentandel av bredden
+
+  // Fontstorlekar skalas mot en referensskärm på 390px bred (iPhone 14 / Pixel 7)
+  const fontScale = width / 390;
+  const fs = size => Math.round(size * fontScale);
+
+  const pad = wp(6); // 6% av bredden som standardpadding
+
+  return StyleSheet.create({
+    root: {flex: 1},
+    bg: {flex: 1},
+    safe: {flex: 1},
+
+    header: {
+      position: 'absolute',
+      top: hp(8),
+      left: pad,
+      right: pad,
+      alignItems: 'center',
+    },
+    title: {
+      fontSize: fs(36),
+      fontWeight: '900',
+      color: '#1a1a2e',
+      letterSpacing: -0.5,
+      textAlign: 'center',
+    },
+    subtitle: {
+      fontSize: fs(17),
+      fontWeight: '500',
+      color: '#2d2d44',
+      marginTop: hp(1),
+      textAlign: 'center',
+    },
+
+    langWrapper: {
+      position: 'absolute',
+      top: hp(18),
+      right: pad,
+    },
+
+    btnWrapper: {
+      position: 'absolute',
+      top: hp(24),
+      left: 0,
+      right: 0,
+      alignItems: 'center',
+    },
+    startBtn: {
+      backgroundColor: '#1a1a2e',
+      borderRadius: wp(4),
+      paddingVertical: hp(2),
+      paddingHorizontal: wp(12),
+      alignItems: 'center',
+      overflow: 'hidden',
+      elevation: 12,
+      borderBottomWidth: 3,
+      borderBottomColor: '#000',
+      borderLeftWidth: 1,
+      borderLeftColor: 'rgba(0,0,0,0.4)',
+      borderRightWidth: 1,
+      borderRightColor: 'rgba(0,0,0,0.4)',
+    },
+    startBtnHighlight: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: '45%',
+      backgroundColor: 'rgba(255,255,255,0.1)',
+      borderTopLeftRadius: wp(4),
+      borderTopRightRadius: wp(4),
+    },
+    startBtnText: {
+      fontSize: fs(18),
+      fontWeight: '700',
+      color: '#fff',
+      letterSpacing: 0.3,
+    },
+  });
+}
