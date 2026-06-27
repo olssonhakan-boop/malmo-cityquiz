@@ -75,9 +75,11 @@ function MultipleChoice({question, lang, onCorrect, onWrong}) {
   function handlePress(id) {
     if (answered) return;
     setSelected(id);
-    const correctOpt  = question.options.find(o => o.id === correctId);
-    const correctText = loc(correctOpt?.label, lang);
-    id === correctId ? onCorrect(correctText) : onWrong(correctText);
+    const correctOpt   = question.options.find(o => o.id === correctId);
+    const selectedOpt  = question.options.find(o => o.id === id);
+    const correctText  = loc(correctOpt?.label, lang);
+    const selectedText = loc(selectedOpt?.label, lang);
+    id === correctId ? onCorrect(correctText) : onWrong(correctText, selectedText);
   }
 
   if (answered) return null;
@@ -104,10 +106,9 @@ function TrueFalse({question, lang, onCorrect, onWrong}) {
   function handlePress(value) {
     if (answered) return;
     setSelected(value);
-    const correctText = question.correctBoolean
-      ? t(lang, 'trueFalseTrue')
-      : t(lang, 'trueFalseFalse');
-    value === question.correctBoolean ? onCorrect(correctText) : onWrong(correctText);
+    const correctText  = question.correctBoolean ? t(lang, 'trueFalseTrue') : t(lang, 'trueFalseFalse');
+    const selectedText = value ? t(lang, 'trueFalseTrue') : t(lang, 'trueFalseFalse');
+    value === question.correctBoolean ? onCorrect(correctText) : onWrong(correctText, selectedText);
   }
 
   if (answered) return null;
@@ -195,7 +196,7 @@ function SortOrder({question, lang, onCorrect, onWrong}) {
 }
 
 // ─── Resultat-sektion (efter svar, ej sortera) ────────────────────────────────
-function ResultArea({feedback, correctAnswer, points, streak, iconScale, scoreScale}) {
+function ResultArea({feedback, correctAnswer, selectedAnswer, points, streak, iconScale, scoreScale}) {
   const isCorrect = feedback === 'correct';
   return (
     <View style={styles.resultArea}>
@@ -229,15 +230,27 @@ function ResultArea({feedback, correctAnswer, points, streak, iconScale, scoreSc
         </View>
       )}
 
-      {/* Rätt svar (visas bara vid fel svar) */}
-      {!isCorrect && correctAnswer ? (
-        <View style={styles.correctPillWrap}>
-          <Text style={styles.correctPillLabel}>Rätt svar var:</Text>
-          <View style={styles.correctPill}>
-            <Text style={styles.correctPillText}>✓  {correctAnswer}</Text>
-          </View>
+      {/* Fel svar: visa vad spelaren valde + vad som var rätt */}
+      {!isCorrect && (
+        <View style={styles.answerSummary}>
+          {selectedAnswer ? (
+            <View style={styles.answerRow}>
+              <Text style={styles.answerRowLabel}>Ditt val:</Text>
+              <View style={styles.wrongPill}>
+                <Text style={styles.wrongPillText}>✗  {selectedAnswer}</Text>
+              </View>
+            </View>
+          ) : null}
+          {correctAnswer ? (
+            <View style={styles.answerRow}>
+              <Text style={styles.answerRowLabel}>Rätt svar:</Text>
+              <View style={styles.correctPill}>
+                <Text style={styles.correctPillText}>✓  {correctAnswer}</Text>
+              </View>
+            </View>
+          ) : null}
         </View>
-      ) : null}
+      )}
 
     </View>
   );
@@ -254,8 +267,9 @@ export default function QuizModal({
   onCompleteQuestion,
 }) {
   const [qIndex,        setQIndex]        = useState(0);
-  const [feedback,      setFeedback]      = useState('idle');
-  const [correctAnswer, setCorrectAnswer] = useState('');
+  const [feedback,        setFeedback]        = useState('idle');
+  const [correctAnswer,   setCorrectAnswer]   = useState('');
+  const [selectedAnswer,  setSelectedAnswer]  = useState('');
   const [streak,        setStreak]        = useState(0);
   const [key,           setKey]           = useState(0);
 
@@ -334,10 +348,11 @@ export default function QuizModal({
     startResultAnims();
   }
 
-  function handleWrong(correctText) {
+  function handleWrong(correctText, selectedText) {
     flash(RED);
     setFeedback('wrong');
     setCorrectAnswer(correctText || '');
+    setSelectedAnswer(selectedText || '');
     setStreak(0);
     startResultAnims();
   }
@@ -349,6 +364,7 @@ export default function QuizModal({
       setQIndex(nextIdx);
       setFeedback('idle');
       setCorrectAnswer('');
+      setSelectedAnswer('');
       setKey(k => k + 1);
     } else {
       onClose();
@@ -453,6 +469,7 @@ export default function QuizModal({
               <ResultArea
                 feedback={feedback}
                 correctAnswer={correctAnswer}
+                selectedAnswer={selectedAnswer}
                 points={points}
                 streak={streak}
                 iconScale={iconScale}
@@ -709,23 +726,44 @@ const styles = StyleSheet.create({
   },
   streakText: {fontSize: 13, fontWeight: '700', color: '#7A5A00'},
 
-  // Rätt svar-pill (vid fel)
-  correctPillWrap: {
-    alignItems: 'center',
-    gap: 6,
-    marginTop: 8,
+  // Svar-sammanfattning (vid fel svar)
+  answerSummary: {
+    alignSelf: 'stretch',
+    gap: 10,
+    marginTop: 10,
   },
-  correctPillLabel: {fontSize: 11, color: MUTED, fontWeight: '600'},
+  answerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  answerRowLabel: {
+    fontSize: 12,
+    color: MUTED,
+    fontWeight: '600',
+    width: 72,
+    textAlign: 'right',
+  },
+  wrongPill: {
+    backgroundColor: '#FDECEA',
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderWidth: 1.5,
+    borderColor: RED,
+    flex: 1,
+  },
+  wrongPillText: {fontSize: 13, fontWeight: '700', color: RED},
   correctPill: {
     backgroundColor: '#E8F8ED',
     borderRadius: 20,
-    paddingHorizontal: 18,
-    paddingVertical: 7,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
     borderWidth: 1.5,
     borderColor: GREEN,
-    elevation: 2,
+    flex: 1,
   },
-  correctPillText: {fontSize: 14, fontWeight: '700', color: GREEN},
+  correctPillText: {fontSize: 13, fontWeight: '700', color: GREEN},
 
   // ── Visste du att — faktakort med djup ───────────────────────────────────────
   funFact: {
