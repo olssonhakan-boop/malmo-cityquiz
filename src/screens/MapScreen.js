@@ -23,6 +23,7 @@ import QuizMarker from '../components/QuizMarker';
 import ClusterMarker from '../components/ClusterMarker';
 
 const MALMO_CENTER = {latitude: 55.605, longitude: 13.0038};
+const SHOW_DEV_SHORTCUT = true; // sätt false innan Play Store-release
 const PROGRESS_KEY = 'malmo_progress';
 const SCORE_KEY = 'malmo_score';
 const BASE_POINTS = 10;
@@ -267,7 +268,7 @@ export default function MapScreen({lang, onLangChange, selectedCategories, onGoH
         })()}
       </MapView>
 
-      {__DEV__ && gpsLocations.length > 0 && (
+      {SHOW_DEV_SHORTCUT && gpsLocations.length > 0 && (
         <TouchableOpacity
           onPress={() => handleMarkerPress(gpsLocations[0])}
           style={{position:'absolute',top:160,right:12,zIndex:999,
