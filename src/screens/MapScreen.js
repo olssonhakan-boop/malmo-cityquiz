@@ -267,6 +267,15 @@ export default function MapScreen({lang, onLangChange, selectedCategories, onGoH
         })()}
       </MapView>
 
+      {__DEV__ && gpsLocations.length > 0 && (
+        <TouchableOpacity
+          onPress={() => handleMarkerPress(gpsLocations[0])}
+          style={{position:'absolute',top:160,right:12,zIndex:999,
+            backgroundColor:'#C8A840',borderRadius:8,
+            paddingHorizontal:10,paddingVertical:6}}>
+          <Text style={{color:'#2C1E0F',fontWeight:'700',fontSize:12}}>DEV</Text>
+        </TouchableOpacity>
+      )}
       {/* Top bar — runda 3D-knappar uppe till vänster */}
       <View style={styles.topBar}>
         <TouchableOpacity style={styles.iconBtn} onPress={onGoHome} activeOpacity={0.8}>
