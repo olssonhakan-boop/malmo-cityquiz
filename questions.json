@@ -286,5 +286,269 @@
       "en": "Calatrava first designed a sculpture of a person twisting – and then transformed that shape into one of Scandinavia's most iconic buildings!",
       "de": "Calatrava entwarf zunächst eine Skulptur eines sich drehenden Menschen – und verwandelte diese Form dann in eines der ikonischsten Gebäude Skandinaviens!"
     }
+  },
+  {
+    "id": "104",
+    "category": "arkitektur",
+    "title": {"sv": "Malmö Konsthall", "en": "Malmö Konsthall", "de": "Malmö Konsthall"},
+    "latitude": null, "longitude": null, "image": null,
+    "question": {
+      "sv": "Vad är unikt med Malmö Konsthalls takkonstruktion?",
+      "en": "What is unique about Malmö Konsthall's roof construction?",
+      "de": "Was ist einzigartig an der Dachkonstruktion der Malmö Konsthall?"
+    },
+    "options": {
+      "sv": ["Över 550 ljusinsläppande kupoler", "En roterande takdel som följer solen", "Taket är täckt av solpaneler", "Glasflaskor gjutna i betongen"],
+      "en": ["Over 550 light-admitting domes", "A rotating section that follows the sun", "The roof is covered with solar panels", "Glass bottles cast in concrete"],
+      "de": ["Über 550 lichtdurchlassende Kuppeln", "Ein rotierender Teil der dem Sonnenlauf folgt", "Das Dach ist mit Solarmodulen bedeckt", "Glasflaschen im Beton vergossen"]
+    },
+    "correctAnswer": {"sv": "Över 550 ljusinsläppande kupoler", "en": "Over 550 light-admitting domes", "de": "Über 550 lichtdurchlassende Kuppeln"},
+    "funFact": {
+      "sv": "Malmö Konsthall invigdes 1975 och är en av Europas största konsthalls-byggnader – takkupolerna skapar ett unikt och jämnt dagsljus inne i salen.",
+      "en": "Malmö Konsthall opened in 1975 and is one of Europe's largest art halls – the roof domes create a unique and even daylight inside the gallery.",
+      "de": "Die Malmö Konsthall wurde 1975 eröffnet und ist eine der größten Kunsthallen Europas – die Dachkuppeln sorgen für ein gleichmäßiges Tageslicht im Inneren."
+    }
+  },
+  {
+    "id": "105",
+    "category": "kultur",
+    "title": {"sv": "Malmö Opera", "en": "Malmö Opera", "de": "Malmö Oper"},
+    "latitude": null, "longitude": null, "image": null,
+    "question": {
+      "sv": "Hur kan operasalongen förvandlas till en balsal?",
+      "en": "How can the opera hall be transformed into a ballroom?",
+      "de": "Wie kann der Opernsaal in einen Ballsaal verwandelt werden?"
+    },
+    "options": {
+      "sv": ["Orkesterdiket täcks och blir dansgolv", "Scenen sänks till salongnivå", "Stolarna fälls automatiskt undan", "Väggarna öppnas mot kajen utanför"],
+      "en": ["The orchestra pit is covered to become a dance floor", "The stage lowers to auditorium level", "The seats fold away automatically", "The walls open towards the quay"],
+      "de": ["Der Orchestergraben wird abgedeckt und wird Tanzfläche", "Die Bühne senkt sich auf Saalniveau", "Die Stühle klappen automatisch weg", "Die Wände öffnen sich zum Kai"]
+    },
+    "correctAnswer": {"sv": "Orkesterdiket täcks och blir dansgolv", "en": "The orchestra pit is covered to become a dance floor", "de": "Der Orchestergraben wird abgedeckt und wird Tanzfläche"},
+    "funFact": {
+      "sv": "Malmö Opera är en av få operor i världen där orkesterdiket kan täckas över helt – salongen används därför även för galamiddagar och baler.",
+      "en": "Malmö Opera is one of few opera houses in the world where the orchestra pit can be fully covered – the hall is therefore also used for gala dinners and balls.",
+      "de": "Die Malmö Oper ist eine der wenigen Opern weltweit, bei der der Orchestergraben vollständig abgedeckt werden kann – der Saal wird daher auch für Galadinner und Bälle genutzt."
+    }
+  },
+  {
+    "id": "106",
+    "category": "kuriosa",
+    "title": {"sv": "Ribersborgs kallbadhus", "en": "Ribersborg Cold Baths", "de": "Ribersborger Kaltbad"},
+    "latitude": null, "longitude": null, "image": null,
+    "question": {
+      "sv": "Vilken vintertradition äger rum på Ribersborg varje år?",
+      "en": "What winter tradition takes place at Ribersborg every year?",
+      "de": "Welche Wintertradition findet jedes Jahr in Ribersborg statt?"
+    },
+    "options": {
+      "sv": ["Isvak sågas upp för vintersim", "Internationellt isseglarsällskap samlas", "Nattligt fackeltåg ut på bryggan", "Ishotell byggs på havet utanför"],
+      "en": ["An ice hole is sawn for winter swimming", "An international ice sailing club gathers", "A nightly torch procession on the pier", "An ice hotel is built on the sea outside"],
+      "de": ["Ein Eisloch wird für Winterschwimmer gesägt", "Eine internationale Eissegelgesellschaft trifft sich", "Nächtlicher Fackelzug auf den Steg", "Ein Eishotel wird auf dem Meer gebaut"]
+    },
+    "correctAnswer": {"sv": "Isvak sågas upp för vintersim", "en": "An ice hole is sawn for winter swimming", "de": "Ein Eisloch wird für Winterschwimmer gesägt"},
+    "funFact": {
+      "sv": "Ribersborgs kallbadhus byggdes 1898 och är ett av Sveriges mest älskade kallbad – vinterbadarna är en trogen skara som håller traditionen levande oavsett temperatur.",
+      "en": "Ribersborg cold baths were built in 1898 and are one of Sweden's most beloved cold bathing spots – the winter bathers keep the tradition alive regardless of temperature.",
+      "de": "Das Ribersborger Kaltbad wurde 1898 erbaut und ist eines der beliebtesten Kaltbäder Schwedens – die Winterschwimmer halten die Tradition bei jedem Wetter aufrecht."
+    }
+  },
+  {
+    "id": "107",
+    "category": "kuriosa",
+    "title": {"sv": "Hippodromen, Kalendegatan", "en": "The Hippodrome, Kalendegatan", "de": "Das Hippodrom, Kalendegatan"},
+    "latitude": null, "longitude": null, "image": null,
+    "question": {
+      "sv": "Vad gömde sig under manegen när huset var cirkus?",
+      "en": "What was hidden beneath the arena floor when the building was a circus?",
+      "de": "Was verbarg sich unter dem Manegenboden als das Gebäude ein Zirkus war?"
+    },
+    "options": {
+      "sv": ["En bassäng under ett sänkbart golv", "En underjordisk stall för elefanter", "En labyrint av flykttunnlar", "Ett hemligt kortspelssällskap"],
+      "en": ["A pool beneath a lowerable floor", "An underground stable for elephants", "A labyrinth of escape tunnels", "A secret card playing society"],
+      "de": ["Ein Becken unter einem absenkbaren Boden", "Ein unterirdischer Stall für Elefanten", "Ein Labyrinth aus Fluchttunneln", "Eine geheime Kartenspielgesellschaft"]
+    },
+    "correctAnswer": {"sv": "En bassäng under ett sänkbart golv", "en": "A pool beneath a lowerable floor", "de": "Ein Becken unter einem absenkbaren Boden"},
+    "funFact": {
+      "sv": "Hippodromen öppnade 1899 som cirkusbyggnad. Golvet kunde sänkas och fyllas med vatten för vattennummer – en teknisk sensation för sin tid.",
+      "en": "The Hippodrome opened in 1899 as a circus building. The floor could be lowered and filled with water for aquatic performances – a technical sensation for its time.",
+      "de": "Das Hippodrom öffnete 1899 als Zirkusgebäude. Der Boden konnte abgesenkt und mit Wasser gefüllt werden für Wasservorstellungen – eine technische Sensation für die damalige Zeit."
+    }
+  },
+  {
+    "id": "108",
+    "category": "kuriosa",
+    "title": {"sv": "Mazetti, Chokladfabriken", "en": "Mazetti, The Chocolate Factory", "de": "Mazetti, die Schokoladenfabrik"},
+    "latitude": null, "longitude": null, "image": null,
+    "question": {
+      "sv": "Vad lyser från den gamla fabriksskorstenen på kvällen?",
+      "en": "What lights up on the old factory chimney in the evening?",
+      "de": "Was leuchtet am Abend vom alten Fabrikschornstein?"
+    },
+    "options": {
+      "sv": ["Neontexten Malmö", "En roterande chokladask i neon", "Fabrikens ursprungliga logotyp", "Stadens äldsta bevarade reklamskylt"],
+      "en": ["The neon text Malmö", "A rotating neon chocolate box", "The factory's original logo", "The city's oldest preserved advertising sign"],
+      "de": ["Der Neonschriftzug Malmö", "Eine rotierende Neonschokoladenpackung", "Das ursprüngliche Firmenlogo", "Das älteste erhaltene Werbeschild der Stadt"]
+    },
+    "correctAnswer": {"sv": "Neontexten Malmö", "en": "The neon text Malmö", "de": "Der Neonschriftzug Malmö"},
+    "funFact": {
+      "sv": "Mazettis chokladfabrik grundades 1878 och blev en av Malmös mest kända industrier. Neonskyltens 'Malmö' på skorstenen har blivit ett kärt landmärke i stadsbilden.",
+      "en": "Mazetti's chocolate factory was founded in 1878 and became one of Malmö's most famous industries. The neon sign 'Malmö' on the chimney has become a beloved landmark in the city.",
+      "de": "Mazettis Schokoladenfabrik wurde 1878 gegründet und wurde zu einer der bekanntesten Industrien Malmös. Der Neonschriftzug 'Malmö' auf dem Schornstein ist zu einem geliebten Wahrzeichen geworden."
+    }
+  },
+  {
+    "id": "109",
+    "category": "historia",
+    "title": {"sv": "Malmö Centralstation", "en": "Malmö Central Station", "de": "Malmö Hauptbahnhof"},
+    "latitude": null, "longitude": null, "image": null,
+    "question": {
+      "sv": "Vilket dolt rum på Centralstationen öppnas bara vid särskilda tillfällen?",
+      "en": "Which hidden room at the Central Station is only opened on special occasions?",
+      "de": "Welcher verborgene Raum im Hauptbahnhof wird nur bei besonderen Anlässen geöffnet?"
+    },
+    "options": {
+      "sv": ["Kungliga väntsalen från 1850-talet", "Det gamla telegrafkontoret", "En underjordisk polisstuga", "Ett hemligt krigsarkiv från 1940-talet"],
+      "en": ["The royal waiting room from the 1850s", "The old telegraph office", "An underground police post", "A secret wartime archive from the 1940s"],
+      "de": ["Der königliche Wartesaal aus den 1850ern", "Das alte Telegraphenamt", "Eine unterirdische Polizeistube", "Ein geheimes Kriegsarchiv aus den 1940ern"]
+    },
+    "correctAnswer": {"sv": "Kungliga väntsalen från 1850-talet", "en": "The royal waiting room from the 1850s", "de": "Der königliche Wartesaal aus den 1850ern"},
+    "funFact": {
+      "sv": "Malmö Centralstation invigdes 1856. Den kungliga väntsalen användes när kungliga besökte staden och är rikt dekorerad – idag öppnas den bara vid speciella evenemang.",
+      "en": "Malmö Central Station opened in 1856. The royal waiting room was used when royalty visited and is richly decorated – today it is only opened for special events.",
+      "de": "Der Malmöer Hauptbahnhof wurde 1856 eröffnet. Der königliche Wartesaal wurde bei Königsbesuchen genutzt und ist reich dekoriert – heute wird er nur bei besonderen Anlässen geöffnet."
+    }
+  },
+  {
+    "id": "110",
+    "category": "arkitektur",
+    "title": {"sv": "Malmö Live Konserthus", "en": "Malmö Live Concert Hall", "de": "Malmö Live Konzerthaus"},
+    "latitude": null, "longitude": null, "image": null,
+    "question": {
+      "sv": "Vilket oväntat material finns i stora salens akustikpaneler?",
+      "en": "What unexpected material is found in the main hall's acoustic panels?",
+      "de": "Welches unerwartete Material findet sich in den Akustikpaneelen des großen Saals?"
+    },
+    "options": {
+      "sv": ["Tång från Öresund", "Kork från Portugal", "Fårull från gotländska får", "Återvunna fiskeredskap"],
+      "en": ["Seaweed from Øresund", "Cork from Portugal", "Sheep's wool from Gotland", "Recycled fishing equipment"],
+      "de": ["Algen aus dem Øresund", "Kork aus Portugal", "Schafwolle von Gotland", "Recycelte Fischereiausrüstung"]
+    },
+    "correctAnswer": {"sv": "Tång från Öresund", "en": "Seaweed from Øresund", "de": "Algen aus dem Øresund"},
+    "funFact": {
+      "sv": "Malmö Live invigdes 2015. Arkitekterna valde tång som akustiskt material som en hyllning till Öresund och Malmös historia som hamnstad.",
+      "en": "Malmö Live opened in 2015. The architects chose seaweed as an acoustic material as a tribute to Øresund and Malmö's history as a port city.",
+      "de": "Malmö Live wurde 2015 eröffnet. Die Architekten wählten Algen als Akustikmaterial als Hommage an den Øresund und Malmös Geschichte als Hafenstadt."
+    }
+  },
+  {
+    "id": "111",
+    "category": "konst",
+    "title": {"sv": "Raoul Wallenbergs park", "en": "Raoul Wallenberg Park", "de": "Raoul-Wallenberg-Park"},
+    "latitude": null, "longitude": null, "image": null,
+    "question": {
+      "sv": "Vem skapade skulpturen Knoten — pistolen med knuten pipa?",
+      "en": "Who created the sculpture The Knotted Gun — the pistol with a knotted barrel?",
+      "de": "Wer schuf die Skulptur Der Knoten — die Pistole mit dem verknoteten Lauf?"
+    },
+    "options": {
+      "sv": ["Carl Fredrik Reuterswärd", "Carl Milles", "Claes Oldenburg", "Lars Englund"],
+      "en": ["Carl Fredrik Reuterswärd", "Carl Milles", "Claes Oldenburg", "Lars Englund"],
+      "de": ["Carl Fredrik Reuterswärd", "Carl Milles", "Claes Oldenburg", "Lars Englund"]
+    },
+    "correctAnswer": {"sv": "Carl Fredrik Reuterswärd", "en": "Carl Fredrik Reuterswärd", "de": "Carl Fredrik Reuterswärd"},
+    "funFact": {
+      "sv": "Knoten skapades av malmökonstnären Carl Fredrik Reuterswärd 1980 efter mordet på John Lennon. Originalet skänktes till FN i New York – Malmö har en av kopiorna.",
+      "en": "The Knotted Gun was created by Malmö artist Carl Fredrik Reuterswärd in 1980 after John Lennon's murder. The original was donated to the UN in New York – Malmö has one of the copies.",
+      "de": "Der Knoten wurde vom Malmöer Künstler Carl Fredrik Reuterswärd 1980 nach dem Mord an John Lennon geschaffen. Das Original wurde den UN in New York geschenkt – Malmö besitzt eine der Kopien."
+    }
+  },
+  {
+    "id": "112",
+    "category": "historia",
+    "title": {"sv": "Rådhuset, Stortorget", "en": "The Town Hall, Stortorget", "de": "Das Rathaus, Stortorget"},
+    "latitude": null, "longitude": null, "image": null,
+    "question": {
+      "sv": "Vilket var borgmästare Jörgen Kocks viktigaste uppdrag på 1500-talet?",
+      "en": "What was Mayor Jörgen Kock's most important role in the 16th century?",
+      "de": "Was war Bürgermeister Jörgen Kocks wichtigste Aufgabe im 16. Jahrhundert?"
+    },
+    "options": {
+      "sv": ["Myntmästare för Danmarks mynt", "Malmös förste apotekare", "Kapten för stadsgardet", "Hovleverantör av kryddor"],
+      "en": ["Mint master for Danish coins", "Malmö's first pharmacist", "Captain of the city guard", "Royal supplier of spices"],
+      "de": ["Münzmeister für dänische Münzen", "Malmös erster Apotheker", "Hauptmann der Stadtgarde", "Hoflieferant für Gewürze"]
+    },
+    "correctAnswer": {"sv": "Myntmästare för Danmarks mynt", "en": "Mint master for Danish coins", "de": "Münzmeister für dänische Münzen"},
+    "funFact": {
+      "sv": "Jörgen Kock var en av medeltidens mäktigaste män i Malmö. Som myntmästare kontrollerade han tillverkningen av Danmarks mynt och byggde sig en enorm förmögenhet.",
+      "en": "Jörgen Kock was one of the most powerful men in medieval Malmö. As mint master he controlled the production of Danish coins and built himself an enormous fortune.",
+      "de": "Jörgen Kock war einer der mächtigsten Männer im mittelalterlichen Malmö. Als Münzmeister kontrollierte er die Prägung dänischer Münzen und baute sich ein enormes Vermögen auf."
+    }
+  },
+  {
+    "id": "113",
+    "category": "historia",
+    "title": {"sv": "S:t Petri kyrka", "en": "St. Peter's Church", "de": "St. Petri Kirche"},
+    "latitude": null, "longitude": null, "image": null,
+    "question": {
+      "sv": "Vem höll Malmös första lutherska predikan på 1520-talet?",
+      "en": "Who held Malmö's first Lutheran sermon in the 1520s?",
+      "de": "Wer hielt in den 1520er Jahren die erste lutherische Predigt in Malmö?"
+    },
+    "options": {
+      "sv": ["Claus Mortensen", "Martin Luther", "Hans Tausen", "Olaus Petri"],
+      "en": ["Claus Mortensen", "Martin Luther", "Hans Tausen", "Olaus Petri"],
+      "de": ["Claus Mortensen", "Martin Luther", "Hans Tausen", "Olaus Petri"]
+    },
+    "correctAnswer": {"sv": "Claus Mortensen", "en": "Claus Mortensen", "de": "Claus Mortensen"},
+    "funFact": {
+      "sv": "Claus Mortensen predikade i S:t Petri på 1520-talet och startade reformationen i Malmö. Staden blev en av de första i Norden att helt överge katolicismen.",
+      "en": "Claus Mortensen preached in St. Peter's in the 1520s and started the Reformation in Malmö. The city became one of the first in the Nordic region to completely abandon Catholicism.",
+      "de": "Claus Mortensen predigte in den 1520ern in St. Petri und leitete die Reformation in Malmö ein. Die Stadt wurde eine der ersten in Nordeuropa die den Katholizismus vollständig aufgab."
+    }
+  },
+  {
+    "id": "114",
+    "category": "historia",
+    "title": {"sv": "Stortorget", "en": "Stortorget", "de": "Stortorget"},
+    "latitude": null, "longitude": null, "image": null,
+    "question": {
+      "sv": "Vad drog Malmös spårvagnar innan elektriciteten kom 1906?",
+      "en": "What pulled Malmö's trams before electricity arrived in 1906?",
+      "de": "Was zog die Malmöer Straßenbahnen bevor 1906 der elektrische Betrieb begann?"
+    },
+    "options": {
+      "sv": ["Hästar", "Ångmaskiner", "Oxar", "Elverk från Danmark"],
+      "en": ["Horses", "Steam engines", "Oxen", "Power from Denmark"],
+      "de": ["Pferde", "Dampfmaschinen", "Ochsen", "Strom aus Dänemark"]
+    },
+    "correctAnswer": {"sv": "Hästar", "en": "Horses", "de": "Pferde"},
+    "funFact": {
+      "sv": "Malmös första spårvagnar drogs av hästar från 1887. När den elektriska spårvagnen invigdes 1906 var det en sensation — linjen gick från Stortorget till Möllevången.",
+      "en": "Malmö's first trams were horse-drawn from 1887. When the electric tram was inaugurated in 1906 it was a sensation — the line ran from Stortorget to Möllevången.",
+      "de": "Malmös erste Straßenbahnen wurden ab 1887 von Pferden gezogen. Als die elektrische Straßenbahn 1906 eingeweiht wurde war das eine Sensation — die Linie verlief vom Stortorget nach Möllevången."
+    }
+  },
+  {
+    "id": "115",
+    "category": "personer",
+    "title": {"sv": "Malmö Latin", "en": "Malmö Latin School", "de": "Malmö Latin"},
+    "latitude": null, "longitude": null, "image": null,
+    "question": {
+      "sv": "Vilken känd statsminister gick på Malmö Latin?",
+      "en": "Which famous prime minister attended Malmö Latin School?",
+      "de": "Welcher berühmte Ministerpräsident besuchte die Schule Malmö Latin?"
+    },
+    "options": {
+      "sv": ["Olof Palme", "Ingvar Carlsson", "Göran Persson", "Tage Erlander"],
+      "en": ["Olof Palme", "Ingvar Carlsson", "Göran Persson", "Tage Erlander"],
+      "de": ["Olof Palme", "Ingvar Carlsson", "Göran Persson", "Tage Erlander"]
+    },
+    "correctAnswer": {"sv": "Olof Palme", "en": "Olof Palme", "de": "Olof Palme"},
+    "funFact": {
+      "sv": "Olof Palme gick på Malmö Latin under sin ungdom innan han till slut blev Sveriges statsminister 1969. Han mördades 1986 och är en av Sveriges mest minnesvärda politiker.",
+      "en": "Olof Palme attended Malmö Latin School in his youth before becoming Sweden's Prime Minister in 1969. He was assassinated in 1986 and remains one of Sweden's most memorable politicians.",
+      "de": "Olof Palme besuchte in seiner Jugend die Malmö Latin School bevor er 1969 Schwedens Ministerpräsident wurde. Er wurde 1986 ermordet und gilt als einer der bedeutendsten schwedischen Politiker."
+    }
   }
 ]

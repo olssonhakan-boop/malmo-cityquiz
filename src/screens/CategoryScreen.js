@@ -9,25 +9,14 @@ import {
   SafeAreaView,
   useWindowDimensions,
 } from 'react-native';
+import {t} from '../utils/i18n';
 
 const BG_IMAGE = require('../assets/category.jpg');
 
 const CATEGORIES = [
-  {
-    id: 'kandisar',
-    label: 'Kändisar & Profiler',
-    image: require('../assets/kandisar.jpg'),
-  },
-  {
-    id: 'historia',
-    label: 'Händelser & Historia',
-    image: require('../assets/historia.jpg'),
-  },
-  {
-    id: 'platser',
-    label: 'Platser & Landmärken',
-    image: require('../assets/platser.jpg'),
-  },
+  {id: 'kandisar', labelKey: 'catKandisar', image: require('../assets/kandisar.jpg')},
+  {id: 'historia', labelKey: 'catHistoria', image: require('../assets/historia.jpg')},
+  {id: 'platser',  labelKey: 'catPlatser',  image: require('../assets/platser.jpg')},
 ];
 
 const GOLD = '#C8A840';
@@ -59,8 +48,8 @@ export default function CategoryScreen({lang, onStart}) {
         <View style={s.overlay} />
         <SafeAreaView style={s.safe}>
 
-          <Text style={s.title}>Välj din kategori</Text>
-          <Text style={s.hint}>Välj 1–3 kategorier</Text>
+          <Text style={s.title}>{t(lang, 'categoryTitle')}</Text>
+          <Text style={s.hint}>{t(lang, 'categoryHint')}</Text>
 
           <View style={s.grid}>
             {CATEGORIES.map(cat => {
@@ -79,7 +68,7 @@ export default function CategoryScreen({lang, onStart}) {
                     <View style={s.cardDimOverlay} />
                     <View style={s.cardContent}>
                       <View style={s.labelBadge}>
-                        <Text style={s.cardLabel}>{cat.label}</Text>
+                        <Text style={s.cardLabel}>{t(lang, cat.labelKey)}</Text>
                       </View>
                     </View>
                     {/* Cirkel uppe till höger: tom ram om ej vald, ifylld med bock om vald */}
@@ -95,7 +84,7 @@ export default function CategoryScreen({lang, onStart}) {
           <View style={s.btnRow}>
             <TouchableOpacity style={s.goldBtn} onPress={handleStart} activeOpacity={0.85}>
               <View style={s.goldBtnHighlight} />
-              <Text style={s.goldBtnText}>Starta Quiz →</Text>
+              <Text style={s.goldBtnText}>{t(lang, 'selectStartBtn')}</Text>
             </TouchableOpacity>
           </View>
 

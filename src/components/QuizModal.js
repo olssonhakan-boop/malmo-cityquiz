@@ -7,7 +7,15 @@ import {
   ScrollView,
   StyleSheet,
   Animated,
+  ImageBackground,
+  Image,
 } from 'react-native';
+
+const RESULT_BG = require('../../assets/images/malmo4.jpg');
+
+const QUESTION_IMAGES = {
+  quizfototest: require('../../assets/images/quizfototest.jpg'),
+};
 import {t} from '../utils/i18n';
 import {makeProgressId} from '../hooks/useLocations';
 
@@ -212,14 +220,14 @@ function ResultArea({feedback, correctAnswer, selectedAnswer, points, streak, ic
 
       {/* Rätt/Fel-text */}
       <Text style={[styles.resultLabel, {color: isCorrect ? GREEN : RED}]}>
-        {isCorrect ? 'Rätt svar!' : 'Fel svar'}
+        {isCorrect ? t(lang, 'sofaCorrect') : t(lang, 'sofaWrong')}
       </Text>
 
       {/* Poäng-stämpel (rätt svar) */}
       {isCorrect && (
         <Animated.View style={[styles.scoreWrap, {transform: [{scale: scoreScale}]}]}>
           <Text style={styles.scoreNum}>+{points}</Text>
-          <Text style={styles.scoreLabel}>POÄNG</Text>
+          <Text style={styles.scoreLabel}>{t(lang, 'score').toUpperCase()}</Text>
         </Animated.View>
       )}
 
@@ -385,17 +393,20 @@ export default function QuizModal({
           style={[StyleSheet.absoluteFillObject, {backgroundColor: colorRef.current, opacity}]}
         />
 
-        <View style={styles.sheet}>
-          <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+        <ImageBackground
+          source={RESULT_BG}
+          style={styles.sheet}
+          imageStyle={styles.sheetBgImage}>
+          <View>
 
             {/* ── Header ── */}
             <View style={styles.header}>
-              <Text style={styles.title} numberOfLines={2}>{title}</Text>
+              <Text style={[styles.title, styles.titleOnBg]} numberOfLines={2}>{title}</Text>
               <TouchableOpacity
                 onPress={onClose}
-                style={styles.closeBtn}
+                style={[styles.headerCloseBtn, styles.headerCloseBtnOnBg]}
                 hitSlop={{top: 12, right: 12, bottom: 12, left: 12}}>
-                <Text style={styles.closeBtnText}>✕</Text>
+                <Text style={[styles.headerCloseBtnText, styles.headerCloseBtnTextOnBg]}>✕</Text>
               </TouchableOpacity>
             </View>
 
@@ -434,7 +445,16 @@ export default function QuizModal({
             )}
 
             {/* ── Fråga ── */}
-            <Text style={styles.question}>{questionText}</Text>
+            <Text style={[styles.question, styles.questionOnBg]}>{questionText}</Text>
+
+            {/* ── Frågebild (om tillgänglig) ── */}
+            {!answered && question.questionImageLocal && QUESTION_IMAGES[question.questionImageLocal] && (
+              <Image
+                source={QUESTION_IMAGES[question.questionImageLocal]}
+                style={styles.questionImage}
+                resizeMode="cover"
+              />
+            )}
 
             {/* ── Svarsalternativ (döljs när answered, utom SortOrder) ── */}
             <View key={key}>
@@ -503,8 +523,8 @@ export default function QuizModal({
             )}
 
             <View style={{height: 28}} />
-          </ScrollView>
-        </View>
+          </View>
+        </ImageBackground>
       </View>
     </Modal>
   );
@@ -523,10 +543,17 @@ const styles = StyleSheet.create({
     backgroundColor: SHEET_BG,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    maxHeight: '82%',
     paddingHorizontal: 20,
     paddingTop: 20,
+    overflow: 'hidden',
   },
+  sheetBgImage: {
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    resizeMode: 'cover',
+  },
+  titleOnBg: {color: '#fff'},
+  questionOnBg: {color: 'rgba(255,255,255,0.90)'},
 
   // ── Header ──────────────────────────────────────────────────────────────────
   header: {
@@ -543,15 +570,17 @@ const styles = StyleSheet.create({
     marginRight: 12,
     letterSpacing: -0.2,
   },
-  closeBtn: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#E8E0D0',
+  headerCloseBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0,0,0,0.08)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  closeBtnText: {fontSize: 13, color: '#777', fontWeight: '700'},
+  headerCloseBtnText: {fontSize: 14, color: '#555', fontWeight: '400', lineHeight: 16},
+  headerCloseBtnOnBg: {backgroundColor: 'rgba(0,0,0,0.35)'},
+  headerCloseBtnTextOnBg: {color: '#fff'},
 
   // ── Progress ─────────────────────────────────────────────────────────────────
   progressRow: {
@@ -596,6 +625,14 @@ const styles = StyleSheet.create({
     color: DARK,
     marginBottom: 14,
     lineHeight: 22,
+  },
+
+  // ── Frågebild ────────────────────────────────────────────────────────────────
+  questionImage: {
+    width: '100%',
+    height: 180,
+    borderRadius: 12,
+    marginBottom: 14,
   },
 
   // ── Svarsknapp ───────────────────────────────────────────────────────────────
@@ -656,19 +693,14 @@ const styles = StyleSheet.create({
   // ── Resultat-kort — eget kort med djup ───────────────────────────────────────
   resultArea: {
     alignItems: 'center',
-    backgroundColor: '#FFF8E1',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#E8D99A',
+    backgroundColor: 'rgba(255,255,255,0.78)',
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: GOLD,
     paddingTop: 24,
     paddingBottom: 24,
     paddingHorizontal: 16,
     marginBottom: 14,
-    elevation: 4,
-    shadowColor: '#8A6A00',
-    shadowOffset: {width: 0, height: 3},
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
   },
   resultCircle: {
     width: 72,
@@ -741,25 +773,25 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: MUTED,
     fontWeight: '600',
-    width: 72,
-    textAlign: 'right',
+    width: 82,
+    textAlign: 'left',
   },
   wrongPill: {
-    backgroundColor: '#FDECEA',
+    backgroundColor: 'rgba(255,255,255,0.92)',
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 6,
-    borderWidth: 1.5,
+    borderWidth: 2,
     borderColor: RED,
     flex: 1,
   },
   wrongPillText: {fontSize: 13, fontWeight: '700', color: RED},
   correctPill: {
-    backgroundColor: '#E8F8ED',
+    backgroundColor: 'rgba(255,255,255,0.92)',
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 6,
-    borderWidth: 1.5,
+    borderWidth: 2,
     borderColor: GREEN,
     flex: 1,
   },
@@ -767,7 +799,7 @@ const styles = StyleSheet.create({
 
   // ── Visste du att — faktakort med djup ───────────────────────────────────────
   funFact: {
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255,255,255,0.78)',
     borderRadius: 14,
     padding: 14,
     marginBottom: 14,
@@ -794,6 +826,8 @@ const styles = StyleSheet.create({
     backgroundColor: GOLD,
     borderRadius: 50,
     paddingVertical: 15,
+    paddingHorizontal: 48,
+    alignSelf: 'center',
     alignItems: 'center',
     overflow: 'hidden',
     elevation: 8,

@@ -120,10 +120,9 @@ export default function MapScreen({lang, onLangChange, selectedCategories, onGoH
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
-            title: 'GPS-behörighet',
-            message:
-              'Appen använder din plats för att låsa upp quiz-frågor när du är nära platsen.',
-            buttonNegative: 'Avbryt',
+            title: t(lang, 'gpsPermTitle'),
+            message: t(lang, 'gpsPermMessage'),
+            buttonNegative: t(lang, 'cancel'),
             buttonPositive: 'OK',
           },
         );
