@@ -85,6 +85,10 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        def localProps = new Properties()
+        def localPropsFile = rootProject.file('local.properties')
+        if (localPropsFile.exists()) { localPropsFile.withInputStream { localProps.load(it) } }
+        manifestPlaceholders = [GOOGLE_MAPS_API_KEY: localProps.getProperty('GOOGLE_MAPS_API_KEY', '')]
         externalNativeBuild {
             cmake {
                 arguments "-DCMAKE_INTERPROCEDURAL_OPTIMIZATION=OFF"
