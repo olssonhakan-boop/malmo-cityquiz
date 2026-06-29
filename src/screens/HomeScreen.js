@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import {t} from '../utils/i18n';
 import LanguagePicker from '../components/LanguagePicker';
+import {StatusBar as RNStatusBar} from 'react-native';
 
 const HERO_IMAGE = require('../assets/homequiz.png');
 
@@ -25,6 +26,7 @@ export default function HomeScreen({lang, onLangChange, onStart}) {
       <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
 
       <ImageBackground source={HERO_IMAGE} style={s.bg} resizeMode="cover">
+        <View style={s.topGradient} />
         <SafeAreaView style={s.safe}>
 
           <View style={s.header}>
@@ -63,10 +65,18 @@ function makeStyles(width, height) {
     root: {flex: 1},
     bg: {flex: 1},
     safe: {flex: 1},
+    topGradient: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: hp(28),
+      backgroundColor: 'rgba(0,0,0,0.45)',
+    },
 
     header: {
       position: 'absolute',
-      top: hp(8),
+      top: (RNStatusBar.currentHeight || 40) + hp(3),
       left: pad,
       right: pad,
       alignItems: 'center',
@@ -74,16 +84,22 @@ function makeStyles(width, height) {
     title: {
       fontSize: fs(36),
       fontWeight: '900',
-      color: '#1a1a2e',
+      color: '#fff',
       letterSpacing: -0.5,
       textAlign: 'center',
+      textShadowColor: 'rgba(0,0,0,0.6)',
+      textShadowOffset: {width: 0, height: 2},
+      textShadowRadius: 8,
     },
     subtitle: {
       fontSize: fs(17),
       fontWeight: '500',
-      color: '#2d2d44',
+      color: 'rgba(255,255,255,0.95)',
       marginTop: hp(1),
       textAlign: 'center',
+      textShadowColor: 'rgba(0,0,0,0.5)',
+      textShadowOffset: {width: 0, height: 1},
+      textShadowRadius: 6,
     },
 
     langWrapper: {

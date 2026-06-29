@@ -16,29 +16,9 @@ export function useLocations() {
   const load = async () => {
     setLoading(true);
     setError(null);
-    try {
-      const cached = await AsyncStorage.getItem(CACHE_KEY);
-      if (cached) {
-        const {data, timestamp} = JSON.parse(cached);
-        if (Date.now() - timestamp < CACHE_TTL) {
-          setLocations(data);
-          setLoading(false);
-          fetchAndCache().catch(() => {});
-          return;
-        }
-      }
-      await fetchAndCache();
-    } catch {
-      const cached = await AsyncStorage.getItem(CACHE_KEY).catch(() => null);
-      if (cached) {
-        setLocations(JSON.parse(cached).data);
-      } else {
-        setLocations(LOCAL_LOCATIONS);
-      }
-      setError('offline');
-    } finally {
-      setLoading(false);
-    }
+    // DEV: använd alltid bundlad JSON under testning
+    setLocations(LOCAL_LOCATIONS);
+    setLoading(false);
   };
 
   const fetchAndCache = async () => {

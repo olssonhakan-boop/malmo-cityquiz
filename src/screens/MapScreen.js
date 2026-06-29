@@ -71,7 +71,7 @@ const CUSTOM_MAP_STYLE = [
   {featureType: 'transit', elementType: 'labels.icon', stylers: [{visibility: 'off'}]},
 ];
 
-export default function MapScreen({lang, onLangChange, selectedCategories, onGoHome, onGoInfo}) {
+export default function MapScreen({lang, onLangChange, selectedCategories, onGoHome, onGoInfo, soundEnabled}) {
   const [userLocation, setUserLocation] = useState(null);
   const [locationGranted, setLocationGranted] = useState(false);
   const [completedIds, setCompletedIds] = useState(new Set());
@@ -317,6 +317,7 @@ export default function MapScreen({lang, onLangChange, selectedCategories, onGoH
           setSelectedLocation(null);
         }}
         onCompleteQuestion={handleCompleteQuestion}
+        soundEnabled={soundEnabled}
       />
     </SafeAreaView>
   );

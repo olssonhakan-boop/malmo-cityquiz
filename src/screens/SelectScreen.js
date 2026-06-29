@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import {t, categoryLabel} from '../utils/i18n';
 import {useCategories} from '../hooks/useCategories';
+import SettingsModal from '../components/SettingsModal';
+import {playClick} from '../utils/sound';
 
 const BG_IMAGE = require('../assets/category.jpg');
 
@@ -26,13 +28,14 @@ const ALL_CATEGORIES = [
 const CARD_BG = 'rgba(44,30,15,0.78)';
 const GOLD    = '#C8A840';
 
-export default function SelectScreen({lang, onStart}) {
+export default function SelectScreen({lang, onLangChange, onStart, soundEnabled, onToggleSound, hapticEnabled, onToggleHaptic}) {
   const {width, height} = useWindowDimensions();
   const s = makeStyles(width, height);
   const {getCategoryConfig} = useCategories();
 
   const [showCats, setShowCats] = useState(false);
   const [selectedCats, setSelectedCats] = useState([]);
+  const [settingsVisible, setSettingsVisible] = useState(false);
 
   function toggleCategory(cat) {
     setSelectedCats(prev =>
@@ -52,6 +55,27 @@ export default function SelectScreen({lang, onStart}) {
       <ImageBackground source={BG_IMAGE} style={s.bg} resizeMode="cover">
         <View style={s.overlay} />
         <SafeAreaView style={s.safe}>
+          {/* Header med kugghjul */}
+          <View style={s.topBar}>
+            <TouchableOpacity
+              style={s.gearBtn}
+              onPress={() => { playClick(soundEnabled, hapticEnabled); setSettingsVisible(true); }}
+              activeOpacity={0.8}>
+              <Text style={s.gearIcon}>{String.fromCodePoint(0xe8b8)}</Text>
+            </TouchableOpacity>
+          </View>
+
+          <SettingsModal
+            visible={settingsVisible}
+            onClose={() => setSettingsVisible(false)}
+            lang={lang}
+            onLangChange={onLangChange}
+            soundEnabled={soundEnabled}
+            onToggleSound={onToggleSound}
+            hapticEnabled={hapticEnabled}
+            onToggleHaptic={onToggleHaptic}
+          />
+
           <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
 
             <Text style={s.title}>{t(lang, 'selectTitle')}</Text>
@@ -118,8 +142,32 @@ function makeStyles(width, height) {
     safe: {flex: 1},
     scroll: {
       paddingHorizontal: pad,
-      paddingTop: hp(11),
+      paddingTop: hp(4),
       paddingBottom: hp(6),
+    },
+
+    topBar: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      paddingHorizontal: wp(4),
+      paddingTop: hp(5),
+      paddingBottom: hp(0.5),
+    },
+    gearBtn: {
+      width: wp(11),
+      height: wp(11),
+      borderRadius: wp(5.5),
+      backgroundColor: 'rgba(44,30,15,0.75)',
+      alignItems: 'center',
+      justifyContent: 'center',
+      elevation: 6,
+      borderWidth: 1.5,
+      borderColor: 'rgba(200,168,64,0.5)',
+    },
+    gearIcon: {
+      fontFamily: 'MaterialSymbolsOutlined',
+      fontSize: fs(24),
+      color: GOLD,
     },
 
     title: {
@@ -158,7 +206,7 @@ function makeStyles(width, height) {
     cardSub: {
       fontSize: fs(13),
       color: 'rgba(255,255,255,0.65)',
-      marginTop: 2,
+      marginTop: hp(0.25),
     },
     cardDesc: {
       fontSize: fs(14),

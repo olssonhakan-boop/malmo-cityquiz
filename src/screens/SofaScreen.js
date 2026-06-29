@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ImageBackground,
-  Image,
   Animated,
   SafeAreaView,
   Dimensions,
@@ -14,6 +13,7 @@ import {
 import Svg, {Circle} from 'react-native-svg';
 import {useQuestions} from '../hooks/useQuestions';
 import {categoryLabel, t} from '../utils/i18n';
+import {playClick, playCorrect, playWrong, playSuccess} from '../utils/sound';
 
 const BG       = require('../../assets/images/malmo5.jpg');
 const POPUP_BG = require('../../assets/images/gronbg.jpg');
@@ -22,6 +22,18 @@ const GOLD  = '#C8A840';
 const DARK  = '#2C1E0F';
 const GREEN = '#27AE60';
 const RED   = '#E74C3C';
+
+// Dimensioner beräknas en gång vid app-start (portrait-only app)
+const {width: SW, height: SH} = Dimensions.get('window');
+const wp = pct => SW * (pct / 100);
+const hp = pct => SH * (pct / 100);
+const fs = size => Math.round(size * (SW / 390));
+
+const RING_SIZE   = Math.round(SW * 0.225);
+const RING_STROKE = 9;
+const RING_R      = (RING_SIZE - RING_STROKE) / 2;
+const RING_CIRC   = 2 * Math.PI * RING_R;
+const BAR_MAX_W   = wp(20.5);
 
 function loc(obj, lang) {
   if (!obj) return '';
@@ -41,11 +53,6 @@ function shuffle(arr, seed) {
 }
 
 // ─── Cirkulär progress-ring ───────────────────────────────────────────────────
-const RING_SIZE = 88;
-const RING_STROKE = 9;
-const RING_R = (RING_SIZE - RING_STROKE) / 2;
-const RING_CIRC = 2 * Math.PI * RING_R;
-
 function ProgressRing({current, total}) {
   const progress = total > 0 ? current / total : 0;
   const dash = progress * RING_CIRC;
@@ -61,12 +68,10 @@ function ProgressRing({current, total}) {
   return (
     <Animated.View style={[styles.ringWrap, {transform: [{scale}]}]}>
       <Svg width={RING_SIZE} height={RING_SIZE} style={StyleSheet.absoluteFill}>
-        {/* Bakgrundscirkel */}
         <Circle
           cx={RING_SIZE / 2} cy={RING_SIZE / 2} r={RING_R}
           stroke="rgba(255,255,255,0.15)" strokeWidth={RING_STROKE} fill="none"
         />
-        {/* Skugga-båge (offset för djup) */}
         <Circle
           cx={RING_SIZE / 2} cy={RING_SIZE / 2} r={RING_R}
           stroke="rgba(0,0,0,0.18)" strokeWidth={RING_STROKE + 2} fill="none"
@@ -75,7 +80,6 @@ function ProgressRing({current, total}) {
           rotation="-89"
           origin={`${RING_SIZE / 2}, ${RING_SIZE / 2}`}
         />
-        {/* Progress-båge */}
         <Circle
           cx={RING_SIZE / 2} cy={RING_SIZE / 2} r={RING_R}
           stroke={GOLD} strokeWidth={RING_STROKE} fill="none"
@@ -84,7 +88,6 @@ function ProgressRing({current, total}) {
           rotation="-90"
           origin={`${RING_SIZE / 2}, ${RING_SIZE / 2}`}
         />
-        {/* Highlight-båge (vit reflex uppe) */}
         <Circle
           cx={RING_SIZE / 2} cy={RING_SIZE / 2} r={RING_R}
           stroke="rgba(255,255,255,0.30)" strokeWidth={3} fill="none"
@@ -102,10 +105,9 @@ function ProgressRing({current, total}) {
 // ─── Poängstapel ─────────────────────────────────────────────────────────────
 function ScoreBar({count, total, color, align}) {
   const widthAnim = useRef(new Animated.Value(0)).current;
-  const maxWidth = 80;
 
   useEffect(() => {
-    const target = total > 0 ? (count / total) * maxWidth : 0;
+    const target = total > 0 ? (count / total) * BAR_MAX_W : 0;
     Animated.spring(widthAnim, {toValue: target, friction: 6, useNativeDriver: false}).start();
   }, [count, total]);
 
@@ -130,33 +132,23 @@ function AnswerBtn({label, onPress, state}) {
     Animated.spring(scale, {toValue: 1, friction: 6, useNativeDriver: true}).start();
   }
 
-  const bgColor = state === 'correct' ? 'rgba(39,174,96,0.15)'
-                : state === 'wrong'   ? 'rgba(231,76,60,0.15)'
-                : '#fff';
-  const textColor = state === 'correct' ? GREEN
-                  : state === 'wrong'   ? RED
-                  : DARK;
-  const borderColor = state === 'correct' ? GREEN
-                    : state === 'wrong'   ? RED
-                    : 'rgba(200,168,64,0.30)';
-
   return (
     <Animated.View style={{transform: [{scale}]}}>
       <TouchableOpacity
-        style={[styles.optBtn, {backgroundColor: bgColor, borderColor}]}
+        style={[styles.optBtn, {backgroundColor: '#fff', borderColor: 'rgba(200,168,64,0.30)'}]}
         onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         activeOpacity={1}
         disabled={state !== 'idle'}>
-        <Text style={[styles.optText, {color: textColor}]}>{label}</Text>
+        <Text style={[styles.optText, {color: DARK}]}>{label}</Text>
       </TouchableOpacity>
     </Animated.View>
   );
 }
 
 // ─── Huvudskärm ───────────────────────────────────────────────────────────────
-export default function SofaScreen({lang, onGoHome}) {
+export default function SofaScreen({lang, onGoHome, soundEnabled}) {
   const {questions, loading} = useQuestions();
   const [sessionSeed, setSessionSeed] = useState(() => Date.now());
   const [idx, setIdx]           = useState(0);
@@ -185,12 +177,12 @@ export default function SofaScreen({lang, onGoHome}) {
   function animateResult() {
     iconScale.setValue(0);
     scoreScale.setValue(0);
-    popupSlide.setValue(500);
-    Animated.spring(iconScale, {toValue: 1, friction: 5, tension: 80, useNativeDriver: true}).start();
-    setTimeout(() => {
-      Animated.spring(scoreScale, {toValue: 1, friction: 5, tension: 60, useNativeDriver: true}).start();
-      Animated.spring(popupSlide, {toValue: 0, friction: 8, tension: 50, useNativeDriver: true}).start();
-    }, 300);
+    popupSlide.setValue(300);
+    Animated.parallel([
+      Animated.spring(iconScale,  {toValue: 1, friction: 5, tension: 80, useNativeDriver: true}),
+      Animated.spring(scoreScale, {toValue: 1, friction: 5, tension: 60, useNativeDriver: true}),
+      Animated.spring(popupSlide, {toValue: 0, friction: 8, tension: 60, useNativeDriver: true}),
+    ]).start();
   }
 
   function handleAnswer(opt) {
@@ -202,8 +194,8 @@ export default function SofaScreen({lang, onGoHome}) {
       const cat = q.category || 'Övrigt';
       setSelected(opt);
       setPending(null);
-      if (isCorrect) setCorrect(c => c + 1);
-      else           setWrong(w => w + 1);
+      if (isCorrect) { setCorrect(c => c + 1); playCorrect(soundEnabled); }
+      else           { setWrong(w => w + 1);   playWrong(soundEnabled); }
       setCategoryStats(prev => ({
         ...prev,
         [cat]: {
@@ -212,11 +204,12 @@ export default function SofaScreen({lang, onGoHome}) {
         },
       }));
       animateResult();
-    }, 420);
+    }, 150);
   }
 
   function handleNext() {
-    if (idx + 1 >= total) { setFinished(true); return; }
+    playClick(soundEnabled);
+    if (idx + 1 >= total) { playSuccess(soundEnabled); setFinished(true); return; }
     setIdx(i => i + 1);
     setSelected(null);
   }
@@ -236,6 +229,7 @@ export default function SofaScreen({lang, onGoHome}) {
   }, [finished, correct]);
 
   function handlePlayAgain() {
+    playClick(soundEnabled);
     setSessionSeed(Date.now());
     setIdx(0);
     setSelected(null);
@@ -260,9 +254,8 @@ export default function SofaScreen({lang, onGoHome}) {
     const catEntries = Object.entries(categoryStats).sort((a, b) => a[0].localeCompare(b[0]));
     return (
       <ImageBackground source={BG} style={styles.bg} resizeMode="cover">
-        <SafeAreaView style={[styles.safeArea, {paddingTop: 32}]}>
+        <SafeAreaView style={[styles.safeArea, {paddingTop: hp(4)}]}>
 
-          {/* ── Poängcirkel ── */}
           <View style={styles.scoreBubble}>
             <View style={styles.scoreBubbleInner}>
               <Text style={styles.scoreBubbleLabel}>{t(lang, 'sofaYourResult')}</Text>
@@ -271,7 +264,6 @@ export default function SofaScreen({lang, onGoHome}) {
             </View>
           </View>
 
-          {/* ── Statistik-kort ── */}
           <View style={styles.statsCard}>
             <View style={styles.statsRow}>
               <View style={styles.statCell}>
@@ -291,7 +283,6 @@ export default function SofaScreen({lang, onGoHome}) {
             </View>
           </View>
 
-          {/* ── Kategori-breakdown ── */}
           {catEntries.length > 0 && (
             <View style={styles.catCard}>
               <Text style={styles.catTitle}>{t(lang, 'sofaCategoryResult')}</Text>
@@ -307,7 +298,6 @@ export default function SofaScreen({lang, onGoHome}) {
             </View>
           )}
 
-          {/* ── Knappar ── */}
           <TouchableOpacity style={styles.nextBtn} onPress={handlePlayAgain} activeOpacity={0.85}>
             <View style={styles.nextHighlight} />
             <Text style={styles.nextText}>{t(lang, 'sofaPlayAgain')}</Text>
@@ -330,12 +320,10 @@ export default function SofaScreen({lang, onGoHome}) {
     <ImageBackground source={BG} style={styles.bg} resizeMode="cover">
       <SafeAreaView style={styles.safeArea}>
 
-        {/* ── Hem-knapp (absolut, stör inte layouten) ── */}
         <TouchableOpacity style={styles.homeIcon} onPress={onGoHome}>
           <Text style={styles.homeIconText}>⌂</Text>
         </TouchableOpacity>
 
-        {/* ── Toprad: stapel rätt | ring | stapel fel ── */}
         <View style={styles.topRow}>
           <ScoreBar count={correct} total={total} color={GREEN} align="left" />
           <View style={styles.ringArea}>
@@ -345,7 +333,6 @@ export default function SofaScreen({lang, onGoHome}) {
           <ScoreBar count={wrong} total={total} color={RED} align="right" />
         </View>
 
-        {/* ── Frågeskärm ── */}
         <View style={styles.content}>
           <View style={styles.questionCard}>
             <View style={styles.questionMeta}>
@@ -362,8 +349,8 @@ export default function SofaScreen({lang, onGoHome}) {
           {!answered && (
             <View style={styles.options}>
               {options.map((opt, i) => {
-                const correctAns = loc(q.correctAnswer, lang);
-                const state = pending === opt ? (opt === correctAns ? 'correct' : 'wrong')
+                const correctAns2 = loc(q.correctAnswer, lang);
+                const state = pending === opt ? (opt === correctAns2 ? 'correct' : 'wrong')
                             : pending !== null ? 'idle'
                             : 'idle';
                 return (
@@ -374,22 +361,18 @@ export default function SofaScreen({lang, onGoHome}) {
           )}
         </View>
 
-        {/* ── Popup-overlay (glider upp när svar ges) ── */}
         {answered && (
           <Animated.View style={[styles.popupOverlay, {transform: [{translateY: popupSlide}]}]}>
             <ImageBackground source={POPUP_BG} style={styles.popupBg} imageStyle={styles.popupBgImg} resizeMode="cover">
 
-              {/* Frågan */}
               <View style={styles.factCard}>
                 <Text style={styles.popupQuestion}>{loc(q.question, lang)}</Text>
               </View>
 
-              {/* Rätt/Fel-etikett */}
               <Text style={[styles.popupLabel, {color: isCorrect ? '#7EE8A2' : '#FF8080'}]}>
                 {isCorrect ? `✓  ${t(lang, 'sofaCorrect')}` : `✗  ${t(lang, 'sofaWrong')}`}
               </Text>
 
-              {/* Rätt svar: poäng */}
               {isCorrect && (
                 <Animated.View style={[styles.scoreWrap, {transform: [{scale: scoreScale}]}]}>
                   <Text style={styles.scoreNum}>+1</Text>
@@ -397,7 +380,6 @@ export default function SofaScreen({lang, onGoHome}) {
                 </Animated.View>
               )}
 
-              {/* Fel svar: pills */}
               {!isCorrect && (
                 <View style={styles.answerRows}>
                   <View style={styles.answerRow}>
@@ -411,7 +393,6 @@ export default function SofaScreen({lang, onGoHome}) {
                 </View>
               )}
 
-              {/* Visste du att */}
               {fact ? (
                 <View style={styles.factCard}>
                   <Text style={styles.factLabel}>{t(lang, 'sofaDidYouKnow')}</Text>
@@ -419,7 +400,6 @@ export default function SofaScreen({lang, onGoHome}) {
                 </View>
               ) : null}
 
-              {/* Nästa knapp */}
               <TouchableOpacity style={styles.nextBtn} onPress={handleNext} activeOpacity={0.85}>
                 <View style={styles.nextHighlight} />
                 <Text style={styles.nextText}>
@@ -438,25 +418,25 @@ export default function SofaScreen({lang, onGoHome}) {
 
 const styles = StyleSheet.create({
   bg:       {flex: 1},
-  safeArea: {flex: 1, paddingHorizontal: 20, paddingTop: 64},
+  safeArea: {flex: 1, paddingHorizontal: wp(5), paddingTop: hp(8)},
   center:   {flex: 1, alignItems: 'center', justifyContent: 'center'},
-  loadingText: {color: '#fff', fontSize: 16, fontWeight: '600'},
+  loadingText: {color: '#fff', fontSize: fs(16), fontWeight: '600'},
 
   // ── Toprad ──────────────────────────────────────────────────────────────────
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: hp(2),
   },
   barWrap: {alignItems: 'flex-start', flex: 1},
   barWrapRight: {alignItems: 'flex-end'},
-  barCount: {fontSize: 22, fontWeight: '900', lineHeight: 26},
+  barCount: {fontSize: fs(22), fontWeight: '900', lineHeight: fs(26)},
   barTrack: {
-    width: 80, height: 8, backgroundColor: 'rgba(255,255,255,0.20)',
-    borderRadius: 4, overflow: 'hidden', marginTop: 4,
+    width: BAR_MAX_W, height: hp(1), backgroundColor: 'rgba(255,255,255,0.20)',
+    borderRadius: 4, overflow: 'hidden', marginTop: hp(0.5),
   },
-  barFill: {height: 8, borderRadius: 4},
+  barFill: {height: hp(1), borderRadius: 4},
 
   ringArea: {alignItems: 'center'},
   ringWrap: {
@@ -470,130 +450,129 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.55,
     shadowRadius: 10,
   },
-  ringNum:   {fontSize: 24, fontWeight: '900', color: '#fff'},
-  ringLabel: {fontSize: 11, color: 'rgba(255,255,255,0.75)', fontWeight: '600', marginTop: 4},
+  ringNum:   {fontSize: fs(24), fontWeight: '900', color: '#fff'},
+  ringLabel: {fontSize: fs(11), color: 'rgba(255,255,255,0.75)', fontWeight: '600', marginTop: hp(0.5)},
 
-  content: {paddingTop: 28},
+  content: {paddingTop: hp(3.5)},
 
   // ── Popup-overlay ────────────────────────────────────────────────────────────
   popupOverlay: {
-    position: 'absolute', left: 0, right: 0, bottom: 0, top: 183,
-    borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    position: 'absolute', left: 0, right: 0, bottom: 0, top: hp(22),
+    borderTopLeftRadius: wp(6), borderTopRightRadius: wp(6),
     overflow: 'hidden',
     elevation: 20,
   },
   popupBg: {
-    flex: 1, paddingHorizontal: 20, paddingTop: 24, paddingBottom: 28,
+    flex: 1, paddingHorizontal: wp(5), paddingTop: hp(3), paddingBottom: hp(3.5),
   },
   popupBgImg: {
-    borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    borderTopLeftRadius: wp(6), borderTopRightRadius: wp(6),
   },
   popupQuestion: {
-    fontSize: 16, fontWeight: '700', color: '#fff',
-    lineHeight: 22, marginBottom: 16,
+    fontSize: fs(16), fontWeight: '700', color: '#fff',
+    lineHeight: fs(22), marginBottom: hp(2),
     opacity: 0.9,
   },
   popupLabel: {
-    fontSize: 22, fontWeight: '900', marginBottom: 12, letterSpacing: -0.3,
+    fontSize: fs(22), fontWeight: '900', marginBottom: hp(1.5), letterSpacing: -0.3,
   },
 
   // ── Fråga ────────────────────────────────────────────────────────────────────
   questionCard: {
     backgroundColor: 'rgba(10,6,0,0.88)',
-    borderRadius: 18, padding: 24, marginBottom: 20,
+    borderRadius: wp(4), padding: wp(6), marginBottom: hp(2.5),
   },
-  questionMeta: {marginBottom: 14, gap: 6},
+  questionMeta: {marginBottom: hp(1.7), gap: hp(0.7)},
   categoryBadge: {
-    flexDirection: 'row', alignItems: 'center', gap: 6,
+    flexDirection: 'row', alignItems: 'center', gap: wp(1.5),
     alignSelf: 'flex-start',
     backgroundColor: 'rgba(200,168,64,0.20)',
-    borderRadius: 20, paddingHorizontal: 12, paddingVertical: 5,
+    borderRadius: 20, paddingHorizontal: wp(3), paddingVertical: hp(0.6),
     borderWidth: 1, borderColor: 'rgba(200,168,64,0.50)',
   },
-  categoryIcon: {fontSize: 14},
-  categoryText: {fontSize: 12, fontWeight: '700', color: GOLD, letterSpacing: 0.5},
+  categoryText: {fontSize: fs(12), fontWeight: '700', color: GOLD, letterSpacing: 0.5},
   locationLabel: {
-    fontSize: 13, fontWeight: '700', color: 'rgba(255,255,255,0.60)',
+    fontSize: fs(13), fontWeight: '700', color: 'rgba(255,255,255,0.60)',
     letterSpacing: 0.3,
   },
-  questionText: {fontSize: 22, fontWeight: '800', color: '#fff', lineHeight: 30},
+  questionText: {fontSize: fs(22), fontWeight: '800', color: '#fff', lineHeight: fs(30)},
 
   // ── Alternativ ───────────────────────────────────────────────────────────────
-  options: {gap: 10},
+  options: {gap: hp(1.2)},
   optBtn: {
-    backgroundColor: '#fff', borderRadius: 14,
-    paddingVertical: 18, paddingHorizontal: 20,
+    backgroundColor: '#fff', borderRadius: wp(3.5),
+    paddingVertical: hp(2.2), paddingHorizontal: wp(5),
     borderWidth: 1.5, borderColor: 'rgba(200,168,64,0.30)',
     elevation: 2,
     shadowColor: '#000', shadowOffset:{width:0,height:1}, shadowOpacity:0.08, shadowRadius:3,
   },
-  optText: {fontSize: 16, fontWeight: '600', color: DARK},
+  optText: {fontSize: fs(16), fontWeight: '600', color: DARK},
 
   // ── Resultat (i popup) ───────────────────────────────────────────────────────
-  scoreWrap: {alignItems: 'center', marginBottom: 16},
-  scoreNum:  {fontSize: 48, fontWeight: '900', color: GOLD, lineHeight: 52, letterSpacing: -2},
-  scoreLbl:  {fontSize: 11, fontWeight: '800', color: GOLD, letterSpacing: 2.5, marginTop: -4},
-  answerRows: {gap: 8, marginBottom: 16},
-  answerRow:  {flexDirection: 'row', alignItems: 'center', gap: 10},
-  answerLbl:  {fontSize: 12, color: 'rgba(255,255,255,0.70)', fontWeight: '600', width: 76},
+  scoreWrap: {alignItems: 'center', marginBottom: hp(2)},
+  scoreNum:  {fontSize: fs(48), fontWeight: '900', color: GOLD, lineHeight: fs(52), letterSpacing: -2},
+  scoreLbl:  {fontSize: fs(11), fontWeight: '800', color: GOLD, letterSpacing: 2.5, marginTop: -4},
+  answerRows: {gap: hp(1), marginBottom: hp(2)},
+  answerRow:  {flexDirection: 'row', alignItems: 'center', gap: wp(2.5)},
+  answerLbl:  {fontSize: fs(12), color: 'rgba(255,255,255,0.70)', fontWeight: '600', width: wp(19)},
   wrongPill: {
     flex: 1, backgroundColor: 'rgba(0,0,0,0.30)',
-    borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8,
+    borderRadius: 10, paddingHorizontal: wp(3), paddingVertical: hp(1),
     borderWidth: 1.5, borderColor: '#FF8080',
   },
-  wrongPillText:  {fontSize: 13, fontWeight: '700', color: '#FF8080'},
+  wrongPillText:  {fontSize: fs(13), fontWeight: '700', color: '#FF8080'},
   correctPill: {
     flex: 1, backgroundColor: 'rgba(0,0,0,0.30)',
-    borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8,
+    borderRadius: 10, paddingHorizontal: wp(3), paddingVertical: hp(1),
     borderWidth: 1.5, borderColor: '#7EE8A2',
   },
-  correctPillText: {fontSize: 13, fontWeight: '700', color: '#7EE8A2'},
+  correctPillText: {fontSize: fs(13), fontWeight: '700', color: '#7EE8A2'},
 
   // ── Visste du att (i popup) ──────────────────────────────────────────────────
   factCard: {
     backgroundColor: 'rgba(0,0,0,0.25)',
-    borderRadius: 12, padding: 14, marginBottom: 16,
+    borderRadius: wp(3), padding: wp(3.5), marginBottom: hp(2),
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)',
   },
-  factLabel: {fontSize: 10, fontWeight: '800', color: 'rgba(255,255,255,0.60)', letterSpacing: 1.2, marginBottom: 6},
-  factText:  {fontSize: 13, color: 'rgba(255,255,255,0.90)', lineHeight: 19},
+  factLabel: {fontSize: fs(10), fontWeight: '800', color: 'rgba(255,255,255,0.60)', letterSpacing: 1.2, marginBottom: hp(0.75)},
+  factText:  {fontSize: fs(13), color: 'rgba(255,255,255,0.90)', lineHeight: fs(19)},
 
   // ── Nästa / Hem ──────────────────────────────────────────────────────────────
   nextBtn: {
     backgroundColor: GOLD, borderRadius: 50,
-    paddingVertical: 16,
+    paddingVertical: hp(2),
     alignItems: 'center',
     overflow: 'hidden', elevation: 10,
     borderBottomWidth: 4, borderBottomColor: 'rgba(0,0,0,0.30)',
-    marginTop: 8,
+    marginTop: hp(1),
   },
   nextHighlight: {
-    position: 'absolute', top: 0, left: 0, right: 0, height: 22,
+    position: 'absolute', top: 0, left: 0, right: 0, height: hp(2.7),
     backgroundColor: 'rgba(255,255,255,0.28)', borderRadius: 50,
   },
-  nextText: {color: '#1a0f00', fontSize: 16, fontWeight: '800', letterSpacing: 0.5},
+  nextText: {color: '#1a0f00', fontSize: fs(16), fontWeight: '800', letterSpacing: 0.5},
   homeIcon: {
-    position: 'absolute', top: 12, right: 20,
-    width: 40, height: 40, borderRadius: 20,
+    position: 'absolute', top: hp(1.5), right: wp(5),
+    width: wp(10), height: wp(10), borderRadius: wp(5),
     backgroundColor: 'rgba(0,0,0,0.40)',
     alignItems: 'center', justifyContent: 'center',
     zIndex: 10,
   },
-  homeIconText: {fontSize: 20, color: '#fff'},
+  homeIconText: {fontSize: fs(20), color: '#fff'},
 
   // ── Avslutsskärm ─────────────────────────────────────────────────────────────
   scoreBubble: {
     alignSelf: 'center',
-    width: 190, height: 190, borderRadius: 95,
+    width: wp(48), height: wp(48), borderRadius: wp(24),
     backgroundColor: 'rgba(200,168,64,0.18)',
     borderWidth: 2, borderColor: 'rgba(200,168,64,0.40)',
     alignItems: 'center', justifyContent: 'center',
-    marginBottom: 20, elevation: 20,
+    marginBottom: hp(2.5), elevation: 20,
     shadowColor: GOLD, shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.55, shadowRadius: 20,
   },
   scoreBubbleInner: {
-    width: 162, height: 162, borderRadius: 81,
+    width: wp(41), height: wp(41), borderRadius: wp(20.5),
     backgroundColor: 'rgba(10,6,0,0.92)',
     borderWidth: 2.5, borderColor: GOLD,
     alignItems: 'center', justifyContent: 'center',
@@ -601,35 +580,38 @@ const styles = StyleSheet.create({
     shadowColor: GOLD, shadowOffset: {width: 0, height: 0},
     shadowOpacity: 0.6, shadowRadius: 10,
   },
-  scoreBubbleLabel: {fontSize: 12, color: 'rgba(255,255,255,0.60)', fontWeight: '600', letterSpacing: 0.5},
-  scoreBubbleNum:   {fontSize: 64, fontWeight: '900', color: GOLD, lineHeight: 68, letterSpacing: -3},
-  scoreBubbleOf:    {fontSize: 11, color: 'rgba(255,255,255,0.50)', fontWeight: '600'},
+  scoreBubbleLabel: {fontSize: fs(12), color: 'rgba(255,255,255,0.60)', fontWeight: '600', letterSpacing: 0.5},
+  scoreBubbleNum:   {fontSize: fs(64), fontWeight: '900', color: GOLD, lineHeight: fs(68), letterSpacing: -3},
+  scoreBubbleOf:    {fontSize: fs(11), color: 'rgba(255,255,255,0.50)', fontWeight: '600'},
 
   statsCard: {
     backgroundColor: 'rgba(10,6,0,0.88)',
-    borderRadius: 16, padding: 16, marginBottom: 12,
+    borderRadius: wp(4), padding: wp(4), marginBottom: hp(1.5),
     borderWidth: 1, borderColor: 'rgba(200,168,64,0.30)',
   },
   statsRow: {flexDirection: 'row', alignItems: 'center'},
   statCell: {flex: 1, alignItems: 'center'},
-  statDivider: {width: 1, height: 40, backgroundColor: 'rgba(255,255,255,0.15)'},
-  statNum: {fontSize: 28, fontWeight: '900', lineHeight: 32},
-  statLbl: {fontSize: 11, color: 'rgba(255,255,255,0.60)', fontWeight: '600', marginTop: 2},
+  statDivider: {width: 1, height: hp(5), backgroundColor: 'rgba(255,255,255,0.15)'},
+  statNum: {fontSize: fs(28), fontWeight: '900', lineHeight: fs(32)},
+  statLbl: {fontSize: fs(11), color: 'rgba(255,255,255,0.60)', fontWeight: '600', marginTop: hp(0.25)},
 
   catCard: {
     backgroundColor: 'rgba(10,6,0,0.88)',
-    borderRadius: 16, padding: 16, marginBottom: 16,
+    borderRadius: wp(4), padding: wp(4), marginBottom: hp(2),
     borderWidth: 1, borderColor: 'rgba(200,168,64,0.30)',
   },
-  catTitle: {fontSize: 10, fontWeight: '800', color: 'rgba(255,255,255,0.45)', letterSpacing: 1.5, marginBottom: 10},
-  catRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6,
-    borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.08)'},
-  catName: {fontSize: 14, color: '#fff', fontWeight: '600'},
-  catScore: {fontSize: 15, fontWeight: '800'},
+  catTitle: {fontSize: fs(10), fontWeight: '800', color: 'rgba(255,255,255,0.45)', letterSpacing: 1.5, marginBottom: hp(1.2)},
+  catRow: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingVertical: hp(0.75),
+    borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.08)',
+  },
+  catName: {fontSize: fs(14), color: '#fff', fontWeight: '600'},
+  catScore: {fontSize: fs(15), fontWeight: '800'},
 
   homeBtn: {
-    marginTop: 10, alignItems: 'center', paddingVertical: 14,
+    marginTop: hp(1.2), alignItems: 'center', paddingVertical: hp(1.7),
     borderRadius: 50, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.30)',
   },
-  homeBtnText: {color: 'rgba(255,255,255,0.80)', fontSize: 15, fontWeight: '700'},
+  homeBtnText: {color: 'rgba(255,255,255,0.80)', fontSize: fs(15), fontWeight: '700'},
 });

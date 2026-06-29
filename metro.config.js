@@ -7,6 +7,9 @@ const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
  * @type {import('metro-config').MetroConfig}
  */
 const config = {
+  transformer: {
+    unstable_allowRequireContext: true,
+  },
   server: {
     // Force plain JS bundle — OkHttp on Windows fails on Metro's multipart chunked response
     enhanceMiddleware: (middleware) => {

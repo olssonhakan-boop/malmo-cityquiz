@@ -158,7 +158,7 @@ function makeStyles(width, height) {
       backgroundColor: CARD_BG,
       alignSelf: 'flex-start',
       borderRadius: wp(2),
-      paddingVertical: 4,
+      paddingVertical: hp(0.5),
       paddingHorizontal: wp(3),
     },
     cardLabel: {

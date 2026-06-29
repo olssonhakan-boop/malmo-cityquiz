@@ -4,20 +4,19 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
   StyleSheet,
   Animated,
   ImageBackground,
   Image,
+  Dimensions,
 } from 'react-native';
 
 const RESULT_BG = require('../../assets/images/malmo4.jpg');
 
-const QUESTION_IMAGES = {
-  quizfototest: require('../../assets/images/quizfototest.jpg'),
-};
+import QUESTION_IMAGES from '../utils/questionImages';
 import {t} from '../utils/i18n';
 import {makeProgressId} from '../hooks/useLocations';
+import {playClick, playCorrect, playWrong, playSuccess} from '../utils/sound';
 
 const GOLD     = '#C8A840';
 const DARK     = '#2C1E0F';
@@ -26,6 +25,12 @@ const RED      = '#E74C3C';
 const SHEET_BG = '#FDFAF5';
 const BORDER   = '#DDD5C4';
 const MUTED    = '#9E8E78';
+
+// Dimensioner beräknas en gång vid app-start (portrait-only app)
+const {width: SW, height: SH} = Dimensions.get('window');
+const wp = pct => SW * (pct / 100);
+const hp = pct => SH * (pct / 100);
+const fs = size => Math.round(size * (SW / 390));
 
 // ─── Hjälpfunktioner ──────────────────────────────────────────────────────────
 function hashString(value) {
@@ -204,12 +209,11 @@ function SortOrder({question, lang, onCorrect, onWrong}) {
 }
 
 // ─── Resultat-sektion (efter svar, ej sortera) ────────────────────────────────
-function ResultArea({feedback, correctAnswer, selectedAnswer, points, streak, iconScale, scoreScale}) {
+function ResultArea({feedback, correctAnswer, selectedAnswer, points, streak, iconScale, scoreScale, lang}) {
   const isCorrect = feedback === 'correct';
   return (
     <View style={styles.resultArea}>
 
-      {/* Stor ikon-cirkel */}
       <Animated.View style={[
         styles.resultCircle,
         isCorrect ? styles.resultCircleOk : styles.resultCircleErr,
@@ -218,12 +222,10 @@ function ResultArea({feedback, correctAnswer, selectedAnswer, points, streak, ic
         <Text style={styles.resultCircleText}>{isCorrect ? '✓' : '✗'}</Text>
       </Animated.View>
 
-      {/* Rätt/Fel-text */}
       <Text style={[styles.resultLabel, {color: isCorrect ? GREEN : RED}]}>
         {isCorrect ? t(lang, 'sofaCorrect') : t(lang, 'sofaWrong')}
       </Text>
 
-      {/* Poäng-stämpel (rätt svar) */}
       {isCorrect && (
         <Animated.View style={[styles.scoreWrap, {transform: [{scale: scoreScale}]}]}>
           <Text style={styles.scoreNum}>+{points}</Text>
@@ -231,14 +233,12 @@ function ResultArea({feedback, correctAnswer, selectedAnswer, points, streak, ic
         </Animated.View>
       )}
 
-      {/* Streak-badge */}
       {isCorrect && streak >= 2 && (
         <View style={styles.streakBadge}>
           <Text style={styles.streakText}>{streak} rätt i rad</Text>
         </View>
       )}
 
-      {/* Fel svar: visa vad spelaren valde + vad som var rätt */}
       {!isCorrect && (
         <View style={styles.answerSummary}>
           {selectedAnswer ? (
@@ -273,6 +273,7 @@ export default function QuizModal({
   isOnLocation,
   onClose,
   onCompleteQuestion,
+  soundEnabled,
 }) {
   const [qIndex,        setQIndex]        = useState(0);
   const [feedback,        setFeedback]        = useState('idle');
@@ -283,11 +284,10 @@ export default function QuizModal({
 
   const {opacity, colorRef, flash} = useFlash();
 
-  // Animationsvärden
   const iconScale   = useRef(new Animated.Value(0)).current;
   const scoreScale  = useRef(new Animated.Value(0)).current;
   const factOpacity = useRef(new Animated.Value(0)).current;
-  const factSlide   = useRef(new Animated.Value(28)).current;
+  const factSlide   = useRef(new Animated.Value(hp(3.5))).current;
 
   const unanswered = useMemo(() => {
     if (!location) return [];
@@ -318,26 +318,22 @@ export default function QuizModal({
                      (feedback === 'correct' && unanswered.length === 1);
   const points     = isOnLocation ? 30 : 10;
 
-  // ─── Animationer ──────────────────────────────────────────────────────────
   function resetAnims() {
     iconScale.setValue(0);
     scoreScale.setValue(0);
     factOpacity.setValue(0);
-    factSlide.setValue(28);
+    factSlide.setValue(hp(3.5));
   }
 
   function startResultAnims() {
-    // 1. Ikon poppar in med fjäder
     Animated.spring(iconScale, {
       toValue: 1, friction: 5, tension: 80, useNativeDriver: true,
     }).start();
-    // 2. Poäng stampar in (bara vid rätt svar)
     setTimeout(() => {
       Animated.spring(scoreScale, {
         toValue: 1, friction: 5, tension: 60, useNativeDriver: true,
       }).start();
     }, 220);
-    // 3. Faktaruta glider upp
     setTimeout(() => {
       Animated.parallel([
         Animated.timing(factOpacity, {toValue: 1, duration: 320, useNativeDriver: true}),
@@ -346,7 +342,6 @@ export default function QuizModal({
     }, 480);
   }
 
-  // ─── Händelser ────────────────────────────────────────────────────────────
   function handleCorrect(correctText) {
     flash(GREEN);
     setFeedback('correct');
@@ -354,6 +349,7 @@ export default function QuizModal({
     setStreak(s => s + 1);
     onCompleteQuestion(progressId);
     startResultAnims();
+    playCorrect(soundEnabled);
   }
 
   function handleWrong(correctText, selectedText) {
@@ -363,9 +359,11 @@ export default function QuizModal({
     setSelectedAnswer(selectedText || '');
     setStreak(0);
     startResultAnims();
+    playWrong(soundEnabled);
   }
 
   function handleNext() {
+    playClick(soundEnabled);
     resetAnims();
     const nextIdx = unanswered.find(i => i > qIndex) ?? unanswered[0];
     if (nextIdx !== undefined && nextIdx !== qIndex) {
@@ -375,6 +373,7 @@ export default function QuizModal({
       setSelectedAnswer('');
       setKey(k => k + 1);
     } else {
+      playSuccess(soundEnabled);
       onClose();
     }
   }
@@ -387,7 +386,6 @@ export default function QuizModal({
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.overlay}>
 
-        {/* Flash-overlay */}
         <Animated.View
           pointerEvents="none"
           style={[StyleSheet.absoluteFillObject, {backgroundColor: colorRef.current, opacity}]}
@@ -403,7 +401,7 @@ export default function QuizModal({
             <View style={styles.header}>
               <Text style={[styles.title, styles.titleOnBg]} numberOfLines={2}>{title}</Text>
               <TouchableOpacity
-                onPress={onClose}
+                onPress={() => { playClick(soundEnabled); onClose(); }}
                 style={[styles.headerCloseBtn, styles.headerCloseBtnOnBg]}
                 hitSlop={{top: 12, right: 12, bottom: 12, left: 12}}>
                 <Text style={[styles.headerCloseBtnText, styles.headerCloseBtnTextOnBg]}>✕</Text>
@@ -456,7 +454,7 @@ export default function QuizModal({
               />
             )}
 
-            {/* ── Svarsalternativ (döljs när answered, utom SortOrder) ── */}
+            {/* ── Svarsalternativ ── */}
             <View key={key}>
               {question.type === 'multiple-choice' && (
                 <MultipleChoice
@@ -484,7 +482,7 @@ export default function QuizModal({
               )}
             </View>
 
-            {/* ── Resultat-kort (MC + TF efter svar) ── */}
+            {/* ── Resultat-kort ── */}
             {answered && question.type !== 'sort-order' && (
               <ResultArea
                 feedback={feedback}
@@ -494,10 +492,11 @@ export default function QuizModal({
                 streak={streak}
                 iconScale={iconScale}
                 scoreScale={scoreScale}
+                lang={lang}
               />
             )}
 
-            {/* ── Visste du att (alltid vid svar, rätt och fel) ── */}
+            {/* ── Visste du att ── */}
             {answered && fact ? (
               <Animated.View
                 style={[
@@ -522,7 +521,7 @@ export default function QuizModal({
               </TouchableOpacity>
             )}
 
-            <View style={{height: 28}} />
+            <View style={{height: hp(3.5)}} />
           </View>
         </ImageBackground>
       </View>
@@ -541,15 +540,15 @@ const styles = StyleSheet.create({
 
   sheet: {
     backgroundColor: SHEET_BG,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    borderTopLeftRadius: wp(6),
+    borderTopRightRadius: wp(6),
+    paddingHorizontal: wp(5),
+    paddingTop: hp(2.5),
     overflow: 'hidden',
   },
   sheetBgImage: {
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderTopLeftRadius: wp(6),
+    borderTopRightRadius: wp(6),
     resizeMode: 'cover',
   },
   titleOnBg: {color: '#fff'},
@@ -560,25 +559,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 10,
+    marginBottom: hp(1.2),
   },
   title: {
-    fontSize: 18,
+    fontSize: fs(18),
     fontWeight: '800',
     color: DARK,
     flex: 1,
-    marginRight: 12,
+    marginRight: wp(3),
     letterSpacing: -0.2,
   },
   headerCloseBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: wp(8),
+    height: wp(8),
+    borderRadius: wp(4),
     backgroundColor: 'rgba(0,0,0,0.08)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  headerCloseBtnText: {fontSize: 14, color: '#555', fontWeight: '400', lineHeight: 16},
+  headerCloseBtnText: {fontSize: fs(14), color: '#555', fontWeight: '400', lineHeight: fs(16)},
   headerCloseBtnOnBg: {backgroundColor: 'rgba(0,0,0,0.35)'},
   headerCloseBtnTextOnBg: {color: '#fff'},
 
@@ -587,52 +586,52 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 14,
+    marginBottom: hp(1.7),
   },
-  dots: {flexDirection: 'row', gap: 6},
-  dot:  {width: 9, height: 9, borderRadius: 5},
+  dots: {flexDirection: 'row', gap: wp(1.5)},
+  dot:  {width: wp(2.3), height: wp(2.3), borderRadius: wp(1.5)},
   dotDone:   {backgroundColor: GREEN},
   dotActive: {backgroundColor: GOLD},
   dotEmpty:  {backgroundColor: '#DDD5C4'},
-  progressText: {fontSize: 12, color: MUTED, fontWeight: '500'},
+  progressText: {fontSize: fs(12), color: MUTED, fontWeight: '500'},
 
   // ── GPS-badge ────────────────────────────────────────────────────────────────
   gpsBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: wp(2.5),
     backgroundColor: '#FFF8E1',
-    borderRadius: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginBottom: 12,
+    borderRadius: wp(2.5),
+    paddingVertical: hp(1),
+    paddingHorizontal: wp(3),
+    marginBottom: hp(1.5),
     borderWidth: 1.5,
     borderColor: GOLD,
   },
   gpsPill: {
     backgroundColor: GOLD,
-    borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    borderRadius: wp(1.5),
+    paddingHorizontal: wp(1.5),
+    paddingVertical: hp(0.25),
   },
-  gpsPillText: {fontSize: 10, fontWeight: '800', color: DARK, letterSpacing: 0.8},
-  gpsText:     {fontSize: 13, color: '#7A5A00', fontWeight: '600'},
+  gpsPillText: {fontSize: fs(10), fontWeight: '800', color: DARK, letterSpacing: 0.8},
+  gpsText:     {fontSize: fs(13), color: '#7A5A00', fontWeight: '600'},
 
   // ── Fråga ────────────────────────────────────────────────────────────────────
   question: {
-    fontSize: 15,
+    fontSize: fs(15),
     fontWeight: '700',
     color: DARK,
-    marginBottom: 14,
-    lineHeight: 22,
+    marginBottom: hp(1.7),
+    lineHeight: fs(22),
   },
 
   // ── Frågebild ────────────────────────────────────────────────────────────────
   questionImage: {
     width: '100%',
-    height: 180,
-    borderRadius: 12,
-    marginBottom: 14,
+    height: hp(22),
+    borderRadius: wp(3),
+    marginBottom: hp(1.7),
   },
 
   // ── Svarsknapp ───────────────────────────────────────────────────────────────
@@ -641,74 +640,73 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1.5,
     borderColor: BORDER,
-    borderRadius: 12,
-    paddingVertical: 13,
-    paddingHorizontal: 16,
-    marginBottom: 8,
+    borderRadius: wp(3),
+    paddingVertical: hp(1.6),
+    paddingHorizontal: wp(4),
+    marginBottom: hp(1),
     backgroundColor: '#fff',
   },
-  optionText: {fontSize: 14, color: DARK, fontWeight: '500', flex: 1},
+  optionText: {fontSize: fs(14), color: DARK, fontWeight: '500', flex: 1},
 
   // ── Ja / Nej ─────────────────────────────────────────────────────────────────
-  tfRow: {flexDirection: 'row', gap: 10, marginBottom: 8},
+  tfRow: {flexDirection: 'row', gap: wp(2.5), marginBottom: hp(1)},
   tfBtn: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
     borderColor: BORDER,
-    borderRadius: 14,
-    paddingVertical: 22,
+    borderRadius: wp(3.5),
+    paddingVertical: hp(2.7),
     backgroundColor: '#fff',
   },
-  tfText: {fontSize: 17, fontWeight: '800', color: DARK},
+  tfText: {fontSize: fs(17), fontWeight: '800', color: DARK},
 
   // ── Sortera ──────────────────────────────────────────────────────────────────
-  sortHint: {fontSize: 12, color: MUTED, marginBottom: 10},
+  sortHint: {fontSize: fs(12), color: MUTED, marginBottom: hp(1.2)},
   sortBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1.5,
     borderColor: BORDER,
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    marginBottom: 8,
+    borderRadius: wp(3),
+    paddingVertical: hp(1.2),
+    paddingHorizontal: wp(3),
+    marginBottom: hp(1),
     backgroundColor: '#fff',
   },
   sortPicked:   {borderColor: GOLD, backgroundColor: '#FFF8E1'},
   sortCorrect:  {borderColor: GREEN, backgroundColor: GREEN},
   sortWrong:    {borderColor: RED,   backgroundColor: RED},
   sortNum: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: wp(6.5),
+    height: wp(6.5),
+    borderRadius: wp(3.25),
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: wp(3),
   },
-  sortNumText:  {color: '#fff', fontSize: 12, fontWeight: '800'},
-  sortItemText: {fontSize: 14, fontWeight: '500', flex: 1, color: DARK},
+  sortNumText:  {color: '#fff', fontSize: fs(12), fontWeight: '800'},
+  sortItemText: {fontSize: fs(14), fontWeight: '500', flex: 1, color: DARK},
 
-  // ── Resultat-kort — eget kort med djup ───────────────────────────────────────
+  // ── Resultat-kort ─────────────────────────────────────────────────────────────
   resultArea: {
     alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.78)',
-    borderRadius: 14,
+    borderRadius: wp(3.5),
     borderWidth: 1.5,
     borderColor: GOLD,
-    paddingTop: 24,
-    paddingBottom: 24,
-    paddingHorizontal: 16,
-    marginBottom: 14,
+    paddingVertical: hp(3),
+    paddingHorizontal: wp(4),
+    marginBottom: hp(1.7),
   },
   resultCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: wp(18),
+    height: wp(18),
+    borderRadius: wp(9),
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
+    marginBottom: hp(1.5),
     elevation: 6,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 3},
@@ -717,92 +715,89 @@ const styles = StyleSheet.create({
   },
   resultCircleOk:   {backgroundColor: GREEN},
   resultCircleErr:  {backgroundColor: RED},
-  resultCircleText: {fontSize: 34, color: '#fff', fontWeight: '900', lineHeight: 40},
+  resultCircleText: {fontSize: fs(34), color: '#fff', fontWeight: '900', lineHeight: fs(40)},
   resultLabel: {
-    fontSize: 20,
+    fontSize: fs(20),
     fontWeight: '800',
-    marginBottom: 16,
+    marginBottom: hp(2),
     letterSpacing: -0.3,
   },
 
-  // Poäng-stämpel
   scoreWrap: {
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: hp(1.7),
   },
   scoreNum: {
-    fontSize: 58,
+    fontSize: fs(58),
     fontWeight: '900',
     color: GOLD,
-    lineHeight: 62,
+    lineHeight: fs(62),
     letterSpacing: -2,
   },
   scoreLabel: {
-    fontSize: 11,
+    fontSize: fs(11),
     fontWeight: '800',
     color: GOLD,
     letterSpacing: 2.5,
     marginTop: -4,
   },
 
-  // Streak
   streakBadge: {
     backgroundColor: '#fff',
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 6,
+    borderRadius: wp(5),
+    paddingHorizontal: wp(4),
+    paddingVertical: hp(0.75),
     borderWidth: 1.5,
     borderColor: GOLD,
-    marginBottom: 4,
+    marginBottom: hp(0.5),
     elevation: 2,
   },
-  streakText: {fontSize: 13, fontWeight: '700', color: '#7A5A00'},
+  streakText: {fontSize: fs(13), fontWeight: '700', color: '#7A5A00'},
 
-  // Svar-sammanfattning (vid fel svar)
   answerSummary: {
     alignSelf: 'stretch',
-    gap: 10,
-    marginTop: 10,
+    gap: hp(1.2),
+    marginTop: hp(1.2),
   },
   answerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: wp(2.5),
   },
   answerRowLabel: {
-    fontSize: 12,
+    fontSize: fs(12),
     color: MUTED,
     fontWeight: '600',
-    width: 82,
+    width: wp(21),
     textAlign: 'left',
   },
   wrongPill: {
     backgroundColor: 'rgba(255,255,255,0.92)',
-    borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
+    borderRadius: wp(5),
+    paddingHorizontal: wp(3.5),
+    paddingVertical: hp(0.75),
     borderWidth: 2,
     borderColor: RED,
     flex: 1,
   },
-  wrongPillText: {fontSize: 13, fontWeight: '700', color: RED},
+  wrongPillText: {fontSize: fs(13), fontWeight: '700', color: RED},
   correctPill: {
     backgroundColor: 'rgba(255,255,255,0.92)',
-    borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
+    borderRadius: wp(5),
+    paddingHorizontal: wp(3.5),
+    paddingVertical: hp(0.75),
     borderWidth: 2,
     borderColor: GREEN,
     flex: 1,
   },
-  correctPillText: {fontSize: 13, fontWeight: '700', color: GREEN},
+  correctPillText: {fontSize: fs(13), fontWeight: '700', color: GREEN},
 
-  // ── Visste du att — faktakort med djup ───────────────────────────────────────
+  // ── Visste du att ─────────────────────────────────────────────────────────────
   funFact: {
     backgroundColor: 'rgba(255,255,255,0.78)',
-    borderRadius: 14,
-    padding: 14,
-    marginBottom: 14,
+    borderRadius: wp(3.5),
+    padding: wp(3.5),
+    marginBottom: hp(1.7),
     borderWidth: 1.5,
     borderColor: GOLD,
     elevation: 3,
@@ -812,21 +807,21 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   funFactLabel: {
-    fontSize: 10,
+    fontSize: fs(10),
     fontWeight: '800',
     color: GOLD,
     textTransform: 'uppercase',
     letterSpacing: 1.2,
-    marginBottom: 6,
+    marginBottom: hp(0.75),
   },
-  funFactText: {fontSize: 13, color: DARK, lineHeight: 19},
+  funFactText: {fontSize: fs(13), color: DARK, lineHeight: fs(19)},
 
-  // ── Nästa/Stäng — enligt designdokumentet ────────────────────────────────────
+  // ── Nästa/Stäng ───────────────────────────────────────────────────────────────
   nextBtn: {
     backgroundColor: GOLD,
     borderRadius: 50,
-    paddingVertical: 15,
-    paddingHorizontal: 48,
+    paddingVertical: hp(1.85),
+    paddingHorizontal: wp(12),
     alignSelf: 'center',
     alignItems: 'center',
     overflow: 'hidden',
@@ -837,13 +832,13 @@ const styles = StyleSheet.create({
   nextBtnHighlight: {
     position: 'absolute',
     top: 0, left: 0, right: 0,
-    height: 22,
+    height: hp(2.7),
     backgroundColor: 'rgba(255,255,255,0.25)',
     borderRadius: 50,
   },
   nextBtnText: {
     color: '#1a0f00',
-    fontSize: 15,
+    fontSize: fs(15),
     fontWeight: '700',
     letterSpacing: 0.3,
   },

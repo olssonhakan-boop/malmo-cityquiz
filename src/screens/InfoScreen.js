@@ -9,19 +9,21 @@ import {
   SafeAreaView,
   useWindowDimensions,
 } from 'react-native';
+import {t} from '../utils/i18n';
 
 const BG_IMAGE = require('../assets/quizbg.jpg');
 const GOLD = '#C8A840';
-const CARD_BG = 'rgba(44,30,15,0.78)';
+const CARD_BG = 'rgba(44,30,15,0.82)';
 
 const ICON_KANDISAR = String.fromCodePoint(0xf0d3);
-const ICON_HISTORIA = String.fromCodePoint(0xea3e); // history_edu
-const ICON_PLATSER  = String.fromCodePoint(0xf200); // foundation
-const ICON_PIN      = String.fromCodePoint(0xe0c8);
-const ICON_WALK     = String.fromCodePoint(0xe536);
-const ICON_STAR     = String.fromCodePoint(0xe838);
+const ICON_HISTORIA = String.fromCodePoint(0xea3e);
+const ICON_PLATSER  = String.fromCodePoint(0xf200);
+// Faktiska statusar på kartan: kategorimarkör → pulserar (nearby) → grön check (avklarad)
+const ICON_MARKER   = String.fromCodePoint(0xe0c8); // location_on — standard markör
+const ICON_NEARBY   = String.fromCodePoint(0xe0c8); // samma men pulserar i appen
+const ICON_DONE     = String.fromCodePoint(0xe86c); // check_circle — avklarad
 
-export default function InfoScreen({lang, categories, onStart}) {
+export default function InfoScreen({lang, onStart}) {
   const {width, height} = useWindowDimensions();
   const s = makeStyles(width, height);
 
@@ -32,8 +34,8 @@ export default function InfoScreen({lang, categories, onStart}) {
         <View style={s.overlay} />
         <SafeAreaView style={s.safe}>
 
-          <Text style={s.title}>Redo att utforska Malmö?</Text>
-          <Text style={s.subtitle}>Så här fungerar det</Text>
+          <Text style={s.title}>{t(lang, 'infoTitle')}</Text>
+          <Text style={s.subtitle}>{t(lang, 'infoSubtitle')}</Text>
 
           {/* Kategori-ikoner */}
           <View style={s.card}>
@@ -42,74 +44,73 @@ export default function InfoScreen({lang, categories, onStart}) {
                 <View style={[s.catIcon, {backgroundColor: '#5B4A9A'}]}>
                   <Text style={s.iconText}>{ICON_KANDISAR}</Text>
                 </View>
-                <Text style={s.catLabel}>Kändisar</Text>
-                <Text style={s.catSub}>Malmöbor som{'\n'}satt avtryck</Text>
+                <Text style={s.catLabel}>{t(lang, 'infoCatKandisar')}</Text>
+                <Text style={s.catSub}>{t(lang, 'infoCatKandisarSub')}</Text>
               </View>
               <View style={s.catItem}>
                 <View style={[s.catIcon, {backgroundColor: '#2D6A3F'}]}>
                   <Text style={s.iconText}>{ICON_HISTORIA}</Text>
                 </View>
-                <Text style={s.catLabel}>Historia</Text>
-                <Text style={s.catSub}>Händelser som{'\n'}format staden</Text>
+                <Text style={s.catLabel}>{t(lang, 'infoCatHistoria')}</Text>
+                <Text style={s.catSub}>{t(lang, 'infoCatHistoriaSub')}</Text>
               </View>
               <View style={s.catItem}>
                 <View style={[s.catIcon, {backgroundColor: '#1A3A6B'}]}>
                   <Text style={s.iconText}>{ICON_PLATSER}</Text>
                 </View>
-                <Text style={s.catLabel}>Platser</Text>
-                <Text style={s.catSub}>Landmärken{'\n'}& arkitektur</Text>
+                <Text style={s.catLabel}>{t(lang, 'infoCatPlatser')}</Text>
+                <Text style={s.catSub}>{t(lang, 'infoCatPlatserSub')}</Text>
               </View>
             </View>
-            <Text style={s.cardDesc}>
-              Varje ikon på kartan är en plats med en historia — gå dit och ta reda på den.
-            </Text>
+            <Text style={s.cardDesc}>{t(lang, 'infoCatDesc')}</Text>
           </View>
 
-          {/* Markör-progression */}
+          {/* Markör-statusar — speglar faktisk kartlogik */}
           <View style={s.card}>
-            <Text style={s.cardTitle}>Ju närmare du går — desto mer händer</Text>
+            <Text style={s.cardTitle}>{t(lang, 'infoProximityTitle')}</Text>
             <View style={s.markerFlow}>
               <View style={s.markerStep}>
-                <View style={[s.markerDot, {backgroundColor: '#666'}]}>
-                  <Text style={s.markerIcon}>{ICON_PIN}</Text>
+                <View style={[s.markerDot, {backgroundColor: '#555'}]}>
+                  <Text style={s.markerIcon}>{ICON_MARKER}</Text>
                 </View>
-                <Text style={s.markerLabel}>Långt borta</Text>
+                <Text style={s.markerLabel}>{t(lang, 'infoProximityFar')}</Text>
               </View>
               <Text style={s.arrow}>→</Text>
               <View style={s.markerStep}>
                 <View style={[s.markerDot, {backgroundColor: '#E6C84A'}]}>
-                  <Text style={s.markerIcon}>{ICON_WALK}</Text>
+                  <Text style={s.markerIcon}>{ICON_NEARBY}</Text>
                 </View>
-                <Text style={s.markerLabel}>Nära</Text>
+                <Text style={[s.markerLabel, {color: GOLD}]}>{t(lang, 'infoProximityNear')}</Text>
               </View>
               <Text style={s.arrow}>→</Text>
               <View style={s.markerStep}>
-                <View style={[s.markerDot, {backgroundColor: GOLD}]}>
-                  <Text style={s.markerIcon}>{ICON_STAR}</Text>
+                <View style={[s.markerDot, {backgroundColor: '#27AE60'}]}>
+                  <Text style={s.markerIcon}>{ICON_DONE}</Text>
                 </View>
-                <Text style={[s.markerLabel, {color: GOLD, fontWeight: '700'}]}>På plats!</Text>
+                <Text style={[s.markerLabel, {color: '#4CD964', fontWeight: '700'}]}>{t(lang, 'infoProximityDone')}</Text>
               </View>
             </View>
             <Text style={s.cardDesc}>
-              Ju närmere du går, desto mer händer.{' '}
-              Svara rätt på plats och få{' '}
-              <Text style={s.highlight}>3× poäng</Text>
-              {' '}— det lönar sig verkligen att röra på benen!
+              {t(lang, 'infoProximityDescBold') ? (
+                <>
+                  {lang === 'sv' ? 'Svara rätt på plats och få ' : lang === 'en' ? 'Answer correctly on location and earn ' : 'Beantworte Fragen vor Ort und erhalte '}
+                  <Text style={s.highlight}>{t(lang, 'infoProximityDescBold')}</Text>
+                  {lang === 'sv' ? ' — det lönar sig att röra på benen!' : lang === 'en' ? ' — it pays to get moving!' : ' — es lohnt sich, loszugehen!'}
+                </>
+              ) : null}
             </Text>
           </View>
 
-          {/* Poäng + tips i en rad */}
+          {/* Poäng + tips */}
           <View style={s.bottomRow}>
             <View style={[s.card, s.pointsCard]}>
               <Text style={s.pointsBig}><Text style={s.pointsGold}>10</Text> p</Text>
-              <Text style={s.pointsSmall}>per rätt svar</Text>
+              <Text style={s.pointsSmall}>{t(lang, 'infoPointsRight')}</Text>
               <Text style={s.pointsBig}><Text style={s.pointsGold}>30</Text> p</Text>
-              <Text style={s.pointsSmall}>på plats</Text>
+              <Text style={s.pointsSmall}>{t(lang, 'infoPointsPlace')}</Text>
             </View>
             <View style={[s.card, s.tipsCard]}>
-              <Text style={s.tipsText}>
-                Ser du en siffra på kartan? Flera platser ligger nära varandra — zooma in för att se dem separat. Varje plats berättar något nytt om Malmö!
-              </Text>
+              <Text style={s.tipsText}>{t(lang, 'infoTipsText')}</Text>
             </View>
           </View>
 
@@ -117,7 +118,7 @@ export default function InfoScreen({lang, categories, onStart}) {
           <View style={s.btnRow}>
             <TouchableOpacity style={s.goldBtn} onPress={onStart} activeOpacity={0.85}>
               <View style={s.goldBtnHighlight} />
-              <Text style={s.goldBtnText}>Sätt igång! →</Text>
+              <Text style={s.goldBtnText}>{t(lang, 'infoStartBtn')}</Text>
             </TouchableOpacity>
           </View>
 
@@ -137,7 +138,7 @@ function makeStyles(width, height) {
     bg: {flex: 1},
     overlay: {
       ...StyleSheet.absoluteFillObject,
-      backgroundColor: 'rgba(8,4,0,0.55)',
+      backgroundColor: 'rgba(8,4,0,0.60)',
     },
     safe: {
       flex: 1,
@@ -154,7 +155,7 @@ function makeStyles(width, height) {
     },
     subtitle: {
       fontSize: fs(14),
-      color: 'rgba(255,255,255,0.55)',
+      color: 'rgba(255,255,255,0.75)',
       textAlign: 'center',
       marginBottom: hp(2.5),
     },
@@ -173,7 +174,7 @@ function makeStyles(width, height) {
     },
     cardDesc: {
       fontSize: fs(12),
-      color: 'rgba(255,255,255,0.75)',
+      color: 'rgba(255,255,255,0.85)',
       lineHeight: fs(12) * 1.55,
       marginTop: hp(1),
     },
@@ -182,7 +183,6 @@ function makeStyles(width, height) {
       fontWeight: '700',
     },
 
-    // Kategorier
     catRow: {
       flexDirection: 'row',
       justifyContent: 'space-around',
@@ -205,20 +205,26 @@ function makeStyles(width, height) {
     },
     catLabel: {
       fontSize: fs(12),
-      color: 'rgba(255,255,255,0.75)',
-      fontWeight: '600',
+      color: '#fff',
+      fontWeight: '700',
+    },
+    catSub: {
+      fontSize: fs(11),
+      color: 'rgba(255,255,255,0.70)',
+      textAlign: 'center',
+      lineHeight: fs(11) * 1.4,
     },
 
-    // Markör-flöde
     markerFlow: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: wp(2),
+      gap: wp(1.5),
     },
     markerStep: {
       alignItems: 'center',
       gap: hp(0.5),
+      flex: 1,
     },
     markerDot: {
       width: wp(11),
@@ -233,17 +239,17 @@ function makeStyles(width, height) {
       color: '#fff',
     },
     markerLabel: {
-      fontSize: fs(12),
-      color: 'rgba(255,255,255,0.65)',
+      fontSize: fs(11),
+      color: 'rgba(255,255,255,0.75)',
       fontWeight: '600',
+      textAlign: 'center',
     },
     arrow: {
-      fontSize: fs(18),
-      color: 'rgba(255,255,255,0.35)',
+      fontSize: fs(16),
+      color: 'rgba(255,255,255,0.40)',
       marginBottom: hp(1.5),
     },
 
-    // Poäng + tips rad
     bottomRow: {
       flexDirection: 'row',
       gap: wp(3),
@@ -263,13 +269,6 @@ function makeStyles(width, height) {
       borderLeftColor: GOLD,
       marginBottom: 0,
     },
-    catSub: {
-      fontSize: fs(12),
-      color: 'rgba(255,255,255,0.5)',
-      textAlign: 'center',
-      lineHeight: fs(12) * 1.4,
-      marginTop: 2,
-    },
     pointsBig: {
       fontSize: fs(13),
       color: '#fff',
@@ -281,18 +280,17 @@ function makeStyles(width, height) {
       color: GOLD,
     },
     pointsSmall: {
-      fontSize: fs(12),
-      color: 'rgba(255,255,255,0.5)',
+      fontSize: fs(11),
+      color: 'rgba(255,255,255,0.70)',
       marginBottom: hp(0.5),
     },
     tipsText: {
       fontSize: fs(12),
-      color: 'rgba(255,255,255,0.8)',
+      color: 'rgba(255,255,255,0.85)',
       lineHeight: fs(12) * 1.6,
       fontStyle: 'italic',
     },
 
-    // Knapp
     btnRow: {
       alignItems: 'center',
       marginTop: hp(1),
