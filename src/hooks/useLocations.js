@@ -13,14 +13,6 @@ export function useLocations() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const load = async () => {
-    setLoading(true);
-    setError(null);
-    // DEV: använd alltid bundlad JSON under testning
-    setLocations(LOCAL_LOCATIONS);
-    setLoading(false);
-  };
-
   const fetchAndCache = async () => {
     const res = await fetch(LOCATIONS_URL);
     if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -30,6 +22,26 @@ export function useLocations() {
       CACHE_KEY,
       JSON.stringify({data, timestamp: Date.now()}),
     );
+  };
+
+  const load = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const cached = await AsyncStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const {data, timestamp} = JSON.parse(cached);
+        if (Date.now() - timestamp < CACHE_TTL) {
+          setLocations(data);
+          setLoading(false);
+          return;
+        }
+      }
+      await fetchAndCache();
+    } catch (_) {
+      setLocations(LOCAL_LOCATIONS);
+    }
+    setLoading(false);
   };
 
   useEffect(() => {

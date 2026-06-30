@@ -144,6 +144,8 @@ const strings = {
     sofaCategoryResult: 'RESULTAT PER KATEGORI',
     sofaPlayAgain: 'Spela igen med nya frågor →',
     sofaBackToStart: 'Tillbaka till start',
+    streakInRow: '{n} rätt i rad',
+    gpsOnLocationText: 'Du är på platsen · 3× poäng',
     // CategoryScreen
     categoryTitle: 'Välj din kategori',
     categoryHint: 'Välj 1–3 kategorier',
@@ -270,6 +272,8 @@ const strings = {
     sofaCategoryResult: 'RESULTS BY CATEGORY',
     sofaPlayAgain: 'Play again with new questions →',
     sofaBackToStart: 'Back to start',
+    streakInRow: '{n} in a row',
+    gpsOnLocationText: 'You\'re at the location · 3× points',
     // CategoryScreen
     categoryTitle: 'Choose category',
     categoryHint: 'Choose 1–3 categories',
@@ -395,6 +399,8 @@ const strings = {
     sofaCategoryResult: 'ERGEBNIS PRO KATEGORIE',
     sofaPlayAgain: 'Nochmal mit neuen Fragen →',
     sofaBackToStart: 'Zurück zum Start',
+    streakInRow: '{n} am Stück',
+    gpsOnLocationText: 'Du bist vor Ort · 3× Punkte',
     // CategoryScreen
     categoryTitle: 'Kategorie wählen',
     categoryHint: 'Wähle 1–3 Kategorien',

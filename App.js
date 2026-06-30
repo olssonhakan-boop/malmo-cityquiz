@@ -26,7 +26,7 @@ export default function App() {
       const haptic = pairs[1][1];
       if (sound  !== null) setSoundEnabled(sound   === 'true');
       if (haptic !== null) setHapticEnabled(haptic === 'true');
-    });
+    }).catch(() => {});
   }, []);
 
   function toggleSound() {
@@ -119,9 +119,16 @@ export default function App() {
         lang={lang}
         onGoHome={() => setScreen('home')}
         soundEnabled={soundEnabled}
+        hapticEnabled={hapticEnabled}
       />
     );
   }
 
-  return null;
+  return <HomeScreen
+    lang={lang}
+    onLangChange={setLang}
+    onStart={() => setScreen('select')}
+    soundEnabled={soundEnabled}
+    onToggleSound={toggleSound}
+  />;
 }

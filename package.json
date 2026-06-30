@@ -14,7 +14,9 @@
     "@react-native-community/geolocation": "^3.4.0",
     "react": "19.2.3",
     "react-native": "0.86.0",
+    "react-native-haptic-feedback": "^3.0.0",
     "react-native-maps": "1.27.2",
+    "react-native-sound-player": "^0.14.5",
     "react-native-svg": "15.15.5"
   },
   "devDependencies": {

@@ -93,7 +93,7 @@ export default function SelectScreen({lang, onLangChange, onStart, soundEnabled,
 
               <TouchableOpacity
                 style={s.goldBtn}
-                onPress={() => onStart({mode: 'map', categories: []})}
+                onPress={() => { playClick(soundEnabled, hapticEnabled); onStart({mode: 'map', categories: []}); }}
                 activeOpacity={0.85}>
                 <Text style={s.goldBtnText}>{t(lang, 'mode1Btn')}</Text>
                 <Text style={s.goldBtnArrow}>→</Text>
@@ -112,7 +112,7 @@ export default function SelectScreen({lang, onLangChange, onStart, soundEnabled,
               <Text style={s.cardDesc}>{t(lang, 'mode2Desc')}</Text>
               <TouchableOpacity
                 style={s.goldBtn}
-                onPress={() => onStart({mode: 'sofa', categories: []})}
+                onPress={() => { playClick(soundEnabled, hapticEnabled); onStart({mode: 'sofa', categories: []}); }}
                 activeOpacity={0.85}>
                 <Text style={s.goldBtnText}>{t(lang, 'mode2Btn')}</Text>
                 <Text style={s.goldBtnArrow}>→</Text>

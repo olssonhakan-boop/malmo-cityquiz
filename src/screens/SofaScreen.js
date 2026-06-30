@@ -148,7 +148,7 @@ function AnswerBtn({label, onPress, state}) {
 }
 
 // ─── Huvudskärm ───────────────────────────────────────────────────────────────
-export default function SofaScreen({lang, onGoHome, soundEnabled}) {
+export default function SofaScreen({lang, onGoHome, soundEnabled, hapticEnabled}) {
   const {questions, loading} = useQuestions();
   const [sessionSeed, setSessionSeed] = useState(() => Date.now());
   const [idx, setIdx]           = useState(0);
@@ -194,8 +194,8 @@ export default function SofaScreen({lang, onGoHome, soundEnabled}) {
       const cat = q.category || 'Övrigt';
       setSelected(opt);
       setPending(null);
-      if (isCorrect) { setCorrect(c => c + 1); playCorrect(soundEnabled); }
-      else           { setWrong(w => w + 1);   playWrong(soundEnabled); }
+      if (isCorrect) { setCorrect(c => c + 1); playCorrect(soundEnabled, hapticEnabled); }
+      else           { setWrong(w => w + 1);   playWrong(soundEnabled, hapticEnabled); }
       setCategoryStats(prev => ({
         ...prev,
         [cat]: {
@@ -208,8 +208,8 @@ export default function SofaScreen({lang, onGoHome, soundEnabled}) {
   }
 
   function handleNext() {
-    playClick(soundEnabled);
-    if (idx + 1 >= total) { playSuccess(soundEnabled); setFinished(true); return; }
+    playClick(soundEnabled, hapticEnabled);
+    if (idx + 1 >= total) { playSuccess(soundEnabled, hapticEnabled); setFinished(true); return; }
     setIdx(i => i + 1);
     setSelected(null);
   }
@@ -229,7 +229,7 @@ export default function SofaScreen({lang, onGoHome, soundEnabled}) {
   }, [finished, correct]);
 
   function handlePlayAgain() {
-    playClick(soundEnabled);
+    playClick(soundEnabled, hapticEnabled);
     setSessionSeed(Date.now());
     setIdx(0);
     setSelected(null);
@@ -451,7 +451,7 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
   },
   ringNum:   {fontSize: fs(24), fontWeight: '900', color: '#fff'},
-  ringLabel: {fontSize: fs(11), color: 'rgba(255,255,255,0.75)', fontWeight: '600', marginTop: hp(0.5)},
+  ringLabel: {fontSize: fs(12), color: 'rgba(255,255,255,0.75)', fontWeight: '600', marginTop: hp(0.5)},
 
   content: {paddingTop: hp(3.5)},
 
@@ -511,7 +511,7 @@ const styles = StyleSheet.create({
   // ── Resultat (i popup) ───────────────────────────────────────────────────────
   scoreWrap: {alignItems: 'center', marginBottom: hp(2)},
   scoreNum:  {fontSize: fs(48), fontWeight: '900', color: GOLD, lineHeight: fs(52), letterSpacing: -2},
-  scoreLbl:  {fontSize: fs(11), fontWeight: '800', color: GOLD, letterSpacing: 2.5, marginTop: -4},
+  scoreLbl:  {fontSize: fs(12), fontWeight: '800', color: GOLD, letterSpacing: 2.5, marginTop: -4},
   answerRows: {gap: hp(1), marginBottom: hp(2)},
   answerRow:  {flexDirection: 'row', alignItems: 'center', gap: wp(2.5)},
   answerLbl:  {fontSize: fs(12), color: 'rgba(255,255,255,0.70)', fontWeight: '600', width: wp(19)},
@@ -534,7 +534,7 @@ const styles = StyleSheet.create({
     borderRadius: wp(3), padding: wp(3.5), marginBottom: hp(2),
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)',
   },
-  factLabel: {fontSize: fs(10), fontWeight: '800', color: 'rgba(255,255,255,0.60)', letterSpacing: 1.2, marginBottom: hp(0.75)},
+  factLabel: {fontSize: fs(12), fontWeight: '800', color: 'rgba(255,255,255,0.60)', letterSpacing: 1.2, marginBottom: hp(0.75)},
   factText:  {fontSize: fs(13), color: 'rgba(255,255,255,0.90)', lineHeight: fs(19)},
 
   // ── Nästa / Hem ──────────────────────────────────────────────────────────────
@@ -582,7 +582,7 @@ const styles = StyleSheet.create({
   },
   scoreBubbleLabel: {fontSize: fs(12), color: 'rgba(255,255,255,0.60)', fontWeight: '600', letterSpacing: 0.5},
   scoreBubbleNum:   {fontSize: fs(64), fontWeight: '900', color: GOLD, lineHeight: fs(68), letterSpacing: -3},
-  scoreBubbleOf:    {fontSize: fs(11), color: 'rgba(255,255,255,0.50)', fontWeight: '600'},
+  scoreBubbleOf:    {fontSize: fs(12), color: 'rgba(255,255,255,0.50)', fontWeight: '600'},
 
   statsCard: {
     backgroundColor: 'rgba(10,6,0,0.88)',
@@ -593,14 +593,14 @@ const styles = StyleSheet.create({
   statCell: {flex: 1, alignItems: 'center'},
   statDivider: {width: 1, height: hp(5), backgroundColor: 'rgba(255,255,255,0.15)'},
   statNum: {fontSize: fs(28), fontWeight: '900', lineHeight: fs(32)},
-  statLbl: {fontSize: fs(11), color: 'rgba(255,255,255,0.60)', fontWeight: '600', marginTop: hp(0.25)},
+  statLbl: {fontSize: fs(12), color: 'rgba(255,255,255,0.60)', fontWeight: '600', marginTop: hp(0.25)},
 
   catCard: {
     backgroundColor: 'rgba(10,6,0,0.88)',
     borderRadius: wp(4), padding: wp(4), marginBottom: hp(2),
     borderWidth: 1, borderColor: 'rgba(200,168,64,0.30)',
   },
-  catTitle: {fontSize: fs(10), fontWeight: '800', color: 'rgba(255,255,255,0.45)', letterSpacing: 1.5, marginBottom: hp(1.2)},
+  catTitle: {fontSize: fs(12), fontWeight: '800', color: 'rgba(255,255,255,0.45)', letterSpacing: 1.5, marginBottom: hp(1.2)},
   catRow: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingVertical: hp(0.75),

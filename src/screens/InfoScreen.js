@@ -209,10 +209,10 @@ function makeStyles(width, height) {
       fontWeight: '700',
     },
     catSub: {
-      fontSize: fs(11),
+      fontSize: fs(12),
       color: 'rgba(255,255,255,0.70)',
       textAlign: 'center',
-      lineHeight: fs(11) * 1.4,
+      lineHeight: fs(12) * 1.4,
     },
 
     markerFlow: {
@@ -239,7 +239,7 @@ function makeStyles(width, height) {
       color: '#fff',
     },
     markerLabel: {
-      fontSize: fs(11),
+      fontSize: fs(12),
       color: 'rgba(255,255,255,0.75)',
       fontWeight: '600',
       textAlign: 'center',
@@ -280,7 +280,7 @@ function makeStyles(width, height) {
       color: GOLD,
     },
     pointsSmall: {
-      fontSize: fs(11),
+      fontSize: fs(12),
       color: 'rgba(255,255,255,0.70)',
       marginBottom: hp(0.5),
     },

@@ -29,6 +29,28 @@
         }
       },
       {
+        "id": "photo-test",
+        "type": "multiple-choice",
+        "questionImageLocal": "quizfototest",
+        "prompt": {
+          "sv": "Vad ser du på bilden?",
+          "en": "What do you see in the picture?",
+          "de": "Was siehst du auf dem Bild?"
+        },
+        "options": [
+          {"id": "a", "label": {"sv": "Malmö Live", "en": "Malmö Live", "de": "Malmö Live"}},
+          {"id": "b", "label": {"sv": "Turning Torso", "en": "Turning Torso", "de": "Turning Torso"}},
+          {"id": "c", "label": {"sv": "Stadshuset", "en": "City Hall", "de": "Rathaus"}},
+          {"id": "d", "label": {"sv": "Centralstationen", "en": "Central Station", "de": "Hauptbahnhof"}}
+        ],
+        "correctOptionId": "b",
+        "fact": {
+          "sv": "Turning Torso är Skandinaviens högsta byggnad, 190 meter högt och ritad av Santiago Calatrava.",
+          "en": "Turning Torso is Scandinavia's tallest building, 190 metres high and designed by Santiago Calatrava.",
+          "de": "Turning Torso ist Skandinaviens höchstes Gebäude, 190 Meter hoch und von Santiago Calatrava entworfen."
+        }
+      },
+      {
         "id": "statue-year",
         "type": "true-false",
         "prompt": {

@@ -235,7 +235,7 @@ function ResultArea({feedback, correctAnswer, selectedAnswer, points, streak, ic
 
       {isCorrect && streak >= 2 && (
         <View style={styles.streakBadge}>
-          <Text style={styles.streakText}>{streak} rätt i rad</Text>
+          <Text style={styles.streakText}>{t(lang, 'streakInRow').replace('{n}', streak)}</Text>
         </View>
       )}
 
@@ -243,7 +243,7 @@ function ResultArea({feedback, correctAnswer, selectedAnswer, points, streak, ic
         <View style={styles.answerSummary}>
           {selectedAnswer ? (
             <View style={styles.answerRow}>
-              <Text style={styles.answerRowLabel}>Ditt val:</Text>
+              <Text style={styles.answerRowLabel}>{t(lang, 'sofaYourAnswer')}</Text>
               <View style={styles.wrongPill}>
                 <Text style={styles.wrongPillText}>✗  {selectedAnswer}</Text>
               </View>
@@ -251,7 +251,7 @@ function ResultArea({feedback, correctAnswer, selectedAnswer, points, streak, ic
           ) : null}
           {correctAnswer ? (
             <View style={styles.answerRow}>
-              <Text style={styles.answerRowLabel}>Rätt svar:</Text>
+              <Text style={styles.answerRowLabel}>{t(lang, 'sofaRightAnswer')}</Text>
               <View style={styles.correctPill}>
                 <Text style={styles.correctPillText}>✓  {correctAnswer}</Text>
               </View>
@@ -374,7 +374,7 @@ export default function QuizModal({
       setKey(k => k + 1);
     } else {
       playSuccess(soundEnabled);
-      onClose();
+      setTimeout(onClose, 500);
     }
   }
 
@@ -438,7 +438,7 @@ export default function QuizModal({
                 <View style={styles.gpsPill}>
                   <Text style={styles.gpsPillText}>GPS</Text>
                 </View>
-                <Text style={styles.gpsText}>Du är på platsen  ·  3× poäng</Text>
+                <Text style={styles.gpsText}>{t(lang, 'gpsOnLocationText')}</Text>
               </View>
             )}
 
@@ -614,7 +614,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp(1.5),
     paddingVertical: hp(0.25),
   },
-  gpsPillText: {fontSize: fs(10), fontWeight: '800', color: DARK, letterSpacing: 0.8},
+  gpsPillText: {fontSize: fs(12), fontWeight: '800', color: DARK, letterSpacing: 0.8},
   gpsText:     {fontSize: fs(13), color: '#7A5A00', fontWeight: '600'},
 
   // ── Fråga ────────────────────────────────────────────────────────────────────
@@ -629,7 +629,7 @@ const styles = StyleSheet.create({
   // ── Frågebild ────────────────────────────────────────────────────────────────
   questionImage: {
     width: '100%',
-    height: hp(22),
+    height: hp(16),
     borderRadius: wp(3),
     marginBottom: hp(1.7),
   },
@@ -735,7 +735,7 @@ const styles = StyleSheet.create({
     letterSpacing: -2,
   },
   scoreLabel: {
-    fontSize: fs(11),
+    fontSize: fs(12),
     fontWeight: '800',
     color: GOLD,
     letterSpacing: 2.5,
@@ -807,7 +807,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   funFactLabel: {
-    fontSize: fs(10),
+    fontSize: fs(12),
     fontWeight: '800',
     color: GOLD,
     textTransform: 'uppercase',

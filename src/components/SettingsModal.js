@@ -48,6 +48,8 @@ export default function SettingsModal({
             await AsyncStorage.multiRemove([
               'malmo_progress',
               'malmo_score',
+              'malmo-cityquiz-completed-question-ids',
+              'malmo-cityquiz-completed-ids',
             ]);
             onClose();
           },
@@ -172,7 +174,7 @@ function makeStyles(width, height) {
     },
 
     sectionLabel: {
-      fontSize: fs(11),
+      fontSize: fs(12),
       fontWeight: '700',
       color: MUTED,
       textTransform: 'uppercase',
