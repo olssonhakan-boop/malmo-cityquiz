@@ -7,8 +7,11 @@ import {
   StyleSheet,
   ActivityIndicator,
   SafeAreaView,
+  StatusBar,
   PermissionsAndroid,
 } from 'react-native';
+
+const STATUS_BAR_H = StatusBar.currentHeight ?? 24;
 import Geolocation from '@react-native-community/geolocation';
 import MapView from 'react-native-maps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -348,7 +351,7 @@ const styles = StyleSheet.create({
 
   topBar: {
     position: 'absolute',
-    top: 48,
+    top: STATUS_BAR_H + 8,
     left: 12,
     flexDirection: 'row',
     gap: 10,
