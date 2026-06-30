@@ -60,6 +60,7 @@ export default function App() {
         onLangChange={setLang}
         onStart={() => setScreen('select')}
         soundEnabled={soundEnabled}
+        hapticEnabled={hapticEnabled}
         onToggleSound={toggleSound}
       />
     );
@@ -86,6 +87,7 @@ export default function App() {
         lang={lang}
         onStart={handleCategoryStart}
         soundEnabled={soundEnabled}
+        hapticEnabled={hapticEnabled}
       />
     );
   }
@@ -130,6 +132,7 @@ export default function App() {
     onLangChange={setLang}
     onStart={() => setScreen('select')}
     soundEnabled={soundEnabled}
+    hapticEnabled={hapticEnabled}
     onToggleSound={toggleSound}
   />;
 }

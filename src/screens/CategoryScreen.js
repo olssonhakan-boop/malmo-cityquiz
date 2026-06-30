@@ -10,6 +10,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import {t} from '../utils/i18n';
+import {playClick} from '../utils/sound';
 
 const BG_IMAGE = require('../assets/category.jpg');
 
@@ -22,7 +23,7 @@ const CATEGORIES = [
 const GOLD = '#C8A840';
 const CARD_BG = 'rgba(44,30,15,0.78)';
 
-export default function CategoryScreen({lang, onStart}) {
+export default function CategoryScreen({lang, onStart, soundEnabled, hapticEnabled}) {
   const {width, height} = useWindowDimensions();
   const s = makeStyles(width, height);
 
@@ -58,7 +59,7 @@ export default function CategoryScreen({lang, onStart}) {
                 <TouchableOpacity
                   key={cat.id}
                   style={[s.card, isSel && s.cardSelected]}
-                  onPress={() => toggle(cat.id)}
+                  onPress={() => { playClick(soundEnabled, hapticEnabled); toggle(cat.id); }}
                   activeOpacity={0.85}>
                   <ImageBackground
                     source={cat.image}
@@ -82,7 +83,7 @@ export default function CategoryScreen({lang, onStart}) {
           </View>
 
           <View style={s.btnRow}>
-            <TouchableOpacity style={s.goldBtn} onPress={handleStart} activeOpacity={0.85}>
+            <TouchableOpacity style={s.goldBtn} onPress={() => { playClick(soundEnabled, hapticEnabled); handleStart(); }} activeOpacity={0.85}>
               <View style={s.goldBtnHighlight} />
               <Text style={s.goldBtnText}>{t(lang, 'selectStartBtn')}</Text>
             </TouchableOpacity>

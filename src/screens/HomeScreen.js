@@ -12,10 +12,11 @@ import {
 import {t} from '../utils/i18n';
 import LanguagePicker from '../components/LanguagePicker';
 import {StatusBar as RNStatusBar} from 'react-native';
+import {playClick} from '../utils/sound';
 
 const HERO_IMAGE = require('../assets/homequiz.png');
 
-export default function HomeScreen({lang, onLangChange, onStart}) {
+export default function HomeScreen({lang, onLangChange, onStart, soundEnabled, hapticEnabled}) {
   const {width, height} = useWindowDimensions();
 
   // Alla mått beräknas från faktisk skärmstorlek
@@ -39,7 +40,7 @@ export default function HomeScreen({lang, onLangChange, onStart}) {
           </View>
 
           <View style={s.btnWrapper}>
-            <TouchableOpacity style={s.startBtn} onPress={onStart} activeOpacity={0.85}>
+            <TouchableOpacity style={s.startBtn} onPress={() => { playClick(soundEnabled, hapticEnabled); onStart(); }} activeOpacity={0.85}>
               <View style={s.startBtnHighlight} />
               <Text style={s.startBtnText}>{t(lang, 'homeStartBtn')}</Text>
             </TouchableOpacity>
