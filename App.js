@@ -71,6 +71,7 @@ export default function App() {
         lang={lang}
         onLangChange={setLang}
         onStart={handleSelectStart}
+        onGoBack={() => setScreen('home')}
         soundEnabled={soundEnabled}
         onToggleSound={toggleSound}
         hapticEnabled={hapticEnabled}

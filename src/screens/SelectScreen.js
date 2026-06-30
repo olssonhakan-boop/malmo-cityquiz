@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   ImageBackground,
   StatusBar,
   SafeAreaView,
+  BackHandler,
   useWindowDimensions,
 } from 'react-native';
 import {t, categoryLabel} from '../utils/i18n';
@@ -28,7 +29,7 @@ const ALL_CATEGORIES = [
 const CARD_BG = 'rgba(44,30,15,0.78)';
 const GOLD    = '#C8A840';
 
-export default function SelectScreen({lang, onLangChange, onStart, soundEnabled, onToggleSound, hapticEnabled, onToggleHaptic}) {
+export default function SelectScreen({lang, onLangChange, onStart, onGoBack, soundEnabled, onToggleSound, hapticEnabled, onToggleHaptic}) {
   const {width, height} = useWindowDimensions();
   const s = makeStyles(width, height);
   const {getCategoryConfig} = useCategories();
@@ -36,6 +37,15 @@ export default function SelectScreen({lang, onLangChange, onStart, soundEnabled,
   const [showCats, setShowCats] = useState(false);
   const [selectedCats, setSelectedCats] = useState([]);
   const [settingsVisible, setSettingsVisible] = useState(false);
+
+  useEffect(() => {
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (settingsVisible) { setSettingsVisible(false); return true; }
+      if (onGoBack) { onGoBack(); return true; }
+      return false;
+    });
+    return () => sub.remove();
+  }, [settingsVisible, onGoBack]);
 
   function toggleCategory(cat) {
     setSelectedCats(prev =>
